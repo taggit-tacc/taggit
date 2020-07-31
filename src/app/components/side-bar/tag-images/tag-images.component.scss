@@ -1,0 +1,125 @@
+@import '../../../../variables.scss';
+
+:host {
+  font-size: 0.8em;
+  display: block;
+  // height: calc(100vh - 50px);
+
+  .subitem-title {
+	text-align: left;
+	display: flex;
+	justify-content: space-between;
+	color: #555;
+	font-size: 14px;
+	padding: 10px;
+	background-color: #F1F1F1;
+  }
+
+  .subitem {
+	border-width: 0px 10px;
+	border-color: #F1F1F1;
+	border-style: solid;
+	padding: 10px;
+	overflow-y: scroll;
+	background-color: #FFFFFF;
+	height: 100%;
+  }
+
+  .main-form-container {
+	padding: 10px;
+  }
+
+  .subitem-scroll {
+	padding: 10px;
+  }
+
+  .subitem-scroll {
+	border-width: 5px;
+  }
+
+  .highlight {
+	background-color: #B3E5FF;
+  }
+
+  .boxed input[type="radio"] {
+	display: none;
+  }
+
+  .boxed label {
+	background-color: #fff;
+	transition: all 0.3s;
+  }
+
+  .boxed input[type="radio"]:checked + label {
+	background-color: #B3E5FF;
+  }
+
+  .group-container {
+	display: flex;
+	flex-direction: row;
+	margin: 0;
+	justify-content: space-between;
+  }
+
+  .select-group {
+	max-height: 20%;
+	height: 20%;
+  }
+
+  .tag-forms {
+	// max-height: 50%;
+	// height: auto;
+	height: 500px;
+  }
+
+  .asset-list {
+	max-height: 20%;
+	height: 20%;
+  }
+
+  .asset-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	cursor: pointer;
+  }
+
+  .preset-descriptions {
+	max-height: 20%;
+	height: 20%;
+  }
+
+  .form-item-container {
+	display: flex;
+	flex-direction: row;
+	margin: 0;
+	justify-content: space-between;
+  }
+
+  .button-group {
+	display: flex;
+	flex-direction: row;
+	margin: 0;
+  }
+
+  .button-group div {
+	padding: 3px;
+  }
+
+  .name-group {
+	padding: 3px;
+	font-size: 17px;
+	font-weight: bold;
+  }
+
+  .list-group {
+	display: flex;
+	flex-direction: row;
+	margin: 0;
+	justify-content: space-between;
+  }
+
+  .list-suboptions {
+	background-color: #F0F0F0;
+  }
+}

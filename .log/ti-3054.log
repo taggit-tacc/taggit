@@ -1,0 +1,42 @@
+[0:47:11.422] Global cache location '/home/duckonomy/.cache/typescript/3.8', safe file path '/usr/lib/node_modules/typescript/lib/typingSafeList.json', types map path /usr/lib/node_modules/typescript/lib/typesMap.json
+[0:47:11.423] Processing cache location '/home/duckonomy/.cache/typescript/3.8'
+[0:47:11.423] Trying to find '/home/duckonomy/.cache/typescript/3.8/package.json'...
+[0:47:11.423] Loaded content of '/home/duckonomy/.cache/typescript/3.8/package.json': {"private":true,"dependencies":{"types-registry":"^0.1.497"},"devDependencies":{"@types/node":"^13.13.1","@types/ws":"^7.2.4"}}
+[0:47:11.423] Loaded content of '/home/duckonomy/.cache/typescript/3.8/package-lock.json'
+[0:47:11.435] Adding entry into typings cache: 'node' => '/home/duckonomy/.cache/typescript/3.8/node_modules/@types/node/ts3.2/index.d.ts'
+[0:47:11.437] Adding entry into typings cache: 'ws' => '/home/duckonomy/.cache/typescript/3.8/node_modules/@types/ws/index.d.ts'
+[0:47:11.437] Finished processing cache location '/home/duckonomy/.cache/typescript/3.8'
+[0:47:11.438] Process id: 3068
+[0:47:11.438] NPM location: /usr/bin/npm (explicit '--npmLocation' not  provided)
+[0:47:11.438] validateDefaultNpmLocation: false
+[0:47:11.438] Npm config file: /home/duckonomy/.cache/typescript/3.8/package.json
+[0:47:11.438] Updating types-registry npm package...
+[0:47:11.438] Exec: /usr/bin/npm install --ignore-scripts types-registry@latest
+[0:47:12.230]     Succeeded. stdout:
+    + types-registry@0.1.497
+    updated 1 package in 0.263s
+
+[0:47:12.230] Updated types-registry npm package
+[9:49:26.229] Got install request {"projectName":"/dev/null/inferredProject1*","fileNames":["/usr/lib/node_modules/typescript/lib/lib.d.ts","/usr/lib/node_modules/typescript/lib/lib.es5.d.ts","/usr/lib/node_modules/typescript/lib/lib.dom.d.ts","/usr/lib/node_modules/typescript/lib/lib.webworker.importscripts.d.ts","/usr/lib/node_modules/typescript/lib/lib.scripthost.d.ts","/home/duckonomy/taggit-app/dist/main-es5.244c098804df914ee03a.js"],"compilerOptions":{"target":1,"jsx":1,"allowNonTsExtensions":true,"allowJs":true,"noEmitForJsFiles":true,"maxNodeModuleJsDepth":2},"typeAcquisition":{"enable":true,"include":[],"exclude":[]},"unresolvedImports":[],"projectRootPath":"/home/duckonomy/taggit-app/dist","kind":"discover"}
+[9:49:26.251] Loaded safelist from types map file '/usr/lib/node_modules/typescript/lib/typesMap.json'
+[9:49:26.252] Explicitly included types: []
+[9:49:26.253] Inferred typings from unresolved imports: []
+[9:49:26.254] Result: {"cachedTypingPaths":[],"newTypingNames":[],"filesToWatch":["/home/duckonomy/taggit-app/dist/bower_components","/home/duckonomy/taggit-app/dist/node_modules"]}
+[9:49:26.254] Finished typings discovery: {"cachedTypingPaths":[],"newTypingNames":[],"filesToWatch":["/home/duckonomy/taggit-app/dist/bower_components","/home/duckonomy/taggit-app/dist/node_modules"]}
+[9:49:26.254] DirectoryWatcher:: Added:: WatchInfo: /home/duckonomy/taggit-app/dist/bower_components
+[9:49:26.258] DirectoryWatcher:: Added:: WatchInfo: /home/duckonomy/taggit-app/dist/node_modules
+[9:49:26.259] Sending response:
+    {"projectName":"/dev/null/inferredProject1*","typeAcquisition":{"enable":true,"include":[],"exclude":[]},"compilerOptions":{"target":1,"jsx":1,"allowNonTsExtensions":true,"allowJs":true,"noEmitForJsFiles":true,"maxNodeModuleJsDepth":2},"typings":[],"unresolvedImports":[],"kind":"action::set"}
+[9:49:26.259] Response has been sent.
+[9:49:26.259] No new typings were requested as a result of typings discovery
+[9:52:50.831] Got install request {"projectName":"/dev/null/inferredProject2*","fileNames":["/usr/lib/node_modules/typescript/lib/lib.d.ts","/usr/lib/node_modules/typescript/lib/lib.es5.d.ts","/usr/lib/node_modules/typescript/lib/lib.dom.d.ts","/usr/lib/node_modules/typescript/lib/lib.webworker.importscripts.d.ts","/usr/lib/node_modules/typescript/lib/lib.scripthost.d.ts","/home/duckonomy/taggit-app/e2e/protractor.conf.js"],"compilerOptions":{"target":1,"jsx":1,"allowNonTsExtensions":true,"allowJs":true,"noEmitForJsFiles":true,"maxNodeModuleJsDepth":2},"typeAcquisition":{"enable":true,"include":[],"exclude":[]},"unresolvedImports":[],"projectRootPath":"/home/duckonomy/taggit-app/e2e","kind":"discover"}
+[9:52:50.831] Explicitly included types: []
+[9:52:50.832] Inferred typings from unresolved imports: []
+[9:52:50.832] Result: {"cachedTypingPaths":[],"newTypingNames":[],"filesToWatch":["/home/duckonomy/taggit-app/e2e/bower_components","/home/duckonomy/taggit-app/e2e/node_modules"]}
+[9:52:50.832] Finished typings discovery: {"cachedTypingPaths":[],"newTypingNames":[],"filesToWatch":["/home/duckonomy/taggit-app/e2e/bower_components","/home/duckonomy/taggit-app/e2e/node_modules"]}
+[9:52:50.832] DirectoryWatcher:: Added:: WatchInfo: /home/duckonomy/taggit-app/e2e/bower_components
+[9:52:50.833] DirectoryWatcher:: Added:: WatchInfo: /home/duckonomy/taggit-app/e2e/node_modules
+[9:52:50.833] Sending response:
+    {"projectName":"/dev/null/inferredProject2*","typeAcquisition":{"enable":true,"include":[],"exclude":[]},"compilerOptions":{"target":1,"jsx":1,"allowNonTsExtensions":true,"allowJs":true,"noEmitForJsFiles":true,"maxNodeModuleJsDepth":2},"typings":[],"unresolvedImports":[],"kind":"action::set"}
+[9:52:50.833] Response has been sent.
+[9:52:50.834] No new typings were requested as a result of typings discovery

@@ -1,0 +1,60 @@
+:host {
+  .subitem-title {
+	text-align: left;
+	color: #555;
+	font-size: 14px;
+	padding: 10px;
+	background-color: #F1F1F1;
+	display: flex;
+	justify-content: space-between;
+  }
+
+  .subitem {
+	border-width: 0px 10px;
+	border-color: #F1F1F1;
+	border-style: solid;
+	overflow-y: scroll;
+	background-color: #FFFFFF;
+	height: 100%;
+  }
+
+  .subitem-scroll {
+	border-width: 5px;
+  }
+
+  .asset-list {
+	max-height: 20%;
+	// height: 20%;
+  }
+
+  .asset-subitem {
+	height: 100px
+  }
+
+  .asset-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	cursor: pointer;
+  }
+
+  .highlight {
+	background-color: #B3E5FF;
+  }
+
+  .name-group {
+	display: inline-block;
+	padding: 3px;
+  }
+
+  .button-group {
+	margin: 0;
+	display: flex;
+	flex-direction: row;
+  }
+
+  .button-group div {
+	padding: 3px;
+	padding-right: 5px;
+  }
+}

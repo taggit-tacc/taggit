@@ -1,0 +1,22 @@
+<div class="asset-list">
+  <div class="subitem-title" (click)="expandPanel()">Image List</div>
+
+  <div *ngIf="showSubitem" class="subitem asset-subitem">
+
+	<div *ngFor="let asset of getActiveFeatures()" (click)="jumpToImage(asset)" class="asset-container" [ngClass]="{'highlight': isActiveFeature(asset)}">
+
+	  <div class="name-group">
+		{{ getAssetDisplay(asset) }}
+	  </div>
+
+	  <div class="button-group">
+		<div (click)="deleteAsset(asset.id)">
+		  <i class="fas fa-minus"
+			 matTooltip="Delete"
+			 matTooltipPosition="above">
+		  </i>
+		</div>
+	  </div>
+	</div>
+  </div>
+</div>

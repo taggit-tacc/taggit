@@ -1,0 +1,33 @@
+@import '../../../variables.scss';
+
+:host {
+  #create-project-form {
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	padding: 5em;
+  }
+}
+// TODO: Fix annoying margin flash
+// :host {
+//   position: {top: 20px};
+//   width: 450px;
+//   height: 250px;
+//   min-height: 20em;
+//   .fileslisting {
+//	min-height: 15em;
+//	max-height: 15em;
+//	overflow-y: scroll;
+//   }
+
+//   .file-row {
+//	border: 1px solid transparent;
+//	&:hover {
+//	  border: 1px solid $lightGrey;
+//	  &.selected {
+//		background: #d3d3d3;
+//	  }
+//	}
+//   }
+
+// }

@@ -1,0 +1,30 @@
+:host {
+  text-align: left;
+  .mat-form-field {
+	width: 100%;
+	text-align: left;
+  }
+
+  .input-group {
+	padding: 5px;
+  }
+
+  label {
+	padding: 5px;
+  }
+
+  input {
+	padding: 5px;
+	vertical-align: middle;
+  }
+
+  .radio-group {
+	display: flex;
+	flex-direction: column;
+  }
+
+  .form-controls {
+	padding: 20px;
+  }
+
+}

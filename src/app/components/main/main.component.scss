@@ -1,0 +1,28 @@
+:host {
+  .top-bar {
+	height: 40px;
+	padding: 5px;
+	padding-left: 0.5em;
+	flex-wrap: nowrap;
+	position: fixed;
+	overflow: hidden;
+	width: 100%;
+	z-index: 999;
+  }
+
+  .top-bar-right
+  .top-bar-left {
+	-webkit-box-flex: 0;
+	flex-wrap: nowrap;
+	flex: 0 1 auto;
+	max-width: 100%;
+
+  }
+
+  @media print, screen and (min-width: 40em) {
+	.top-bar {
+	  flex-wrap: nowrap;
+	  flex: 0 1 auto;
+	}
+  }
+}

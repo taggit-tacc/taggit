@@ -1,0 +1,56 @@
+<!-- <label for=""> -->
+<!--   Name: -->
+<!--   <\!-- {{field.label}} -\-> -->
+<!--   <input name="" [formControl]="name"/> -->
+<!-- </label> -->
+
+<div [formGroup]="form">
+  <!-- <label [attr.for]="field.label">{{field.label}}</label> -->
+
+  <div [ngSwitch]="field.type" class="form-controls">
+	<mat-form-field *ngSwitchCase="'text'">
+	  <input matInput color="primary" [formControlName]="field.label"
+			 [id]="field.label" [type]="field.type">
+	</mat-form-field>
+
+	<mat-form-field *ngSwitchCase="'dropdown'">
+	  <mat-select [id]="field.label" [id]="field.label" [formControlName]="field.label">
+		<mat-option *ngFor="let opt of field.options" [value]="opt.label">
+		  {{opt.label}}
+		</mat-option>
+	  </mat-select>
+	</mat-form-field>
+
+	<ng-container *ngSwitchCase="'radio'">
+	  <mat-radio-group [formControlName]="field.label" class="radio-group">
+		<mat-radio-button *ngFor="let opt of field.options" class="input-group" type="radio" [value]="opt.label">
+		  {{opt.label}}
+		</mat-radio-button>
+	  </mat-radio-group>
+	</ng-container>
+
+	<ng-container *ngSwitchCase="'checkbox'">
+	  <div *ngFor="let opt of field.options" [id]="field.label" class="input-group">
+		<mat-checkbox type="checkbox" [value]="opt.label" [formControlName]="field.label">
+		  {{opt.label}}
+		</mat-checkbox>
+	  </div>
+	</ng-container>
+
+  </div>
+
+  <div class="errorMessage" *ngIf="!isValid">{{field.label}} is required</div>
+</div>
+
+
+
+
+
+
+
+<!-- <form (ngSubmit)="onSubmit.emit(this.form.value)" [formGroup]="form" class="form-horizontal"> -->
+<!--   <div *ngFor="let field of formsService.activeFormList | async"> -->
+<!--   <\!-- <div *ngFor="let field of fields"> -\-> -->
+<!--	<\!-- <app-form-fields [field]="field" [form]="form"></app-form-fields> -\-> -->
+<!--   </div> -->
+<!-- </form> -->

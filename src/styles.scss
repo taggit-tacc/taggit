@@ -1,0 +1,114 @@
+/* You can add global styles to this file, and also import other style files */
+@import '~normalize.css';
+@import "~leaflet/dist/leaflet.css";
+@import "~@fortawesome/fontawesome-free/css/all.css";
+// @import "~foundation-sites/dist/css/foundation.css"
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+@import "variables.scss";
+
+// @import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+@import '~@angular/material/theming';
+@include mat-core();
+@import 'theme.scss';
+
+
+@include angular-material-theme($theme);
+
+// @import "~ngx-foundation/dist/css/ngx-foundation.css";
+
+html, body, h1, h2, h3, h4, h5, h6 {
+  font-family: Roboto;
+  margin: 0;
+  padding: 0;
+}
+
+.menu.is-dropdown-submenu {
+  z-index: 10000;
+}
+
+ul.dropdown {
+  li {
+	&:hover {
+	  backgroud-color: #d3d3d3;
+	}
+  }
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+html, body {
+  height: 100%;
+}
+
+
+.light-blue {
+  color: $AppMediumBlue;
+}
+
+.leaflet-fa-marker-icon {
+  background-color: #fff;
+  width: 3em !important;
+  height: 3em !important;
+  padding: 5px;
+  text-align: center;
+  border-radius: 18px;
+  line-height: 3em;
+}
+
+.break {
+  word-break: break-word
+}
+
+.marker-cluster {
+  div {
+	width: 25px;
+	height: 25px;
+	background-color: #4f8677;
+	border: 3px solid #fff;
+	text-align: center;
+	border-radius: 50%;
+	line-height: 19px;
+	color: #fff;
+  }
+}
+
+[appDropdown] {
+  cursor: pointer
+}
+
+.no-margin {
+  margin: 0
+}
+
+.no-padding {
+  padding: 0
+}
+
+.dock-panel {
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 70px);
+  .dock-panel-title {
+	color: $lightBlue;
+	font-size: 1.25em;
+  }
+  .dock-panel-content {
+	padding: 5px;
+	overflow-y: scroll;
+	height: calc(100% - 85px);
+  }
+  .dock-panel-controls {
+	bottom: 0;
+  }
+}
+
+app-map {
+  z-index: 1;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

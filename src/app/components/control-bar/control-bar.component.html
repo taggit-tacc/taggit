@@ -1,0 +1,96 @@
+<mat-toolbar class="top-bar" color="primary">
+  <img src="assets/logo.svg" width="40PX">
+  <span style="color: white">Taggit</span>
+
+  <button mat-icon-button [matMenuTriggerFor]="project" color="foreground" class="project-menu">
+	<mat-icon>menu</mat-icon>
+  </button>
+
+
+  <mat-menu #project="matMenu">
+	<span mat-menu-item *ngIf="selectedProject">
+	  Current Project : {{selectedProject.name}}
+	</span>
+	<button mat-menu-item (click)="openCreateProjectModal()">Create Project</button>
+	<button mat-menu-item [matMenuTriggerFor]="projectList">Select Project</button>
+	<button mat-menu-item (click)="openFilePicker()">File Browser</button>
+  </mat-menu>
+
+  <mat-menu #projectList="matMenu">
+	<button mat-menu-item class="clickable" *ngFor="let p of projects" (click)="selectProject(p)" [ngClass]="{'active-project': p === selectedProject}">
+	  {{ p.name }}
+	</button>
+  </mat-menu>
+
+  <span class="example-spacer"></span>
+
+  <div *ngIf="showSidebar; else doThat" class="path-buttons">
+	<div class="slides" style="line-height: 1; font-size: 12px">
+	  {{imageName}}
+	  <div class="lr-buttons" style="margin-top: 5px">
+		<i (click)="otherPath(false)" style="margin-right: 10px; cursor: pointer" class="fas fa-angle-left"></i>
+		<i (click)="otherPath(true)" style="margin-left: 10px; cursor: pointer" class="fas fa-angle-right"></i>
+	  </div>
+	</div>
+  </div>
+
+  <ng-template #doThat>
+	<!-- <input placeholder="Search images" -->
+	<!--	   name="" -->
+	<!--	   type="text" -->
+	<!--	   value="" -->
+	<!--	   class="goods"/> -->
+
+
+	<!-- <mat-form-field appearance="fill"> -->
+	<!--   <input matInput placeholder="Search"> -->
+	<!-- </mat-form-field> -->
+
+	<!-- <mat-form-field class="example-full-width"> -->
+	<!--   <input matInput type="text" -->
+	<!--		 [(ngModel)]="value" -->
+	<!--		 placeholder="Search"> -->
+	<!-- </mat-form-field> -->
+  </ng-template>
+
+  <span class="example-spacer"></span>
+
+  <div *ngIf="showGroup" class="group-bar grid-x align-right">
+	<button mat-raised-button
+			(click)="openAddGroupModal(addGroupModal)">Add Group</button>
+
+	<ng-template #addGroupModal>
+	  <mat-form-field>
+		<mat-label>Group Name</mat-label>
+		<input matInput placeholder="Group Name" #groupInput>
+	  </mat-form-field>
+	  <br/>
+	  <br/>
+	  <button mat-raised-button matDialogClose color="primary" (click)="addToGroupService(groupInput.value)">Add Group</button>
+	  <button mat-button matDialogClose color="secondary">Cancel</button>
+	</ng-template>
+  </div>
+
+  <!-- <button *ngIf="groupsExist && showSidebar && activePane == 'preset'" -->
+  <!--		  mat-button -->
+  <!--		  color="secondary" -->
+  <!--		  (click)="goToRoute()">Tagger</button> -->
+
+  <!-- <button *ngIf="groupsExist && showSidebar && activePane == 'tagger'" -->
+  <!--		  mat-button -->
+  <!--		  color="secondary" -->
+  <!--		  (click)="goToRoute()">Preset</button> -->
+
+
+  <button *ngIf="groupsExist && !showSidebar"
+		  mat-raised-button
+		  style="margin-left: 15px"
+		  (click)="openSidebar()">Taggit!</button>
+
+  <button *ngIf="groupsExist && showSidebar"
+		  mat-raised-button
+		  style="margin-left: 15px"
+		  (click)="openSidebar()">Gallery</button>
+
+
+</mat-toolbar>

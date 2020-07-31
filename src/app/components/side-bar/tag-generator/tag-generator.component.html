@@ -1,0 +1,100 @@
+<div class="create-prompt">
+  <div class="subitem-title" (click)="expandPanel()">
+	<span>
+	  Create Tag
+	</span>
+	<!-- <span style="cursor: pointer" -->
+	<!--	  (click)="addFormItem(); clearLabel(); clearOption()" -->
+	<!--	  matTooltip="Add Form Item" -->
+	<!--	  style="cursor: pointer; margin-right: 20px" -->
+	<!--	  matTooltipPosition="above"> -->
+	<!--   <i class="fas fa-plus"></i> -->
+	<!-- </span> -->
+  </div> <!-- subitem-title -->
+
+  <div *ngIf="showSubitem" class="subitem">
+	<form class="form-type-form">
+	  <div *ngFor="let control of enabledControls; let idx = index" class="box form">
+		<input type="radio" [id]="control" value="control.toLowerCase()" name="form-type" [checked]="(idx === 0)" (change)="selectInputForm(control.toLowerCase())">
+		<label style="cursor: pointer; margin: 3px; padding: 3px; font-size: 10px" [for]="control">{{ control }}</label>
+	  </div> <!-- form-type-form -->
+	</form>
+
+	<div *ngIf="formType == 'text'; else optionForms">
+	  <div class="form-name">
+		<mat-form-field class="input-label-group">
+		  <mat-label>Label</mat-label>
+		  <input matInput placeholder="Label" #labelValue [(ngModel)]="labelFilter" (keyup)="inputFormLabel($event)" name="labelFilter" class="tiny" type="text">
+		</mat-form-field>
+	  </div> <!--form-name -->
+	</div> <!-- formtype -->
+
+	<ng-template #optionForms>
+	  <div class="form-name">
+
+		<mat-form-field class="input-label-group">
+		  <mat-label>Label</mat-label>
+		  <input matInput placeholder="Label" #labelValue [(ngModel)]="labelFilter" (keyup)="inputFormLabel($event)" name="labelFilter" class="tiny" type="text">
+		</mat-form-field>
+		<mat-form-field class="input-label-group">
+		  <mat-label>Options</mat-label>
+		  <div class="input-group">
+			<input matInput #optionValue class="input-group-field" placeholder="Option" type="text" [(ngModel)]="optionFilter" name="optionFilter">
+		  </div> <!-- input-group -->
+		</mat-form-field>
+
+		<div class="input-group-button">
+		  <button mat-button color="accent" class="button" (click)="addOptionItem(optionValue.value); optionValue.value = ''; clearOption()">
+			<i class="fas fa-plus"></i>
+		  </button>
+		</div> <!-- input-group-button -->
+
+		<ul class="form-option-container">
+		  <li *ngFor="let opt of formOptions" class="list-group">
+			<div [className]="showOpt">
+			  {{opt.label}}
+			</div> <!-- showopt -->
+			<div class="button-group">
+			  <div (click)="deleteOption(opt)">
+				<i class="fas fa-minus"
+				   matTooltip="Delete"
+				   matTooltipPosition="above"
+				   style="cursor: pointer">
+				</i>
+			  </div> <!-- delete opt -->
+
+			  <div (click)="openRenameOptionModal(renameOptionModal)">
+				<i class="fas fa-edit"
+				   style="cursor: pointer"
+				   matTooltip="Rename"
+				   matTooltipPosition="above">
+				</i>
+			  </div>
+
+			  <ng-template #renameOptionModal>
+				<input matInput #optionRename
+					   placeholder="Rename Option">
+				<br/>
+				<br/>
+				<div class="button-group">
+				  <button matDialogClose
+						  mat-raised-button
+						  color="primary"
+						  (click)="renameOption(opt, optionRename.value)">Rename</button>
+				  <button matDialogClose
+						  mat-button>Cancel</button>
+				</div>
+			  </ng-template>
+
+			</div> <!-- button group -->
+
+		  </li>
+		</ul>
+	  </div> <!-- form name -->
+	</ng-template> <!-- form options -->
+
+	<button mat-raised-button color="primary" (click)="addFormItem(); clearLabel(); clearOption()">Save</button>
+	<button mat-button color="primary" (click)="cancelCreate(); clearLabel(); clearOption()">Cancel</button>
+
+  </div> <!-- subitem -->
+</div> <!-- create-group -->

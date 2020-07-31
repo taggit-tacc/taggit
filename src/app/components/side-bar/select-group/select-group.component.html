@@ -1,0 +1,46 @@
+<div class="select-group">
+  <div class="subitem-title" (click)="expandPanel()">Groups</div>
+  <div *ngIf="showSubitem" class="subitem group-subitem">
+	<!-- TODO redundant functionality radio is just for style -->
+	<form class="boxed">
+	  <div *ngFor="let group of groupList" (click)="selectGroupForm(group.name)" class="box form">
+		<input type="radio" [id]="group.name" [value]="group.name" name="skills" [checked]="isChecked(group.name)">
+		<label class="group-container" style="cursor: pointer" [for]="group.name">
+		  <div class="name-group">
+			{{group.name}}
+			<svg class="box" width="10px" height="10px">
+			  <rect width="10px" height="10px" style="fill: #ffffff"/>
+			  <rect width="8px" height="8px" x="1px" y="1px" [style.fill]="group.color"/>
+			</svg>
+		  </div>
+		  <div class="button-group">
+			<div (click)="deleteGroup(group.name)">
+			  <i class="fas fa-minus"
+				 matTooltip="Delete"
+				 matTooltipPosition="below">
+			  </i>
+			</div>
+			<div (click)="openRenameModal(renameModal, group.name)">
+			  <i class="fas fa-edit"
+				 matTooltip="Rename"
+				 matTooltipPosition="below">
+			  </i>
+			</div>
+		  </div>
+		</label>
+	  </div>
+	</form>
+
+	<ng-template #renameModal>
+	  <input matInput #groupRename
+			 placeholder="Rename Group"
+			 (keyup.enter)="renameGroup(groupRename.value)">
+	  <br/>
+	  <br/>
+	  <div class="button-group">
+		<button matDialogClose color="primary" mat-raised-button (click)="renameGroup(groupRename.value)">Rename</button>
+		<button matDialogClose mat-button>Cancel</button>
+	  </div>
+	</ng-template>
+  </div> <!-- subitem -->
+</div> <!-- select-group -->

@@ -1,0 +1,21 @@
+[16:36:34.83] Global cache location '/home/duckonomy/.cache/typescript/3.8', safe file path '/usr/lib/node_modules/typescript/lib/typingSafeList.json', types map path /usr/lib/node_modules/typescript/lib/typesMap.json
+[16:36:34.85] Processing cache location '/home/duckonomy/.cache/typescript/3.8'
+[16:36:34.85] Trying to find '/home/duckonomy/.cache/typescript/3.8/package.json'...
+[16:36:34.87] Loaded content of '/home/duckonomy/.cache/typescript/3.8/package.json': {"private":true,"dependencies":{"types-registry":"^0.1.497"},"devDependencies":{"@types/node":"^13.13.1","@types/ws":"^7.2.4"}}
+[16:36:34.87] Loaded content of '/home/duckonomy/.cache/typescript/3.8/package-lock.json'
+[16:36:34.123] Adding entry into typings cache: 'node' => '/home/duckonomy/.cache/typescript/3.8/node_modules/@types/node/ts3.2/index.d.ts'
+[16:36:34.133] Adding entry into typings cache: 'ws' => '/home/duckonomy/.cache/typescript/3.8/node_modules/@types/ws/index.d.ts'
+[16:36:34.133] Finished processing cache location '/home/duckonomy/.cache/typescript/3.8'
+[16:36:34.134] Process id: 53832
+[16:36:34.134] NPM location: /usr/bin/npm (explicit '--npmLocation' not  provided)
+[16:36:34.134] validateDefaultNpmLocation: false
+[16:36:34.135] Npm config file: /home/duckonomy/.cache/typescript/3.8/package.json
+[16:36:34.135] Updating types-registry npm package...
+[16:36:34.135] Exec: /usr/bin/npm install --ignore-scripts types-registry@latest
+[16:36:36.126]     Succeeded. stdout:
+    + types-registry@0.1.497
+    updated 1 package and audited 3 packages in 0.944s
+found 0 vulnerabilities
+
+
+[16:36:36.126] Updated types-registry npm package

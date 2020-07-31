@@ -1,0 +1,32 @@
+<h4> Select Files </h4>
+<small><em> Note: Only files are selectable, not folders. Double click on a folder to navigate into it. </em></small>
+<hr>
+<select (ngModelChange)="selectSystem($event)" [(ngModel)]="selectedSystem">
+	<option [ngValue]="myDataSystem"> My Data </option>
+	<option [ngValue]="communityDataSystem"> Community Data</option>
+	<option [ngValue]="publishedDataSystem"> Published Data</option>
+	<optgroup label="My Projects">
+		<option *ngFor="let project of projects" [ngValue]="project">{{project.description}}</option>
+	</optgroup>
+</select>
+<div class="fileslisting">
+	<div class="grid-x" *ngIf="inProgress">
+		<div class="cell medium-12">
+			<i class="fas fa-spin fa-atom"></i>
+		</div>
+	</div>
+	<div class="grid-x file-row" *ngFor="let file of filesList" [ngClass]="{'selected':selectedFiles.has(file.path)}">
+		<div class="cell medium-9 clickable" (click)="select(file)"  (dblclick)="browse(file)">
+			<i class="fas fa-folder" *ngIf="file.type === 'dir'" ></i>
+			<i class="far fa-file" *ngIf="file.type !== 'dir'"></i>
+			<span > {{ file.name }} </span>
+		</div>
+		<div class="cell medium-3">
+			{{file.length | filesize }}
+		</div>
+	</div>
+</div>
+<div class="button-group">
+	<button mat-raised-button color="warn" class="button warning" (click)="cancel()">Cancel</button>
+	<button mat-raised-button color="primary" class="button" [disabled]="!selectedFiles.size" (click)="chooseFiles()">Import</button>
+</div>
