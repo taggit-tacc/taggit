@@ -27,6 +27,9 @@ export class GeoDataService {
   private _pointClouds: BehaviorSubject<Array<IPointCloud>> = new BehaviorSubject<Array<IPointCloud>>(null);
   public readonly pointClouds: Observable<Array<IPointCloud>> = this._pointClouds.asObservable();
 
+  private _loaded: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  public loaded: Observable<boolean> = this._loaded.asObservable();
+
   constructor(private http: HttpClient) {
 	this._features = new BehaviorSubject<FeatureCollection>({type: 'FeatureCollection', features: []});
 	this.features$ = this._features.asObservable();
@@ -43,10 +46,12 @@ export class GeoDataService {
 
   getFeatures(projectId: number, query: AssetFilters = new AssetFilters()): void {
 	const qstring: string = querystring.stringify(query.toJson());
+	this._loaded.next(false);
 	this.http.get<FeatureCollection>(environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring)
 	  .subscribe( (fc: FeatureCollection) => {
-	fc.features = fc.features.map( (feat: Feature) => new Feature(feat));
-	this._features.next(fc);
+		fc.features = fc.features.map( (feat: Feature) => new Feature(feat));
+		this._features.next(fc);
+		this._loaded.next(true);
 	  });
   }
 
@@ -90,9 +95,9 @@ export class GeoDataService {
 	//   description: title,
 	//   conversion_parameters: conversionParams
 	// };
-	this.http.post(environment.apiUrl + `/projects/{projectId}/features/{featureId}/properties/`, groupData)
+	this.http.post(environment.apiUrl + `/projects/${projectId}/features/${featureId}/properties/`, groupData)
 	  .subscribe( (resp) => {
-		this.getFeatures(projectId);
+		// this.getFeatures(projectId);
 	  }, error => {
 	// TODO: notification
 	  });
@@ -103,9 +108,9 @@ export class GeoDataService {
 	//   description: title,
 	//   conversion_parameters: conversionParams
 	// };
-	this.http.post(environment.apiUrl + `/projects/{projectId}/features/{featureId}/styles/`, groupData)
+	this.http.post(environment.apiUrl + `/projects/${projectId}/features/${featureId}/styles/`, groupData)
 	  .subscribe( (resp) => {
-		this.getFeatures(projectId);
+		// this.getFeatures(projectId);
 	  }, error => {
 	// TODO: notification
 	  });

@@ -42,7 +42,7 @@
 	// TODO make it work with windows and transform (or postcss prefix);
 	right: 10px;
 	bottom: 10px;
-	cursor: pointer;
+	// cursor: pointer;
 	text-align: center;
 	// transform: translate(-50%, -50%);;
 	// -ms-transform: translate(-50%, -50%);;
@@ -111,17 +111,18 @@
 	flex-direction: row;
 	justify-content: center;
 	transition: .3s ease;
-	cursor: pointer;
+	// cursor: pointer;
 	align-items: center;
 	.inner-del {
 	  opacity: 0;
 	  transition: .3s ease;
+	  cursor: pointer;
 	}
   }
 
   .center:hover {
 	.inner-del  {
-	  opacity: 0.5;
+	  opacity: 1;
 	}
   }
 
@@ -136,11 +137,12 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
-  cursor: pointer;
+  // cursor: pointer;
   align-items: center;
   .inner-del-temp {
 	opacity: 0;
 	transition: .3s ease;
+	cursor: pointer;
   }
 }
 

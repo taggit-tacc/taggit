@@ -1,4 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import {FeatureCollection} from 'geojson';
+import { Project } from '../../../models/models';
+import { ProjectsService } from '../../../services/projects.service';
+import { GeoDataService } from '../../../services/geo-data.service';
 import { FormsService } from '../../../services/forms.service';
 import { GroupsService } from '../../../services/groups.service';
 import { Subscription } from 'rxjs';
@@ -14,6 +18,8 @@ export class SelectImageComponent implements OnInit, OnDestroy {
   activeFeatureNum$: Subscription;
   activeGroup$: Subscription;
 
+  featureList: Array<any> = [];
+  public selectedProject: Project;
   groupList: Array<any> = [];
   activeGroup: string;
   activeFeatureNum: number;
@@ -21,9 +27,21 @@ export class SelectImageComponent implements OnInit, OnDestroy {
   showSubitem: boolean = true;
 
   constructor(private formsService: FormsService,
-			  private groupsService: GroupsService) {}
+			  private groupsService: GroupsService,
+			  private geoDataService: GeoDataService,
+			  private projectsService: ProjectsService) {}
 
   ngOnInit() {
+	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
+	  if (fc) {
+		this.featureList = fc.features;
+	  }
+	});
+
+	this.projectsService.activeProject.subscribe(next => {
+	  this.selectedProject = next;
+	});
+
 	this.groups$ = this.groupsService.groups.subscribe((next) => {
 	  this.groupList = next;
 	});
@@ -64,6 +82,19 @@ export class SelectImageComponent implements OnInit, OnDestroy {
 
   deleteGroup() {
 	this.groupsService.addGroup(this.groupList.filter(what => what.name != this.activeGroup))
+
+	for (let feat of this.featureList) {
+	  // this should be a shared group of
+	  // all the currently created objects of a particular feature
+
+	  let featProp = feat.properties;
+	  featProp.group = featProp.group.filter(e => e.name != this.activeGroup);
+
+	  this.geoDataService.updateFeatureProperty(this.selectedProject.id,
+												Number(feat.id),
+												featProp);
+	}
+
 	if (this.groupList.length <= 0) {
 	  this.showSidebar = false;
 	  this.groupsService.setShowSidebar(this.showSidebar);
@@ -83,6 +114,14 @@ export class SelectImageComponent implements OnInit, OnDestroy {
 		}
 	  }
 	});
+
+	let featProp = this.getActiveFeatures().properties;
+
+	featProp.group = featProp.group.filter(e => e.name != this.activeGroup);
+
+	this.geoDataService.updateFeatureProperty(this.selectedProject.id,
+											  Number(this.getActiveFeatures().id),
+											  featProp);
   }
 
   getAssetDisplay(asset: any) {

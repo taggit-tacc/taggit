@@ -64,8 +64,6 @@
 	  <button mat-button matDialogClose>Cancel</button>
 	</ng-template>
 
-
-
 	<div class="image-option"
 		 matTooltip="Add To Group"
 		 matTooltipPosition="below"
@@ -74,16 +72,33 @@
 	</div>
 
 	<ng-template #addMoreToGroup>
-	  <select #selectGroup class="form-control" [value]="activeGroup">
-		<option *ngFor="let group of groupList">
-		  {{ group.name }}
-		</option>
-	  </select>
-	  <button mat-button matDialogClose (click)="selectGroupForm(selectGroup.value)">Add To Group</button>
 
-	  <button mat-button matDialogClose aria-label="Close modal" type="button">
-		<span aria-hidden="true">&times;</span>
-	  </button>
+	  <mat-form-field appearance="fill">
+		<mat-label>Groups</mat-label>
+		<mat-select matNativeControl required [(value)]="activeGroup">
+		  <mat-option>
+			None
+		  </mat-option>
+		  <mat-option *ngFor="let group of groupList" [value]="group.name">
+			{{ group.name }}
+		  </mat-option>
+		</mat-select>
+	  </mat-form-field>
+
+	  <!-- <select #selectGroup class="form-control" [value]="activeGroup"> -->
+	  <!--	<option *ngFor="let group of groupList"> -->
+	  <!--	  {{ group.name }} -->
+	  <!--	</option> -->
+	  <!-- </select> -->
+	  <!-- <button mat-raised-button color="primary" matDialogClose (click)="selectGroupForm(selectGroup.value)">Add To Group</button> -->
+	  <p>
+		<button mat-raised-button color="primary" matDialogClose (click)="selectGroupForm(activeGroup)" [disabled]="!activeGroup">Add To Group</button>
+		<button mat-button color="secondary" matDialogClose>Cancel</button>
+	  </p>
+
+	  <!-- <button mat-raised-button color="primary" class="button" matDialogClose aria-label="Close modal" type="button"> -->
+	  <!--	<span aria-hidden="true">&times;</span> -->
+	  <!-- </button> -->
 	</ng-template>
   </div>
 
@@ -99,9 +114,11 @@
 			   (mouseover)="getGroupNameFromColor(color)"
 			   [matTooltip]="currentGroup"
 			   matTooltipPosition="below">
-			<svg class="box" (click)="deleteFromGroup(color)" width="15px" height="15px">
-			  <rect width="15px" height="15px" [style.fill]="color"/>
-			  <rect class="inner-del" width="8px" height="4px" x="3.3" y="5.5" style="fill: #000"/>
+			<svg class="box" width="25px" height="75px">
+			  <!-- <rect width="15px" height="15px" [style.fill]="color"/> -->
+			  <rect width="15px" height="15px" x="5" y="30" [style.fill]="color"/>
+			  <rect class="inner-del" width="25px" height="15px" rx="3" x="0" y="0" style="fill: #ffffff"/>
+			  <rect (click)="deleteFromGroup(color)" class="inner-del" width="15px" height="5px" x="5" y="5" style="fill: #DE6363"/>
 			</svg>
 		  </div>
 		</div>

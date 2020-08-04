@@ -13,6 +13,7 @@
 	justify-content: center;
 	align-items: center;
 	height: 70vh;
+	// z-index: -10;
   }
 
   #no-proj {
@@ -31,7 +32,7 @@
 	width: 200px;
   }
 
-  ngx-spinner {
+  img-spin {
 	position: relative;
 	bottom: 0px;
 	left: 0px;
@@ -39,6 +40,14 @@
 	height: 100px;
 	background: #fff;
   }
+
+  load-spin {
+	position: relative;
+	width: 100%;
+	height: 100px;
+	background: #fff;
+  }
+
   // Make overflow for this hidden
   .side-bar-container {
 	background-color: #F1F1F1;
@@ -59,6 +68,29 @@
 	margin-right: 0%;
   }
 
+  #gallery-container-container {
+	position: relative;
+	width: 100%;
+	height: auto;
+	// background: rgba(240, 240, 240, 0.9);
+	// z-index: -1;
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	margin-top: 0px;
+	// z-index: -1;
+  }
+
+  #loading-load {
+	position: relative;
+	width: 100%;
+	height: auto;
+	text-align: center;
+	// display: flex;
+	flex-direction: column;
+	margin-top: 50px;
+  }
+
   #gallery-container {
 	position: relative;
 	width: 100%;
@@ -68,7 +100,8 @@
 	text-align: center;
 	display: flex;
 	flex-direction: column;
-	margin-top: 50px;
+	// margin-top: 50px;
+	// z-index: -1;
   }
 
   #gallery-container .gallery-image {

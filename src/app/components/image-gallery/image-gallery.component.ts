@@ -29,6 +29,7 @@ export class ImageGalleryComponent implements OnInit {
   showSidebar: boolean;
   scrolling: boolean = false;
   status: boolean;
+  groupExist: boolean;
   imagesExist: boolean;
   projectsExist: boolean;
   featureList: Array<any> = [];
@@ -38,6 +39,7 @@ export class ImageGalleryComponent implements OnInit {
   activeFeature: Feature;
   activeFeatureNum: number;
   featurePath: string;
+  loaded: boolean;
 
   constructor(private geoDataService: GeoDataService,
 			  private projectsService: ProjectsService,
@@ -52,6 +54,12 @@ export class ImageGalleryComponent implements OnInit {
 	// this.activeFeatureNum = 0;
 	// FIXME feature collection giving me an error when trying to access assets
 	// this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
+
+	this.geoDataService.loaded.subscribe(e => {
+	  this.loaded = e;
+	});
+
+
 	this.geoDataService.features.subscribe( (fc: any) => {
 	  if (fc) {
 		if (fc.features.length > 0) {
@@ -90,6 +98,10 @@ export class ImageGalleryComponent implements OnInit {
 
 	this.groupsService.activeGroup.subscribe((next) => {
 	  this.activeGroup = next;
+	});
+
+	this.groupsService.featureImagesExist.subscribe((next) => {
+	  this.groupExist = next;
 	});
 
 	this.groupsService.tempGroup.subscribe((next) => {

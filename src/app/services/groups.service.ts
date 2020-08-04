@@ -31,6 +31,9 @@ export class GroupsService {
   private _unselectAll: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public unselectAll: Observable<boolean> = this._unselectAll.asObservable();
 
+  private _featureImagesExist: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  public featureImagesExist: Observable<boolean> = this._featureImagesExist.asObservable();
+
   private _activeFeatureId: BehaviorSubject<number> = new BehaviorSubject<number>(null);
   public activeFeatureId: Observable<number> = this._activeFeatureId.asObservable();
 
@@ -48,6 +51,78 @@ export class GroupsService {
 	this._groups.next(groupList);
   }
 
+  setGroupProperties(featureList: any): void {
+	// let tempGroupList = {};
+	let tempGroupList = {};
+	let tempFeatList = {};
+	for (let feat of featureList) {
+	  // Parses if group exists at all in server
+	  if (feat.properties.group) {
+		// Loops through all the groups
+		for (let group of feat.properties.group) {
+		  // Adds new feature to group
+		  // if (!tempFeatList[group.name]) {
+		  //	tempFeatList[group.name] = [];
+		  // }
+
+		  // if (!tempGroupList[group.name]) {
+		  //	tempGroupList[group.name] = [];
+		  // }
+
+		  // TODO for some reason it's limiting itself to only one group per feature...
+
+		  //if it exist
+		  if (!tempGroupList[group.name]) {
+			// console.log("RENEWING");
+			// console.log(group.name);
+			// console.log(feat);
+			tempGroupList[group.name] = {
+			  name: group.name,
+			  features: [],
+			  color: group.color,
+			}
+		  }
+		  tempGroupList[group.name].features.push(feat);
+
+		  // console.log("Inside Service");
+		  // console.log(tempGroupList);
+		  // tempFeatList[group.name].push(feat);
+
+		  // if (tempGroupList[group.name] != undefined) {
+		  //	tempGroupList[group.name].features = tempFeatList[group.name];
+		  // } else {
+		  //	tempGroupList[group.name] = {
+		  //	  name: group.name,
+		  //	  features: tempFeatList[group.name],
+		  //	  color: group.color,
+		  //	}
+		  // }
+		  //	{
+		  //	name: group.name,
+		  //	features: tempFeatList[group.name],
+		  //	color: group.color,
+		  // });
+
+		  // if (!tempGroupList.) {
+
+		  // }
+
+		  // tempGroupList.push({
+		  //	name: group.name,
+		  //	features: tempFeatList[group.name],
+		  //	color: group.color,
+		  // });
+
+		}
+	  }
+	}
+
+	console.log(tempGroupList);
+	this._groups.next(Object.values(tempGroupList));
+	console.log(Object.values(tempGroupList))
+	// this._groups.next(tempGroupList);
+  }
+
   addForm(formList: any): void {
 	this._forms.next(formList);
   }
@@ -58,6 +133,10 @@ export class GroupsService {
 
   setShowGroup(show: boolean): void {
 	this._showGroup.next(show);
+  }
+
+  setFeatureImagesExist(feature: boolean): void {
+	this._featureImagesExist.next(feature);
   }
 
   setShowSidebar(show: boolean): void {

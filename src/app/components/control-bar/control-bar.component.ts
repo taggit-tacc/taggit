@@ -65,6 +65,11 @@ export class ControlBarComponent implements OnInit {
 	  if (this.features != undefined) {
 		this.featureList = this.features.features;
 		this.groupsService.setActiveProject(this.featureList[0]);
+
+		// TODO This should activate persistence by looping through all features and creating new groups and
+		//
+		this.groupsService.setGroupProperties(this.featureList);
+
 		// console.log(this.featureList[this.activeFeatureNum].assets[0].path);
 		// this.activeFeature = this.featureList[this.activeFeatureNum];
 	  }
@@ -109,10 +114,12 @@ export class ControlBarComponent implements OnInit {
 
 		this.groupList.forEach(e => {
 		  if (e.name == this.activeGroup) {
-			if (e.features[next].assets[0].display_path) {
-			  this.imageName = /[^/]*$/.exec(e.features[next].assets[0].display_path)[0];
-			} else {
-			  this.imageName = /[^/]*$/.exec(e.features[next].assets[0].path)[0];
+			if (e.features[next]) {
+			  if (e.features[next].assets[0].display_path) {
+				this.imageName = /[^/]*$/.exec(e.features[next].assets[0].display_path)[0];
+			  } else {
+				this.imageName = /[^/]*$/.exec(e.features[next].assets[0].path)[0];
+			  }
 			}
 		  }
 		});
@@ -214,38 +221,68 @@ export class ControlBarComponent implements OnInit {
 	// this.groupsService.setActiveGroup(name.toLowerCase());
 	this.groupsService.setActiveGroup(name);
 
-	// TODO Make this better
-	if (!name || 0 === name.length) {
-	  console.log("Invalid Name");
-	} else if (this.groupList.filter(e => e.name === name).length) {
-	  console.log("Existing Name");
-	} else {
-	  let myRandColor: string = this.getRandomColor();
-	  this.groupList.push({
-		name: name,
-		features: this.tempGroup,
-		color: myRandColor,
-		// featureIds: Object.keys(this.tempGroup),
-	  });
-	  this.groupsService.addGroup(this.groupList);
-	  this.formsService.addGroup(this.groupName);
 
-	  // TODO make this work for persistence
-	  // for (let feat of this.tempGroup) {
-	  //	let newObj = {
-	  //	  name: name,
-	  //	  color: myRandColor,
-	  //	};
-	  //	// this should be a shared group of
-	  //	// all the currently created objects of a particular feature
+	// let activeGroup = this.groupList.filter(group => group.name == name);
 
-	  //	let newList = [];
-	  //	newList.push();
-	  //	this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), {
+	// if (activeGroup[0].features.length == 0) {
+	//   this.groupsService.setFeatureImagesExist(false);
+	// } else {
+	//   this.groupsService.setFeatureImagesExist(true);
+	// }
 
-	  //	});
-	  // }
-	  // TODO Also should create parser that loops through all features and generates groups in an object
+	if (this.groupList.length != 1000) {
+	  // TODO Make this better
+	  if (!name || 0 === name.length) {
+		console.log("Invalid Name");
+	  } else if (this.groupList.filter(e => e.name === name).length) {
+		console.log("Existing Name");
+	  } else {
+		let myRandColor: string = this.getRandomColor();
+		this.groupList.push({
+		  name: name,
+		  features: this.tempGroup,
+		  color: myRandColor,
+		  // featureIds: Object.keys(this.tempGroup),
+		});
+		this.groupsService.addGroup(this.groupList);
+		this.formsService.addGroup(this.groupName);
+
+		// TODO make this work for persistence
+		for (let feat of this.tempGroup) {
+		  // this should be a shared group of
+		  // all the currently created objects of a particular feature
+
+		  // let featProp = {group: []};
+
+		  let featProp = feat.properties;
+
+		  if (featProp.group) {
+			console.log("nope");
+			featProp.group.push({
+			  name: name,
+			  color: myRandColor,
+			});
+		  } else {
+			console.log("This is actually happening");
+			let featPropList = featProp.group = [];
+			featPropList.push({
+			  name: name,
+			  color: myRandColor,
+			});
+		  }
+
+		  this.geoDataService.updateFeatureProperty(this.selectedProject.id,
+													Number(feat.id),
+													featProp);
+		  console.log("In control-bar");
+		  console.log("Current feat: " + feat.id);
+		  console.log("featProp: what gets sent to server");
+		  console.log(featProp);
+		  console.log("groupList: internal listing");
+		  // console.log(this.groupList);
+		}
+		// TODO Also should create parser that loops through all features and generates groups in an object
+	  }
 	}
 
 	// TODO Clear input value
@@ -267,6 +304,15 @@ export class ControlBarComponent implements OnInit {
 	let showGroup = false;
 	// let showGroupButton = !this.showGroupButton;
 	this.groupsService.setActiveGroup(this.groupList[0].name);
+
+	let activeGroup = this.groupList.filter(group => group.name == this.activeGroup);
+
+	if (activeGroup[0].features.length == 0) {
+	  this.groupsService.setFeatureImagesExist(false);
+	} else {
+	  this.groupsService.setFeatureImagesExist(true);
+	}
+
 	this.groupsService.setActiveFeatureNum(0);
 	this.groupsService.setShowSidebar(showSidebar);
 	this.groupsService.setShowGroup(showGroup);
@@ -321,6 +367,15 @@ export class ControlBarComponent implements OnInit {
 	  this.router.navigateByUrl('/preset', {skipLocationChange: true});
 	}
 	this.groupsService.setActiveGroup(this.activeGroup);
+
+	// let activeGroup = this.groupList.filter(what => what.name == this.activeGroup);
+
+	// if (activeGroup[0].features.length == 0) {
+	//   this.groupsService.setFeatureImagesExist(false);
+	// } else {
+	//   this.groupsService.setFeatureImagesExist(true);
+	// }
+
   }
 
   // TODO

@@ -1,8 +1,9 @@
 import {Component, OnInit, EventEmitter, Input, TemplateRef} from '@angular/core';
-import {Feature} from '../../models/models';
+import {Feature, Project} from '../../models/models';
 import {GeoDataService} from '../../services/geo-data.service';
 import {AppEnvironment, environment} from '../../../environments/environment';
 import {GroupsService} from "../../services/groups.service";
+import {ProjectsService} from "../../services/projects.service";
 import { BsModalService } from 'ngx-foundation/modal';
 import { BsModalRef } from 'ngx-foundation/modal/bs-modal-ref.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -30,6 +31,8 @@ export class ImageBoxComponent implements OnInit {
   modalRef: BsModalRef;
   activeGroup: string;
 
+  public selectedProject: Project;
+
   unselectAll: boolean = false;
 
   // FIXME Bad
@@ -37,6 +40,7 @@ export class ImageBoxComponent implements OnInit {
 
   constructor( private geoDataService: GeoDataService,
 			   private groupsService: GroupsService,
+			   private projectsService: ProjectsService,
 			   private modalService: BsModalService,
 			   private dialog: MatDialog
 			 ){ }
@@ -50,16 +54,21 @@ export class ImageBoxComponent implements OnInit {
 	this.coordinates = this.feature.geometry['coordinates'];
 	// console.log(coordinates[0]);
 
+	this.projectsService.activeProject.subscribe(next => {
+	  this.selectedProject = next;
+	});
+
 	this.groupsService.groups.subscribe((next) => {
 	  this.groupList = next;
 
 	  if (this.groupList != null && this.groupList.length > 0 && this.featureSource != null) {
-		let theGroups = this.groupList.forEach(e => {
+		this.groupList.forEach(e => {
 		  e.features.forEach(c => {
 
 			if (c.id == this.feature.id) {
 			  if (!this.colors.includes(e.color)) {
 				this.colors.push(e.color);
+				console.log(e.color);
 			  }
 			  this.hasGroup = true;
 			}
@@ -161,6 +170,14 @@ export class ImageBoxComponent implements OnInit {
 	  }
 	});
 
+	let featProp = this.feature.properties;
+
+	featProp.group = featProp.group.filter(e => e.color != color);
+
+	this.geoDataService.updateFeatureProperty(this.selectedProject.id,
+											  Number(this.feature.id),
+											  featProp);
+
 	this.groupsService.addGroup(this.groupList);
 	this.colors = this.colors.filter(e => e != color);
   }
@@ -171,12 +188,38 @@ export class ImageBoxComponent implements OnInit {
   }
 
   selectGroupForm (name: string) {
+	let color = "";
 	this.groupsService.setActiveFeatureNum(0);
 	this.groupList.forEach(e => {
 	  if (e.name == name) {
 		e.features.push(this.feature);
+		color = e.color;
 	  }
 	});
+
+	let featProp = this.feature.properties;
+	if (featProp.group) {
+	  let featGroupList = featProp.group.map(e => {
+		return e.name;
+	  });
+
+	  if (!featGroupList.includes(name)) {
+		featProp.group.push({
+		  name: name,
+		  color: color,
+		});
+	  }
+	} else {
+	  featProp.group = [];
+	  featProp.group.push({
+		name: name,
+		color: color,
+	  });
+	}
+
+	this.geoDataService.updateFeatureProperty(this.selectedProject.id,
+											  Number(this.feature.id),
+											  featProp);
 
 	this.groupsService.addGroup(this.groupList);
   }

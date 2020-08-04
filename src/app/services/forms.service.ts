@@ -74,12 +74,14 @@ export class FormsService {
   updateFormItem() {
 	let group: any = {};
 
-	this._activeFormList.value.forEach(e =>
-	  group[e.label] = e.required ? new FormControl(e.value || '', Validators.required)
-								  : new FormControl(e.value || '')
-	);
+	if (this._activeFormList.value) {
+	  this._activeFormList.value.forEach(e =>
+		group[e.label] = e.required ? new FormControl(e.value || '', Validators.required)
+		: new FormControl(e.value || '')
+										);
 
-	this._formGroup.next(new FormGroup(group));
+	  this._formGroup.next(new FormGroup(group));
+	}
   }
 
   changeGroupForm(groupName: string) {
