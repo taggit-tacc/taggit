@@ -1,0 +1,10 @@
+@import '../../../variables.scss';
+
+:host {
+  #current-project-form {
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	padding: 5em;
+  }
+}

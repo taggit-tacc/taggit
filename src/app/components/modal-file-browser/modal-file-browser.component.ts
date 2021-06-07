@@ -34,22 +34,28 @@ export class ModalFileBrowserComponent implements OnInit {
 		  private agaveSystemsService: AgaveSystemsService) { }
 
   ngOnInit() {
+	  // This finds all the projects, and file systems found from a user 
 	this.agaveSystemsService.list();
 
 	// TODO: change those hard coded systemIds to environment vars or some sort of config
 	// wait on the currentUser and systems to resolve
 	combineLatest([this.authService.currentUser, this.agaveSystemsService.systems, this.agaveSystemsService.projects])
 	  .subscribe( ([user, systems, projects]) => {
+	
+		// Uses systems to find the different directories that has the files in
 	this.myDataSystem = systems.find( (sys) => sys.id === 'designsafe.storage.default');
 	this.communityDataSystem = systems.find( (sys) => sys.id === 'designsafe.storage.community');
 	this.publishedDataSystem = systems.find( (sys) => sys.id === 'designsafe.storage.published');
+	
+	// This is where they choose which one they start with
 	this.selectedSystem = this.myDataSystem;
+
 	this.projects = projects;
 	this.currentUser = user;
-	const init = <RemoteFile> {
-	  system: this.myDataSystem.id,
-	  type: 'dir',
-	  path: this.currentUser.username
+	const init = <RemoteFile> {	
+		system: this.myDataSystem.id,
+		type: 'dir',
+		path: this.currentUser.username
 	};
 	this.browse(init);
 	  });
