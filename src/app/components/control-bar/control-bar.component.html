@@ -57,6 +57,12 @@
 
   <!-- <div *ngIf="showGroup" class="group-bar grid-x align-right"> -->
   <div class="group-bar grid-x align-right">
+
+	<!-- A link that looks like a button, links to Hazmapper-->
+	<a class="button-spacing" mat-raised-button href={{hazMapperLink}} title="Open your project in HazMapper" target="_blank">
+		<img src="assets/hazmapper-header-logo.png" width="100PX">
+	</a>
+
 	<button mat-raised-button
 			(click)="openAddGroupModal(addGroupModal)">Add Group</button>
 
