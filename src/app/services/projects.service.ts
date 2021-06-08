@@ -17,15 +17,19 @@ export class ProjectsService {
 
   constructor(private http: HttpClient) { }
 
+  //Queries database for all user projects.
   getProjects(): void {
    this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe( resp => {
      this._projects.next(resp);
+     //DEBUG: outputs results of query
+     //console.log(this._projects.getValue())
    });
   }
 
   create(data: Project): Observable<Project> {
     const prom = this.http.post<Project>(environment.apiUrl + `/projects/`, data);
     prom.subscribe(proj => {
+      //below code from here to next comment does nothing
       const p = new Project();
       p.name = 'test';
       p.description = 'test';

@@ -47,6 +47,7 @@ export class ControlBarComponent implements OnInit {
   modalRef: BsModalRef;
   activeGroup: string;
   activePane: string;
+  hazMapperLink: string;
 
   constructor(private projectsService: ProjectsService,
 			  private geoDataService: GeoDataService,
@@ -147,6 +148,8 @@ export class ControlBarComponent implements OnInit {
 	this.projectsService.activeProject.subscribe(next => {
 	  this.selectedProject = next;
 	  this.getDataForProject(this.selectedProject);
+	  //retrieves uuid for project, formats result into a link to that Hazmapper map
+	  this.hazMapperLink = "https://hazmapper.tacc.utexas.edu/hazmapper/project/" + next.uuid
 	});
 
 	this.geoDataService.mapMouseLocation.pipe(skip(1)).subscribe( (next) => {
