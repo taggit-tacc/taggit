@@ -8,7 +8,7 @@
 
 
   <mat-menu #project="matMenu">
-	<span mat-menu-item *ngIf="selectedProject">
+	<span mat-menu-item *ngIf="selectedProject" (click)="openProjectModal(selectedProject)">
 	  Current Project : {{selectedProject.name}}
 	</span>
 	<button mat-menu-item (click)="openCreateProjectModal()">Create Project</button>

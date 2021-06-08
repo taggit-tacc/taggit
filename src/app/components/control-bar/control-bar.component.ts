@@ -15,6 +15,7 @@ import {FormsService} from "../../services/forms.service";
 import {AuthenticatedUser, AuthService} from '../../services/authentication.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { ModalCurrentProjectComponent } from '../modal-current-project/modal-current-project.component';
 
 @Component({
   selector: 'app-control-bar',
@@ -205,6 +206,20 @@ export class ControlBarComponent implements OnInit {
 	//   this.geoDataService.importFileFromTapis(this.selectedProject.id, files);
 	// });
   }
+
+  openProjectModal(project) {
+	// console.log(project);
+	this.dialog.open(ModalCurrentProjectComponent, {
+	  height: '400px',
+	  width: '600px',
+	  data: {
+		id: project.id,
+		name: project.name,
+		description: project.description,
+		uuid: project.uuid
+	  }
+	});
+}
 
   // TODO This should add color
   addToGroupService(name: string) {

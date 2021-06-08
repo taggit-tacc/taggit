@@ -49,6 +49,7 @@ import { SelectImageComponent } from './components/side-bar/select-image/select-
 import { TagGeneratorComponent } from './components/side-bar/tag-generator/tag-generator.component';
 import { TagImagesComponent } from './components/side-bar/tag-images/tag-images.component';
 import { ModalCreateProjectComponent } from './components/modal-create-project/modal-create-project.component';
+import { ModalCurrentProjectComponent } from './components/modal-current-project/modal-current-project.component';
 
 @NgModule({
   declarations: [
@@ -68,6 +69,7 @@ import { ModalCreateProjectComponent } from './components/modal-create-project/m
 	TagGeneratorComponent,
 	TagImagesComponent,
 	ModalCreateProjectComponent,
+	ModalCurrentProjectComponent,
   ],
   imports: [
 	// this is for the ng-tapis library
@@ -115,6 +117,6 @@ import { ModalCreateProjectComponent } from './components/modal-create-project/m
 	}
   ],
   bootstrap: [AppComponent],
-  entryComponents: [ModalFileBrowserComponent, ModalCreateProjectComponent]
+  entryComponents: [ModalFileBrowserComponent, ModalCreateProjectComponent, ModalCurrentProjectComponent]
 })
 export class AppModule { }

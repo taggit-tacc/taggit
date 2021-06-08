@@ -1,0 +1,19 @@
+<h4> Current Project </h4>
+<form [formGroup]="projCreateForm" (ngSubmit)="update()" id="current-project-form">
+  <mat-form-field>
+	<mat-label>Name:</mat-label>
+	<input matInput type="text" formControlName="name" appearance="filled"  required="true">
+
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Description</mat-label>
+    <textarea matInput formControlName="description" required="true"></textarea>
+  </mat-form-field>
+
+  <div class="button-group small">
+    <button mat-raised-button color="basic" class="button small warning" type="button" (click)="close()">Close</button>
+    <button mat-raised-button color="warn" class="button small warning" type="delete" (click)="delete()">Delete</button>
+    <button mat-raised-button color="primary" class="button small align-right" type="submit" [disabled]="!projCreateForm.valid">Update</button>
+  </div>
+</form>
