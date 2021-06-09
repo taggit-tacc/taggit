@@ -203,6 +203,7 @@ export class ModalFileBrowserComponent implements OnInit, OnDestroy {
   /** Whether all the descendants of the node are selected */
   descendantsAllSelected(node: DynamicFlatNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
+	console.log("YOOOOOOOOOOO", descendants)
     const descAllSelected = descendants.length > 0 && descendants.every(child => {
       return this.checklistSelection.isSelected(child);
     });
@@ -213,7 +214,9 @@ export class ModalFileBrowserComponent implements OnInit, OnDestroy {
   descendantsPartiallySelected(node: DynamicFlatNode): boolean {
     const descendants = this.treeControl.getDescendants(node);
     const result = descendants.some(child => this.checklistSelection.isSelected(child));
-    return result && !this.descendantsAllSelected(node);
+    console.log("YOOO?!?!!??!?!?!?!", result)
+	console.log("WHAT", node)
+	return result  && !this.descendantsAllSelected(node);
   }
 
   /** Toggle the to-do item selection. Select/deselect all the descendants node */
@@ -357,7 +360,7 @@ export class ModalFileBrowserComponent implements OnInit, OnDestroy {
 
         //Uncomment this.MyProjectTree() to let it run on the My Project Database on DesignSafe
         this.MyDataTree(init)
-        this.MyProjectTree();
+        // this.MyProjectTree();
         //const data = this.database.buildFileTree(this.filesList, 1)
         // console.log(data)
         // this.database.dataChange.next(data);
@@ -414,11 +417,11 @@ export class ModalFileBrowserComponent implements OnInit, OnDestroy {
     this.showSpinner = true
     
     for (const car of this.projects) {
-      console.log('This could be project id', car.id)
-      console.log(car.name)
-      console.log(car.description)
-      console.log(car.status)
-      console.log(car.type)
+    //   console.log('This could be project id', car.id)
+    //   console.log(car.name)
+    //   console.log(car.description)
+    //   console.log(car.status)
+    //   console.log(car.type)
 
      let  GetFiles = async (now: RemoteFile):Promise<RemoteFile[]> => {
 
@@ -570,7 +573,7 @@ export class ModalFileBrowserComponent implements OnInit, OnDestroy {
       try {
         console.log("Try1")
         let response = await GetFiles(file)
-        console.log(response)
+        // console.log(response)
         console.log('Try2')
         let list_1 = await getRemoteList(response)
         console.log('answer received')
@@ -607,21 +610,21 @@ export class ModalFileBrowserComponent implements OnInit, OnDestroy {
     //It also checks that we do not go more than one level deep at a point. 
     async function getRemoteList (rem: Array<RemoteFile> ): Promise<RemoteFile[]> {
       if (rem.length == 0) {
-        console.log("returning early")
+        // console.log("returning early")
         return
       }
       rem.forEach(function (value, index) {
         if (value.type == 'dir' && value.name != ".." && gonelevelDeep == true) {
-          console.log('This directory is one level deep', value.path)
+        //   console.log('This directory is one level deep', value.path)
           allPaths.push(value.path.concat('/'))
         }
         if (value.type == 'dir' && value.name != ".." && gonelevelDeep == false) {
-          console.log('Found Directory at', value.path)
+        //   console.log('Found Directory at', value.path)
           BigDirectory.push(value.path.concat('/'))
           
         }
         if (value.type == 'file' && !(allPaths.includes(value.path.concat('/'))) && (value.path.indexOf('jpg') !== -1)) {
-          console.log('File found at', value.path)
+        //   console.log('File found at', value.path)
           allPaths.push(value.path.concat('/'))
         }
 
@@ -637,7 +640,7 @@ export class ModalFileBrowserComponent implements OnInit, OnDestroy {
 
       for (let [key, value] of directory.entries()) {
         file.path = (value as string).slice(0, -1)
-        console.log(file.path)
+        // console.log(file.path)
         let strong = await GetFiles(file)
         let awake = await getRemoteList(strong)
         awake;
@@ -858,6 +861,7 @@ export class ModalFileBrowserComponent implements OnInit, OnDestroy {
     parseFilePath(file)
     }
 
+	console.log("this is filetree", fileTree)
   return fileTree;
 
   
