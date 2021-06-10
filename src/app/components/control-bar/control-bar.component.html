@@ -14,12 +14,20 @@
 	<button mat-menu-item (click)="openCreateProjectModal()">Create Project</button>
 	<button mat-menu-item [matMenuTriggerFor]="projectList">Select Project</button>
 	<button mat-menu-item (click)="openFilePicker()">File Browser</button>
+	<!-- <button mat-menu-item (click)="saveCSV()">Save to CSV</button> -->
+	<button mat-menu-item [matMenuTriggerFor]="saveOptions">Save as</button>
   </mat-menu>
 
   <mat-menu #projectList="matMenu">
 	<button mat-menu-item class="clickable" *ngFor="let p of projects" (click)="selectProject(p)" [ngClass]="{'active-project': p === selectedProject}">
 	  {{ p.name }}
 	</button>
+  </mat-menu>
+
+  <mat-menu #saveOptions="matMenu">
+	<button mat-menu-item (click)=saveFile(0)>CSV file</button>
+	<button mat-menu-item (click)=saveFile(1)>JSON file</button>
+	<button mat-menu-item>Export to Design Safe?</button>
   </mat-menu>
 
   <span class="example-spacer"></span>
