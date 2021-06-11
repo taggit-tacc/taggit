@@ -403,7 +403,7 @@ export class ControlBarComponent implements OnInit {
 
   }
 
-  //saves project as a CSV file by first organizing a JSON and converting it. Saves to either MyData or local
+  //saves project as a CSV file by first organizing a JSON or a CSV and converting it. Saves to either MyData or local
   saveFile(isJSON:Boolean) {
 	  let CSVHolder = "longitude,latitude,src,groupName,groupColor\r\n"
 	  let JSONHolder: Array<object> = []
@@ -483,5 +483,5 @@ export class ControlBarComponent implements OnInit {
 		document.body.appendChild(download)
 		download.click()
 		document.body.removeChild(download)
-  }
+  	}
 }
