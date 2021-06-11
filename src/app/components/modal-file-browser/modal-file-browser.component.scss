@@ -1,33 +1,20 @@
-@import '../../../variables.scss';
-
-// TODO: Fix annoying margin flash
-:host {
-  // min-height: 20em;
-  .fileslisting {
-	min-height: 15em;
-	max-height: 15em;
+:host { 
+	.fileslisting {
+	height: 20em;
 	overflow-y: scroll;
-  }
-  .selected {
-	background: #eeeeee;
-  }
-
-  .button-group {
-	text-align: center;
-  }
-  .example-tree-progress-bar {
-	margin-left: 30px;
-  }
-
-  .file-row {
-	border: 1px solid transparent;
-	&:hover {
-	  border: 1px solid $lightGrey;
-	  &.selected {
-		background: #d3d3d3;
-	  }
+	padding: 0px 20px;
 	}
-  }
-
-
+	.file-row {
+	background: #f9f9f9;
+	border: 1px solid transparent;
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	}
+	.file-row:hover {
+	border: 1px solid;
+	}
+	.file-row.selected {
+	background: #d3d3d3;
+	}
 }

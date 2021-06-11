@@ -1,21 +1,20 @@
 <h4> Select Files </h4>
 <small><em> Note: Only files are selectable, not folders. Double click on a folder to navigate into it. </em></small>
 <hr>
-<!-- <select (ngModelChange)="selectSystem($event)" [(ngModel)]="selectedSystem">
+<select (ngModelChange)="selectSystem($event)" [(ngModel)]="selectedSystem">
 	<option [ngValue]="myDataSystem"> My Data </option>
 	<option [ngValue]="communityDataSystem"> Community Data</option>
 	<option [ngValue]="publishedDataSystem"> Published Data</option>
-	<option [ngValue]="projectsDataSystem"> My Projects</option>
 	<optgroup label="My Projects">
 		<option *ngFor="let project of projects" [ngValue]="project">{{project.description}}</option>
 	</optgroup>
-</select> -->
-<!-- <div class="fileslisting">
-	<div class="grid-x" *ngIf="inProgress">
+</select>
+<div class="fileslisting"  infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="100" [scrollWindow]="false" >
+	<!-- <div class="grid-x" *ngIf="inProgress">
 		<div class="cell medium-12">
 			<i class="fas fa-spin fa-atom"></i>
 		</div>
-	</div>
+	</div> -->
 	<div class="grid-x file-row" *ngFor="let file of filesList" [ngClass]="{'selected':selectedFiles.has(file.path)}">
 		<div class="cell medium-9 clickable" (click)="select(file)"  (dblclick)="browse(file)">
 			<i class="fas fa-folder" *ngIf="file.type === 'dir'" ></i>
@@ -26,47 +25,14 @@
 			{{file.length | filesize }}
 		</div>
 	</div>
-</div> -->
+	<div class="grid-x" *ngIf="inProgress">
+		<div class="cell medium-12">
+		  <i class="fas fa-spin fa-atom"></i>
+		</div>
+	  </div>
+</div>
 
-<cdk-virtual-scroll-viewport itemSize="48" style="height: 500px;">
-	<ng-container *cdkVirtualFor="let item of dataSource"></ng-container>
-
-<!-- //Commented out the spinner, will recomment when it works -->
-<!-- <mat-spinner> *ngIf="showSpinner == true"</mat-spinner> -->
-	
-<mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class = "mat-tree">
-	
-	<!-- <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding class = "mat-tree-node">
-	  <button mat-icon-button disabled></button>
-	  <mat-checkbox class="checklist-leaf-node"
-	  [checked]="checklistSelection.isSelected(node)"
-	  (change)="todoLeafItemSelectionToggle(node);">{{node.item}}
-	</mat-checkbox>
-	</mat-tree-node> -->
-
-	<mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding class = "mat-tree-node">
-	  <button mat-icon-button
-			  [attr.aria-label]="'Toggle ' + node.item" matTreeNodeToggle>
-		<mat-icon class="mat-icon-rtl-mirror">
-		  {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}} 
-		</mat-icon>
-	  </button>
-	  <mat-checkbox [checked]="descendantsAllSelected(node)"
-					[indeterminate]="descendantsPartiallySelected(node)"
-					(change)="todoItemSelectionToggle(node)">{{node.item}}</mat-checkbox>
-	  <mat-progress-bar *ngIf="node.isLoading"
-						mode="indeterminate"
-						class="example-tree-progress-bar"></mat-progress-bar>
-	</mat-tree-node>
-
-  </mat-tree>
-  
-</cdk-virtual-scroll-viewport>
-
-
-
-<div>
-	<button mat-raised-button color="warn" class="button warning" (click)="cancel()">Cancel</button>
-	<button mat-raised-button color="primary" class="button" [disabled]="!this.checklistSelection.selected.length" (click)="chooseFiles()">Import</button>
-
+<div class="button-group">
+	<button mat-raised-button color="warn" class="button warning" (click)="cancel()">Done</button>
+	<button mat-raised-button color="primary" class="button" [disabled]="!selectedFiles.size" (click)="chooseFiles()">Import</button>
 </div>
