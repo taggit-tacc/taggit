@@ -10,18 +10,13 @@
 	</optgroup>
 </select>
 <div class="fileslisting"  infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="100" [scrollWindow]="false" >
-	<!-- <div class="grid-x" *ngIf="inProgress">
-		<div class="cell medium-12">
-			<i class="fas fa-spin fa-atom"></i>
-		</div>
-	</div> -->
 	<div class="grid-x file-row" *ngFor="let file of filesList" [ngClass]="{'selected':selectedFiles.has(file.path)}">
-		<div class="cell medium-9 clickable" (click)="select(file)"  (dblclick)="browse(file)">
+		<div class="clickable" (click)="select(file)"  (dblclick)="browse(file)">
 			<i class="fas fa-folder" *ngIf="file.type === 'dir'" ></i>
 			<i class="far fa-file" *ngIf="file.type !== 'dir'"></i>
 			<span > {{ file.name }} </span>
 		</div>
-		<div class="cell medium-3">
+		<div class="size">
 			{{file.length | filesize }}
 		</div>
 	</div>

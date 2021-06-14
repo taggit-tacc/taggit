@@ -7,6 +7,7 @@ import { TapisFilesService } from '../../services/tapis-files.service';
 import { BsModalRef } from 'ngx-foundation/modal/bs-modal-ref.service';
 import { Subject, combineLatest} from 'rxjs';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-modal-file-browser',
@@ -43,6 +44,11 @@ export class ModalFileBrowserComponent implements OnInit {
 	// TODO: change those hard coded systemIds to environment vars or some sort of config
 	// wait on the currentUser and systems to resolve
 	combineLatest([this.authService.currentUser, this.agaveSystemsService.systems, this.agaveSystemsService.projects])
+	
+	// This little thing helped me fix the problem on calling ngOnInit several times
+	.pipe(
+        take(1)
+      )
 	  .subscribe( ([user, systems, projects]) => {
 	
 		// Uses systems to find the different directories that has the files in
@@ -60,7 +66,6 @@ export class ModalFileBrowserComponent implements OnInit {
 		type: 'dir',
 		path: this.currentUser.username
 	};
-	console.log("WHATAT")
 	this.browse(init);
 	  });
 
@@ -74,18 +79,16 @@ export class ModalFileBrowserComponent implements OnInit {
 	  type: 'dir',
 	  path: pth
 	};
-	console.log("YEAHHH")
 	this.browse(init);
   }
 
 
   browse(file: RemoteFile) {
 	if (file.type !== 'dir') { return; }
-	console.log("HIYA")
 	this.currentDirectory = file;
 	// this.selectedFiles.clear();
 	this.filesList = [];
-	this.inProgress = true;
+	this.inProgress = false;
 	this.getFiles();
   }
 
@@ -112,11 +115,11 @@ export class ModalFileBrowserComponent implements OnInit {
 
 		  this.inProgress = false;
 		  this.filesList = this.filesList.concat(newFile);
-	}
-	);
+	},
+	error => {
+		this.inProgress = false;
+	});
   }
-
- Nadi = "dummy dumb dumb";
 
   // TODO: Ian: Error message on incorrect file type?
   select(file: RemoteFile) {
@@ -124,7 +127,7 @@ export class ModalFileBrowserComponent implements OnInit {
 	  this.addSelectedFile(file);
 	}
 	else{
-		console.log("not selectable")
+		// console.log("not selectable")
 	}
 	// here?
 	// else {
@@ -143,12 +146,10 @@ export class ModalFileBrowserComponent implements OnInit {
 
   chooseFiles() {
 	const tmp = Array.from(this.selectedFiles.values());
-	
 	this.dialogRef.close(tmp)
   }
 
   cancel() {
-	// this.modalRef.hide();
 	this.dialogRef.close()
   }
 }

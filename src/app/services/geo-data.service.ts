@@ -65,7 +65,7 @@ export class GeoDataService {
   getPointClouds(projectId: number) {
 	this.http.get<Array<IPointCloud>>(environment.apiUrl + `/projects/${projectId}/point-cloud/`)
 	  .subscribe( (resp ) => {
-	console.log(resp);
+	// console.log(resp);
 	this._pointClouds.next(resp);
 	  });
   }
