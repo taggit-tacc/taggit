@@ -50,6 +50,10 @@ import { TagGeneratorComponent } from './components/side-bar/tag-generator/tag-g
 import { TagImagesComponent } from './components/side-bar/tag-images/tag-images.component';
 import { ModalCreateProjectComponent } from './components/modal-create-project/modal-create-project.component';
 import { ModalCurrentProjectComponent } from './components/modal-current-project/modal-current-project.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
+import {MatTreeModule} from '@angular/material/tree';
+import { MatProgressBar } from '@angular/material';
 
 @NgModule({
   declarations: [
@@ -70,6 +74,7 @@ import { ModalCurrentProjectComponent } from './components/modal-current-project
 	TagImagesComponent,
 	ModalCreateProjectComponent,
 	ModalCurrentProjectComponent,
+	MatProgressBar
   ],
   imports: [
 	// this is for the ng-tapis library
@@ -98,6 +103,9 @@ import { ModalCurrentProjectComponent } from './components/modal-current-project
 	FileSizeModule,
 	BsDropdownModule.forRoot(),
 	CommonModule,
+	MatProgressSpinnerModule,
+	ScrollingModule,
+	MatTreeModule
   ],
   providers: [
 	AuthService,

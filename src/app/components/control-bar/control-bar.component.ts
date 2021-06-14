@@ -185,7 +185,7 @@ export class ControlBarComponent implements OnInit {
   openFilePicker() {
 	const modal = this.dialog.open(ModalFileBrowserComponent);
 	modal.afterClosed().subscribe( (files: Array<RemoteFile>) => {
-	  this.geoDataService.importFileFromTapis(this.selectedProject.id, files);
+		if (files != null) {this.geoDataService.importFileFromTapis(this.selectedProject.id, files);}
 	});
 
 	// const modal: BsModalRef = this.bsModalService.show(ModalFileBrowserComponent);

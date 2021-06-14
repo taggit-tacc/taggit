@@ -117,9 +117,9 @@ export class GroupsService {
 	  }
 	}
 
-	console.log(tempGroupList);
+	// console.log(tempGroupList);
 	this._groups.next(Object.values(tempGroupList));
-	console.log(Object.values(tempGroupList))
+	// console.log(Object.values(tempGroupList))
 	// this._groups.next(tempGroupList);
   }
 

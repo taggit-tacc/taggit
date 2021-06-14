@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import {AgaveSystemsService} from '../../services/agave-systems.service';
 import {AuthenticatedUser, AuthService} from '../../services/authentication.service';
 import { RemoteFile} from 'ng-tapis/models/remote-file';
@@ -7,6 +7,7 @@ import { TapisFilesService } from '../../services/tapis-files.service';
 import { BsModalRef } from 'ngx-foundation/modal/bs-modal-ref.service';
 import { Subject, combineLatest} from 'rxjs';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-modal-file-browser',
@@ -15,9 +16,11 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 })
 export class ModalFileBrowserComponent implements OnInit {
 
+  @Output() currentPath: EventEmitter<string> = new EventEmitter<string>();
+
   private currentUser: AuthenticatedUser;
-  public filesList: Array<RemoteFile>;
-  public inProgress: boolean;
+  public filesList: Array<RemoteFile> = [];
+  public inProgress= true;
   public selectedFiles: Map<string, RemoteFile> = new Map();
   public onClose: Subject<Array<RemoteFile>> = new Subject<Array<RemoteFile>>();
   public projects: Array<SystemSummary>;
@@ -25,6 +28,7 @@ export class ModalFileBrowserComponent implements OnInit {
   public myDataSystem: SystemSummary;
   public communityDataSystem: SystemSummary;
   public publishedDataSystem: SystemSummary;
+  public currentDirectory: RemoteFile;
 
   constructor(private tapisFilesService: TapisFilesService,
 		  // private modalRef: BsModalRef,
@@ -40,6 +44,11 @@ export class ModalFileBrowserComponent implements OnInit {
 	// TODO: change those hard coded systemIds to environment vars or some sort of config
 	// wait on the currentUser and systems to resolve
 	combineLatest([this.authService.currentUser, this.agaveSystemsService.systems, this.agaveSystemsService.projects])
+	
+	// This little thing helped me fix the problem on calling ngOnInit several times
+	.pipe(
+        take(1)
+      )
 	  .subscribe( ([user, systems, projects]) => {
 	
 		// Uses systems to find the different directories that has the files in
@@ -76,12 +85,39 @@ export class ModalFileBrowserComponent implements OnInit {
 
   browse(file: RemoteFile) {
 	if (file.type !== 'dir') { return; }
+	this.currentDirectory = file;
+	// this.selectedFiles.clear();
+	this.filesList = [];
+	this.inProgress = false;
+	this.getFiles();
+  }
+
+  getFiles() {
 	this.inProgress = true;
-	this.selectedFiles.clear();
-	this.tapisFilesService.listFiles(file.system, file.path);
-	this.tapisFilesService.listing.subscribe(listing => {
-	  this.inProgress = false;
-	  this.filesList = listing;
+
+	this.tapisFilesService.listFiles(this.currentDirectory.system, this.currentDirectory.path).subscribe(listing => {
+		const files = listing.result;
+
+		if (files.length && files[0].name === '.') {
+			// This removes the first item in the listing, which in Agave
+			// is always a reference to self '.' and replaces with '..'
+			const current = files.shift();
+			this.currentPath.next(current.path);
+			current.path = this.tapisFilesService.getParentPath(current.path);
+			current.name = '..';
+			files.unshift(current);
+		  }
+		  const newFile = [];
+		  files.forEach(function (value, index) {
+          if (value.type == 'file' && (value.path.indexOf('jpg') !== -1) || value.type == 'dir'){
+            newFile.push(value);
+          }})
+
+		  this.inProgress = false;
+		  this.filesList = this.filesList.concat(newFile);
+	},
+	error => {
+		this.inProgress = false;
 	});
   }
 
@@ -89,6 +125,9 @@ export class ModalFileBrowserComponent implements OnInit {
   select(file: RemoteFile) {
 	if (this.tapisFilesService.checkIfSelectable(file)) {
 	  this.addSelectedFile(file);
+	}
+	else{
+		// console.log("not selectable")
 	}
 	// here?
 	// else {
@@ -101,18 +140,16 @@ export class ModalFileBrowserComponent implements OnInit {
 	  this.selectedFiles.delete(file.path);
 	} else {
 	  this.selectedFiles.set(file.path, file);
+	//   console.log(this.selectedFiles + "GOT HERE");
 	}
   }
 
   chooseFiles() {
 	const tmp = Array.from(this.selectedFiles.values());
-	// this.onClose.next(tmp);
-	// this.modalRef.hide();
 	this.dialogRef.close(tmp)
   }
 
   cancel() {
-	// this.modalRef.hide();
 	this.dialogRef.close()
   }
 }

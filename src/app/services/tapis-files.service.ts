@@ -28,19 +28,10 @@ export class TapisFilesService {
   }
 
   listFiles(system: string, path: string) {
-    this.tapis.filesList({systemId: system, filePath: path})
-      .subscribe(resp => {
-	const files = resp.result;
-	// This removes the first item in the listing, which in Agave is always a reference to self.
-	const current = files.shift();
-	current.path = this.getParentPath(current.path);
-	current.name = '..';
-	files.unshift(current);
-	this._listing.next(files);
-      });
+    return this.tapis.filesList({systemId: system, filePath: path});
   }
 
-  private getParentPath(path: string): string {
+  public getParentPath(path: string): string {
     const cleaned = path.replace('//', '/');
     const arr = cleaned.split('/');
     arr.pop();
