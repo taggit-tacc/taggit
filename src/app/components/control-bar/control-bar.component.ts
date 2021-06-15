@@ -16,6 +16,8 @@ import {AuthenticatedUser, AuthService} from '../../services/authentication.serv
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalCurrentProjectComponent } from '../modal-current-project/modal-current-project.component';
+import {AppEnvironment, environment} from '../../../environments/environment';
+import { feature } from '@turf/helpers';
 
 @Component({
   selector: 'app-control-bar',
@@ -401,5 +403,85 @@ export class ControlBarComponent implements OnInit {
 
   }
 
+  //saves project as a CSV file by first organizing a JSON or a CSV and converting it. Saves to either MyData or local
+  saveFile(isJSON:Boolean) {
+	  let CSVHolder = "longitude,latitude,src,groupName,groupColor\r\n"
+	  let JSONHolder: Array<object> = []
+	  let projID = ""
 
+	  this.featureList.forEach(element => {
+			//Retrieves project ID for building a filename
+			projID = element.project_id
+
+		  	//retrieves longitude and latitude values as an array
+			let coordinates = element.geometry['coordinates']
+
+			//creates image source URL from environment and cleans up URL to a usable link
+			let featureSource = environment.apiUrl + '/assets/' + element.assets[0].path;
+			featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
+
+			//Grabs group data
+			//Group data can be accessed from the feature, through the properties element
+			//If the image doesn't have a group, a placeholder is given
+			//NOTE: future group properties can be accessed in the same way
+			let groupName:String = ""
+			let groupColor:String = ""
+			try {
+				groupName = element.properties['group'][0].name
+				groupColor = element.properties['group'][0].color	
+			} catch (error) {
+				groupName = "N/A"
+				groupColor = "#000000"
+			}
+
+			if (isJSON) {
+				//Alternately compiles it into a JSON
+				let transferJSON = {
+					"longitude": coordinates[0],
+					"latitude": coordinates[1],
+					"src": featureSource,
+					"groupName": groupName,
+					"groupColor": groupColor
+				}
+				//And adds it to a growing list of JSON objects
+				JSONHolder.push(transferJSON)
+			
+			} else {
+				//Compiles the attributes into a CSV format
+				let tempCSV = coordinates[0] + "," + coordinates[1] + "," + featureSource + "," + groupName + "," + groupColor + "\r\n"
+				//And adds it to a growing full CSV file
+				CSVHolder += tempCSV
+			}
+	  });
+	  let content
+	  let extension
+		if (isJSON) {
+			content = JSONHolder
+			extension = ".json"
+		} else {
+			content = CSVHolder
+			extension = ".csv"
+		}
+		this.download(content,extension,projID)
+  }
+	
+	download(content, extension, projID){
+	  //Creates a download link in typescript through a blob
+		let blob = new Blob(['\ufeff' + content], {type: 'text/csv;charset=utf-8;' })
+		let download = document.createElement("a")
+		let url = URL.createObjectURL(blob)
+		let filename = "taggit-proj-" + projID
+
+		//checks if the browser is Safari or otherwise, if so open download in new window
+		if (navigator.userAgent.indexOf('Safari')!= -1 && navigator.userAgent.indexOf('Chrome') == -1) {
+			download.setAttribute("target", "_blank")
+		}
+		//Sets up the link, and simulates a click
+		download.setAttribute("href", url)
+		download.setAttribute("download", filename + extension)
+		download.style.visibility = "hidden"
+		document.body.appendChild(download)
+		download.click()
+		document.body.removeChild(download)
+  	}
 }
