@@ -31,7 +31,7 @@ export class ImageGalleryComponent implements OnInit {
   status: boolean;
   groupExist: boolean;
   imagesExist: boolean;
-  projectsExist: boolean;
+  projectsExist: boolean = true;
   featureList: Array<any> = [];
   featureListScroll: Array<any>;
   scrollSum: number = 15;
@@ -54,10 +54,11 @@ export class ImageGalleryComponent implements OnInit {
 	// this.activeFeatureNum = 0;
 	// FIXME feature collection giving me an error when trying to access assets
 	// this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
-
 	this.geoDataService.loaded.subscribe(e => {
 	  this.loaded = e;
-	});
+	}, error => {
+		this.projectsExist = false;
+	  });
 
 
 	this.geoDataService.features.subscribe( (fc: any) => {

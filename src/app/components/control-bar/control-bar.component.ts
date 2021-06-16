@@ -153,7 +153,7 @@ export class ControlBarComponent implements OnInit {
 	  this.mapMouseLocation = next;
 	});
 	this.timerSubscription = this.timer.subscribe( () => {
-	  this.reloadFeatures();
+	//   this.reloadFeatures();
 	});
 
 	// FIXME Maybe redundant
@@ -164,9 +164,9 @@ export class ControlBarComponent implements OnInit {
 	this.geoDataService.getFeatures(this.selectedProject.id);
   }
 
-  setLiveRefresh(option: boolean) {
-	option ? this.timerSubscription = this.timer.subscribe(() => { this.reloadFeatures(); }) : this.timerSubscription.unsubscribe();
-  }
+//   setLiveRefresh(option: boolean) {
+// 	option ? this.timerSubscription = this.timer.subscribe(() => { this.reloadFeatures(); }) : this.timerSubscription.unsubscribe();
+//   }
 
   selectProject(p: Project): void {
 	this.projectsService.setActiveProject(p);
