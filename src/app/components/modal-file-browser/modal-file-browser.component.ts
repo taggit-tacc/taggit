@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import {AgaveSystemsService} from '../../services/agave-systems.service';
 import {AuthenticatedUser, AuthService} from '../../services/authentication.service';
 import { RemoteFile} from 'ng-tapis/models/remote-file';
@@ -15,9 +15,10 @@ import { take } from 'rxjs/operators';
   styleUrls: ['./modal-file-browser.component.scss'],
 })
 export class ModalFileBrowserComponent implements OnInit {
-
   @Output() currentPath: EventEmitter<string> = new EventEmitter<string>();
 
+  public allowedExtensions: Array<string> = this.tapisFilesService.IMPORTABLE_TYPES;
+ 
   private currentUser: AuthenticatedUser;
   public filesList: Array<RemoteFile> = [];
   public inProgress= true;
@@ -108,8 +109,9 @@ export class ModalFileBrowserComponent implements OnInit {
 			files.unshift(current);
 		  }
 		  const newFile = [];
+		  const allowedExt = this.allowedExtensions
 		  files.forEach(function (value, index) {
-          if (value.type == 'file' && (value.path.indexOf('jpg') !== -1) || value.type == 'dir'){
+          if ((value.type == 'file' && allowedExt.includes(value.path.split('.').pop().toLowerCase()) ) || value.type == 'dir'){
             newFile.push(value);
           }})
 
