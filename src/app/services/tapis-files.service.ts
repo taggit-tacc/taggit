@@ -24,7 +24,7 @@ export class TapisFilesService {
   }
 
   private getFileExtension(file: RemoteFile): string {
-    return file.name.split('.').pop();
+    return file.name.split('.').pop().toLowerCase();
   }
 
   listFiles(system: string, path: string) {

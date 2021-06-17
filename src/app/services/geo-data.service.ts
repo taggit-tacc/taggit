@@ -142,6 +142,7 @@ export class GeoDataService {
 	};
 	this.http.post(environment.apiUrl + `/projects/${projectId}/features/files/import/`, payload)
 	  .subscribe( (resp) => {
+		this.getFeatures(projectId);
 		// this.getFeatures(projectId);
 	  }, error => {
 		// this.getFeatures(projectId);

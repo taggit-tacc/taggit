@@ -144,7 +144,10 @@ export class ImageBoxComponent implements OnInit {
   }
 
   imageDelete() {
-	this.geoDataService.deleteFeature(this.feature);
+	  const geoData = this.geoDataService;
+	this.tempGroup.forEach(function (value) {
+		geoData.deleteFeature(value);
+	})
   }
 
   openMoreGroupsModal(template: TemplateRef<any>) {
