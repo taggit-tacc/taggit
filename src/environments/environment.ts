@@ -2,6 +2,8 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+import {jwt as devJWT } from './jwt'
+
 export interface AppEnvironment {
   production: boolean;
   apiUrl: string;
@@ -14,7 +16,8 @@ export const environment: AppEnvironment = {
   production: true,
   apiUrl: 'https://agave.designsafe-ci.org/geo/v2/',
   clientId: 'vtDnU5adn3ue7MMNPTq__bvxSa8a',
-  baseHref: '/'
+  baseHref: '/',
+  jwt: devJWT
 };
 
 /*

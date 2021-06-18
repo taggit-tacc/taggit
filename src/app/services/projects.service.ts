@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
 import {Project} from '../models/models';
 import { environment } from '../../environments/environment';
+import {AuthService} from './authentication.service';
 import { validateBBox } from '@turf/helpers';
 
 @Injectable({
@@ -15,7 +17,8 @@ export class ProjectsService {
   private _activeProject: ReplaySubject<Project> = new ReplaySubject<Project>(1);
   public readonly  activeProject: Observable<Project> = this._activeProject.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private authService: AuthService) { }
 
   //Queries database for all user projects.
   getProjects(): void {
@@ -67,4 +70,26 @@ export class ProjectsService {
       });
   }
 
+  //saves project to a specified format in Design Safe's my Data section
+  //TODO: ask Hazmapper guys how they got design safe to read a .hazmapper file
+  //      and make a .tag file to link to their project
+  exportProject(project: Project, systemID: String, path: string, fileName: string, data:any) {
+    let payload = {systemID, path, fileName, data}
+    let httpOptions = {
+      headers: new HttpHeaders({
+        Authorization: 'Bearer ' + this.authService.userToken.token,
+        'X-JWT-Assertion-designsafe': environment.jwt
+      })
+    }
+
+    this.http.put<any>(environment.apiUrl + `projects/${project.id}/export/`, payload, httpOptions)
+    .subscribe(resp => {
+      console.log(resp.message)
+      this._projects.next([...this._projects.value.filter((item) => item.id != project.id), resp]);
+      this._activeProject.next(resp);
+    }, error => {
+      console.log(error)
+      console.log(payload)
+    })
+  }
 }
