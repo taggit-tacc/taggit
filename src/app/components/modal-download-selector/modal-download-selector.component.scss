@@ -1,0 +1,40 @@
+:host { 
+    min-height: 20em;
+.fileslisting {
+    height: 20em;
+    overflow-y: scroll;
+    padding: 0px 20px;
+}
+.file-row {
+    display: flex;
+    background: #f9f9f9;
+    border: 1px solid transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+.clickable{
+    flex:1;
+    max-width: 20em;
+}
+.size{
+    align-items: flex-end;
+}
+.file-row:hover {
+    border: 1px solid;
+}
+.file-row.selected {
+    background: #d3d3d3;
+}
+
+.mat-radio-button ~ .mat-radio-button {
+    margin-left: 16px;
+}
+
+.radio-box{
+    position: relative;
+    bottom: 45px;
+    left: 45%;
+}
+
+}

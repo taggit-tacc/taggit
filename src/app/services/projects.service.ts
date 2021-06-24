@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
 import {Project} from '../models/models';
 import { environment } from '../../environments/environment';
+import {AuthService} from './authentication.service';
 import { validateBBox } from '@turf/helpers';
 
 @Injectable({
@@ -15,7 +17,8 @@ export class ProjectsService {
   private _activeProject: ReplaySubject<Project> = new ReplaySubject<Project>(1);
   public readonly  activeProject: Observable<Project> = this._activeProject.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private authService: AuthService) { }
 
   //Queries database for all user projects.
   getProjects(): void {
@@ -66,5 +69,4 @@ export class ProjectsService {
         // this._activeProject.next(this._projects.value[0]);
       });
   }
-
 }

@@ -7,6 +7,7 @@ import {LatLng} from 'leaflet';
 import {skip, startWith} from 'rxjs/operators';
 import {BsModalRef, BsModalService} from 'ngx-foundation';
 import {ModalFileBrowserComponent} from '../modal-file-browser/modal-file-browser.component';
+import {ModalDownloadSelectorComponent} from '../modal-download-selector/modal-download-selector.component';
 import {ModalCreateProjectComponent} from '../modal-create-project/modal-create-project.component';
 import {interval, Observable, Subscription} from 'rxjs';
 import {RemoteFile} from 'ng-tapis';
@@ -18,6 +19,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { ModalCurrentProjectComponent } from '../modal-current-project/modal-current-project.component';
 import {AppEnvironment, environment} from '../../../environments/environment';
 import { feature } from '@turf/helpers';
+import { TapisFilesService } from '../../services/tapis-files.service'
+import { element } from 'protractor';
+import { consoleTestResultHandler } from 'tslint/lib/test';
 
 @Component({
   selector: 'app-control-bar',
@@ -57,6 +61,7 @@ export class ControlBarComponent implements OnInit {
 			  private groupsService: GroupsService,
 			  private formsService: FormsService,
 			  private authService: AuthService,
+			  private filesService: TapisFilesService,
 			  private router: Router,
 			  private dialog: MatDialog) {}
 
@@ -194,6 +199,16 @@ export class ControlBarComponent implements OnInit {
 	// modal.content.onClose.subscribe( (files: Array<RemoteFile>) => {
 	//   this.geoDataService.importFileFromTapis(this.selectedProject.id, files);
 	// });
+  }
+
+  openDownloadSelector(fileName:string){
+	const modal = this.dialog.open(ModalDownloadSelectorComponent);
+	let path: Array<string>
+	modal.afterClosed().subscribe( (passbackData: Array<string>) => {
+		console.log(passbackData)
+		path = passbackData
+		this.saveFile(path[3] == ".json", true, path[0], path[1], path[2])
+	});
   }
 
   // nameGroup(event: any) {
@@ -404,7 +419,7 @@ export class ControlBarComponent implements OnInit {
   }
 
   //saves project as a CSV file by first organizing a JSON or a CSV and converting it. Saves to either MyData or local
-  saveFile(isJSON:Boolean) {
+  saveFile(isJSON:Boolean, forExport:Boolean = false, systemID = "", path = "", fileName) {
 	  let CSVHolder = "longitude,latitude,src,groupName,groupColor\r\n"
 	  let JSONHolder: Array<object> = []
 	  let projID = ""
@@ -455,6 +470,7 @@ export class ControlBarComponent implements OnInit {
 	  });
 	  let content
 	  let extension
+	  //determine whether the file is wanted as a JSON or a CSV
 		if (isJSON) {
 			content = JSONHolder
 			extension = ".json"
@@ -462,7 +478,15 @@ export class ControlBarComponent implements OnInit {
 			content = CSVHolder
 			extension = ".csv"
 		}
-		this.download(content,extension,projID)
+
+		//If the function is marked for export to Design Safe, route through export, otherwise, download the file
+		if(forExport){
+			((fileName == "")? (fileName = projID + extension): (fileName += extension))
+			this.filesService.export(systemID, path, fileName, extension, content)
+		}else{
+			this.download(content,extension,projID)
+		}
+
   }
 	
 	download(content, extension, projID){

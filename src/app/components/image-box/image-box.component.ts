@@ -68,7 +68,7 @@ export class ImageBoxComponent implements OnInit {
 			if (c.id == this.feature.id) {
 			  if (!this.colors.includes(e.color)) {
 				this.colors.push(e.color);
-				console.log(e.color);
+				//console.log(e.color);
 			  }
 			  this.hasGroup = true;
 			}

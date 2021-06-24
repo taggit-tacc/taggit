@@ -1,8 +1,14 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
-import { ApiService} from 'ng-tapis';
+import { ApiService, FileOperationRequest} from 'ng-tapis';
 import {RemoteFile} from 'ng-tapis';
+import {Project} from '../models/models';
 import {share} from 'rxjs/operators';
+import {HttpClient} from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import {AuthService} from './authentication.service';
+import { verify } from 'ts-mockito';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +21,9 @@ export class TapisFilesService {
   public readonly listing: Observable<RemoteFile[]> = this._listing.asObservable();
   public readonly IMPORTABLE_TYPES: Array<string> = ['jpg', 'las', 'laz', 'json', 'geojson', 'geotiff', 'tiff', 'gpx'];
 
-  constructor(private tapis: ApiService) { }
+  constructor(private tapis: ApiService,
+              private http: HttpClient,
+              private authService: AuthService) { }
 
   checkIfSelectable(file: RemoteFile): boolean {
     if (file.type === 'dir') {return false; }
@@ -37,5 +45,28 @@ export class TapisFilesService {
     arr.pop();
     const parentPath = arr.join('/');
     return parentPath;
+  }
+
+  //saves project to a specified format in Design Safe's my Data section
+  public export(systemID: string, path: string, fileName: string, extension:string, data:any) {
+    let fullURL = `https://agave.designsafe-ci.org/files/v2/media/system/${systemID}${path}`
+
+    //construct a file to submit
+    let fileType = "plain/text";
+    ((extension == ".csv")? (fileType = "text/csv"): (fileType = "application/json"))
+    let tmp = new Blob([data], {type: fileType})
+    let date = new Date()
+    let file = new File([tmp], fileName, {lastModified: date.valueOf()})
+
+    //Creates a form data object which holds the file to be uploaded
+    let form:FormData = new FormData
+    form.append("fileToUpload", file)
+
+    //sends the packaged data to Designsafe. URL its being uploaded to handles authentication
+    this.http.post(fullURL, form).subscribe(resp => {
+      console.log(resp)
+    }, error => {
+      console.log(error)
+    })
   }
 }
