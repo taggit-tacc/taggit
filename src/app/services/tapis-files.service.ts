@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
-import { ApiService} from 'ng-tapis';
+import { ApiService, FileOperationRequest} from 'ng-tapis';
 import {RemoteFile} from 'ng-tapis';
 import {Project} from '../models/models';
 import {share} from 'rxjs/operators';
@@ -48,31 +48,25 @@ export class TapisFilesService {
   }
 
   //saves project to a specified format in Design Safe's my Data section
-  //TODO: ask Hazmapper guys how they got design safe to read a .hazmapper file
-  //      and make a .tag file to link to their project
-  public export(project: Project, systemID: String, path: string, fileName: string, data:any) {
-    let combinedURL = `files/media/system/${systemID}${path}`
-    //let fullURL = this.baseUrl + combinedURL
-    //I think this is the proper URL, and the only reason it's not working is because we're not in a production build.
-    //And we don't have a JWT
-    let fullURL = "https://api.prod.tacc.cloud/" + combinedURL
-    console.log(fullURL)
+  public export(systemID: string, path: string, fileName: string, extension:string, data:any) {
+    let fullURL = `https://agave.designsafe-ci.org/files/v2/media/system/${systemID}${path}`
 
-    let httpOptions = {
-      headers: new HttpHeaders({
-        Authorization: 'Bearer ' + this.authService.userToken.token,
-        'X-JWT-Assertion-designsafe': environment.jwt
-      })
-    }
     //construct a file to submit
-    let tmp: File = new File([data as BlobPart], fileName)
-    let files = {'fileToUpload': tmp}
-    this.http.post<any>(fullURL, files=files, httpOptions)
-    .subscribe(resp => {
+    let fileType = "plain/text";
+    ((extension == ".csv")? (fileType = "text/csv"): (fileType = "application/json"))
+    let tmp = new Blob([data], {type: fileType})
+    let date = new Date()
+    let file = new File([tmp], fileName, {lastModified: date.valueOf()})
+
+    //Creates a form data object which holds the file to be uploaded
+    let form:FormData = new FormData
+    form.append("fileToUpload", file)
+
+    //sends the packaged data to Designsafe. URL its being uploaded to handles authentication
+    this.http.post(fullURL, form).subscribe(resp => {
       console.log(resp)
     }, error => {
       console.log(error)
     })
-    //this.tapis.filesImport()
   }
 }

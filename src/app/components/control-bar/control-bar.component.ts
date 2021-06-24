@@ -21,6 +21,7 @@ import {AppEnvironment, environment} from '../../../environments/environment';
 import { feature } from '@turf/helpers';
 import { TapisFilesService } from '../../services/tapis-files.service'
 import { element } from 'protractor';
+import { consoleTestResultHandler } from 'tslint/lib/test';
 
 @Component({
   selector: 'app-control-bar',
@@ -480,12 +481,8 @@ export class ControlBarComponent implements OnInit {
 
 		//If the function is marked for export to Design Safe, route through export, otherwise, download the file
 		if(forExport){
-			if( fileName == "" ) {
-				fileName = projID + extension
-			} else {
-				fileName += extension
-			}
-			this.filesService.export(this.selectedProject, systemID, path, fileName, content)
+			((fileName == "")? (fileName = projID + extension): (fileName += extension))
+			this.filesService.export(systemID, path, fileName, extension, content)
 		}else{
 			this.download(content,extension,projID)
 		}
@@ -511,9 +508,4 @@ export class ControlBarComponent implements OnInit {
 		download.click()
 		document.body.removeChild(download)
   	}
-
-	export(fileName:string, data:any){
-		//this.projectsService.exportProject(this.selectedProject, "designsafe.storage.default", "/bwest99/images", "test.txt", "Blah")
-		this.filesService.export(this.selectedProject, "designsafe.storage.default", "/bwest99/images", fileName, data)
-	}
 }

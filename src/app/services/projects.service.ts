@@ -69,27 +69,4 @@ export class ProjectsService {
         // this._activeProject.next(this._projects.value[0]);
       });
   }
-
-  //saves project to a specified format in Design Safe's my Data section
-  //TODO: ask Hazmapper guys how they got design safe to read a .hazmapper file
-  //      and make a .tag file to link to their project
-  exportProject(project: Project, systemID: String, path: string, fileName: string, data:any) {
-    let payload = {systemID, path, fileName, data}
-    let httpOptions = {
-      headers: new HttpHeaders({
-        Authorization: 'Bearer ' + this.authService.userToken.token,
-        'X-JWT-Assertion-designsafe': environment.jwt
-      })
-    }
-
-    this.http.put<any>(environment.apiUrl + `projects/${project.id}/export/`, payload, httpOptions)
-    .subscribe(resp => {
-      console.log(resp.message)
-      this._projects.next([...this._projects.value.filter((item) => item.id != project.id), resp]);
-      this._activeProject.next(resp);
-    }, error => {
-      console.log(error)
-      console.log(payload)
-    })
-  }
 }
