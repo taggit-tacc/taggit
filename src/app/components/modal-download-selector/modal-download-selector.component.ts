@@ -120,7 +120,7 @@ export class ModalDownloadSelectorComponent implements OnInit {
 		  }
 		  const newFile = [];
 		  files.forEach(function (value, index) {
-          if (value.type == 'file' && (value.path.indexOf('jpg') !== -1) || value.type == 'dir'){
+          if (value.type == 'file' || value.type == 'dir'){
             newFile.push(value);
           }})
 
