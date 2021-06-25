@@ -39,7 +39,7 @@ export class ModalCurrentProjectComponent implements OnInit
   }
 
   delete(){
-    if(confirm("Are you sure to delete this project?")) {
+    if(confirm("Are you sure you want to delete this project? This will also delete it from HazMapper, and anyone this project was shared with.")) {
       this.projectsService.delete(this.activeProject);
     }
     this.dialogRef.close();

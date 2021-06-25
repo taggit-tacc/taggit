@@ -36,7 +36,7 @@ export class ControlBarComponent implements OnInit {
   activeFeatureNum: number;
 
   public currentUser: AuthenticatedUser;
-  private REFRESHTIME = 60; // 60 secs per reload
+  private REFRESHTIME = 6000; // 60 secs per reload default, right now it's an hour (6000 sec)
   public projects: Project[];
   public selectedProject: Project;
   public mapMouseLocation: LatLng = new LatLng(0, 0);

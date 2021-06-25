@@ -8,6 +8,7 @@ import {HttpClient} from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import {AuthService} from './authentication.service';
+import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 import { verify } from 'ts-mockito';
 
 @Injectable({
@@ -23,7 +24,8 @@ export class TapisFilesService {
 
   constructor(private tapis: ApiService,
               private http: HttpClient,
-              private authService: AuthService) { }
+              private authService: AuthService,
+              private popup: MatSnackBar) { }
 
   checkIfSelectable(file: RemoteFile): boolean {
     if (file.type === 'dir') {return false; }
@@ -49,6 +51,9 @@ export class TapisFilesService {
 
   //saves project to a specified format in Design Safe's my Data section
   public export(systemID: string, path: string, fileName: string, extension:string, data:any) {
+    //Constructs an object that configures the success/error pop-up
+    let snackbarConfig:MatSnackBarConfig = {duration: 3000, horizontalPosition: 'right', verticalPosition: 'top'}
+    //construct the full URL that points to where the data will be stored
     let fullURL = `https://agave.designsafe-ci.org/files/v2/media/system/${systemID}${path}`
 
     //construct a file to submit
@@ -65,8 +70,12 @@ export class TapisFilesService {
     //sends the packaged data to Designsafe. URL its being uploaded to handles authentication
     this.http.post(fullURL, form).subscribe(resp => {
       console.log(resp)
+      let msg = "Successfully saved file to " + systemID + path
+      this.popup.open(msg, '', snackbarConfig)
     }, error => {
       console.log(error)
+      let msg = "Faled to save file to " + systemID + path
+      this.popup.open(msg, '', snackbarConfig)
     })
   }
 }

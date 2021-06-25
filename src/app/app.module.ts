@@ -54,6 +54,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
 import {MatTreeModule} from '@angular/material/tree';
 import { MatProgressBar } from '@angular/material';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { ModalDownloadSelectorComponent } from './components/modal-download-selector/modal-download-selector.component';
 
 @NgModule({
@@ -107,7 +108,8 @@ import { ModalDownloadSelectorComponent } from './components/modal-download-sele
 	CommonModule,
 	MatProgressSpinnerModule,
 	ScrollingModule,
-	MatTreeModule
+	MatTreeModule,
+	MatSnackBarModule
   ],
   providers: [
 	AuthService,
