@@ -68,6 +68,8 @@ export interface Project {
   id?: number;
   name: string;
   uuid?: string;
+  system_id?: string;
+  system_path?: string;
 }
 
 export class Project implements Project {

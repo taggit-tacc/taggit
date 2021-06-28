@@ -19,6 +19,7 @@ export class ImageBoxComponent implements OnInit {
   // @Output() clickRequest = new EventEmitter<Feature>();
   environment: AppEnvironment;
   featureSource: string;
+  featurePath: string;
   status: boolean = false;
   hasGroup: boolean = false;
   colors: Array<string> = [];
@@ -50,12 +51,21 @@ export class ImageBoxComponent implements OnInit {
 	let featureSource = this.environment.apiUrl + '/assets/' + this.feature.assets[0].path;
 	featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
 	this.featureSource = featureSource;
-
 	this.coordinates = this.feature.geometry['coordinates'];
 	// console.log(coordinates[0]);
 
 	this.projectsService.activeProject.subscribe(next => {
 	  this.selectedProject = next;
+	  
+	  //selector for storage system in feature path. Then prepends image's path to it
+	  if(next.system_id === 'designsafe.storage.default'){
+		  this.featurePath = "My Data: "
+	  } else if (next.system_id === 'designsafe.storage.community') {
+		  this.featurePath = "Community Data: "
+	  } else {
+		  this.featurePath = "Published Data: "
+	  }
+	  this.featurePath = this.featurePath + next.system_path
 	});
 
 	this.groupsService.groups.subscribe((next) => {
