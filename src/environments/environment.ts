@@ -13,6 +13,8 @@ export interface AppEnvironment {
 export const environment: AppEnvironment = {
   production: true,
   apiUrl: 'https://agave.designsafe-ci.org/geo/v2/',
+    // apiUrl: 'https://localhost:8000',
+  // clientId: 'RMCJHgW9CwJ6mKjhLTDnUYBo9Hka',
   clientId: 'vtDnU5adn3ue7MMNPTq__bvxSa8a',
   baseHref: '/'
 };

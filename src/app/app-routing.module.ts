@@ -5,10 +5,12 @@ import {AuthService} from './services/authentication.service';
 import {MainComponent} from './components/main/main.component';
 import { CallbackComponent } from './components/callback/callback.component';
 import { ImageGalleryComponent } from './components/image-gallery/image-gallery.component';
+import { SideBarComponent } from './components/side-bar/side-bar.component';
 // import { TaggerComponent } from './components/tagger/tagger.component';
 // import { PresetGeneratorComponent } from './components/preset-generator/preset-generator.component';
-import { TagGeneratorComponent } from './components/side-bar/tag-generator/tag-generator.component';
-import { TagImagesComponent } from './components/side-bar/tag-images/tag-images.component';
+// import { TagGeneratorComponent } from './components/side-bar/tag-generator/tag-generator.component';
+// import { TagImagesComponent } from './components/side-bar/tag-images/tag-images.component';
+
 
 @Injectable()
 export class Activate implements CanActivate {
@@ -31,8 +33,8 @@ const routes: Routes = [
 	// {path: 'tagger', component: TaggerComponent, canActivateChild: [Activate]},
 	// {path: 'preset', component: PresetGeneratorComponent, canActivateChild: [Activate]}
 
-	{path: 'tagger', component: TagImagesComponent, canActivateChild: [Activate]},
-	{path: 'preset', component: TagGeneratorComponent, canActivateChild: [Activate]}
+	{path: 'tagger', component: SideBarComponent, canActivateChild: [Activate]},
+	// {path: 'preset', component: TagGeneratorComponent, canActivateChild: [Activate]}
   ]},
 
   {path: 'callback', component: CallbackComponent},

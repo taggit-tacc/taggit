@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
-import {Group} from '../models/models';
+import {HttpClient} from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import {Group, Project} from '../models/models';
 import { map, first } from 'rxjs/operators';
 import { GroupsService } from './groups.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -25,13 +27,13 @@ export class FormsService {
   // this._features = new BehaviorSubject<FeatureCollection>({type: 'FeatureCollection', features: []});
 
   private _forms: BehaviorSubject<Group[]> = new BehaviorSubject([]);
-  public forms: Observable<Group[]> = this._forms.asObservable();
+  public readonly forms: Observable<Group[]> = this._forms.asObservable();
 
   private _activeFormList: BehaviorSubject<any[]> = new BehaviorSubject([]);
-  public activeFormList: Observable<any[]> = this._activeFormList.asObservable();
+  public readonly activeFormList: Observable<any[]> = this._activeFormList.asObservable();
 
   private _formGroup: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(null);
-  public formGroup: Observable<FormGroup> = this._formGroup.asObservable();
+  public readonly formGroup: Observable<FormGroup> = this._formGroup.asObservable();
 
 
   // THIS TODO
@@ -39,7 +41,7 @@ export class FormsService {
   // public forms: Observable<Group> = this._forms.asObservable();
 
 
-  constructor(private groupsService: GroupsService) {}
+  constructor(private groupsService: GroupsService, private http: HttpClient) {}
 
   // getProjects(): void {
   //  this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe( resp => {
@@ -55,19 +57,29 @@ export class FormsService {
   // TODO This should be stored in projects api later on (or not)
   // addForm(groupName: string, formGroup: Group, formList: Array<any>): void {
   // addForm(formObj: Array<Group>): void {
-  addForm(groupName: string, formItem: any): void {
+  addForm(data: Project, groupName: string, formItem: any): void {
+	// const tag = {
+
+	// }
+
+	// const prom = this.http.post(environment.apiUrl + `/projects/${data.id}/${groupName}/`, formItem);
+	// prom.subscribe(tag => this._forms.next(tag))
+	console.log( this.forms)
 	this.forms.pipe(
 	  first(),
 	  map(groupList => {
 		return groupList.map(groupObj => {
+			console.log( groupObj.groupName + " "+ groupName)
 		  if (groupObj.groupName == groupName) {
+			  console.log(groupObj.formList)
 			groupObj.formList.push(formItem);
+			console.log("AFTER: " + groupObj.formList)
 		  }
 		  return groupObj;
 		});
 	  })).subscribe(current => this._forms.next(current));
 
-
+	  console.log("GOT HERE?")
 	this.changeGroupForm(groupName);
   }
 

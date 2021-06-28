@@ -41,13 +41,10 @@ import { ImageGalleryComponent } from './components/image-gallery/image-gallery.
 // import { TaggerComponent } from './components/tagger/tagger.component';
 // import { PresetGeneratorComponent } from './components/preset-generator/preset-generator.component';
 import { ImageBoxComponent } from './components/image-box/image-box.component';
-import { FormGeneratorComponent } from './components/side-bar/tag-images/form-generator/form-generator.component';
 import { SideBarComponent } from './components/side-bar/side-bar.component';
 // import { ImageListComponent } from './components/image-list/image-list.component';
 import { SelectGroupComponent } from './components/side-bar/select-group/select-group.component';
 import { SelectImageComponent } from './components/side-bar/select-image/select-image.component';
-import { TagGeneratorComponent } from './components/side-bar/tag-generator/tag-generator.component';
-import { TagImagesComponent } from './components/side-bar/tag-images/tag-images.component';
 import { ModalCreateProjectComponent } from './components/modal-create-project/modal-create-project.component';
 import { ModalCurrentProjectComponent } from './components/modal-current-project/modal-current-project.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
@@ -65,13 +62,10 @@ import { MatProgressBar } from '@angular/material';
 	// TaggerComponent,
 	// PresetGeneratorComponent,
 	ImageBoxComponent,
-	FormGeneratorComponent,
 	SideBarComponent,
 	// ImageListComponent,
 	SelectGroupComponent,
 	SelectImageComponent,
-	TagGeneratorComponent,
-	TagImagesComponent,
 	ModalCreateProjectComponent,
 	ModalCurrentProjectComponent,
 	MatProgressBar
