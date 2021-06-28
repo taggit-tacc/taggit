@@ -162,9 +162,9 @@ export class ControlBarComponent implements OnInit {
 	this.geoDataService.mapMouseLocation.pipe(skip(1)).subscribe( (next) => {
 	  this.mapMouseLocation = next;
 	});
-	this.timerSubscription = this.timer.subscribe( () => {
-	  this.reloadFeatures();
-	});
+	// this.timerSubscription = this.timer.subscribe( () => {
+	//   this.reloadFeatures();
+	// });
 
 	// FIXME Maybe redundant
 	this.groupsService.setActiveFeatureNum(0);
