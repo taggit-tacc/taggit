@@ -65,7 +65,7 @@ export class FormsService {
 		  }
 		  return groupObj;
 		});
-	  })).subscribe(current => this._forms.next(current));
+	  })).subscribe(current => {this._forms.next(current); console.log(this._forms); console.log(current)});
 
 
 	this.changeGroupForm(groupName);
