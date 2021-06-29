@@ -26,7 +26,6 @@ export class ImageBoxComponent implements OnInit {
   groupList: Array<any>;
   coordinates: Array<any>;
   containingGroupList: Array<any>;
-  // This is for tooltip
   currentGroup: string = "hello";
   tempGroup: Array<Feature>;
   modalRef: BsModalRef;
@@ -56,16 +55,6 @@ export class ImageBoxComponent implements OnInit {
 
 	this.projectsService.activeProject.subscribe(next => {
 	  this.selectedProject = next;
-	  
-	  //selector for storage system in feature path. Then prepends image's path to it
-	  if(next.system_id === 'designsafe.storage.default'){
-		  this.featurePath = "My Data: "
-	  } else if (next.system_id === 'designsafe.storage.community') {
-		  this.featurePath = "Community Data: "
-	  } else {
-		  this.featurePath = "Published Data: "
-	  }
-	  this.featurePath = this.featurePath + next.system_path
 	});
 
 	this.groupsService.groups.subscribe((next) => {
@@ -102,6 +91,9 @@ export class ImageBoxComponent implements OnInit {
 		this.status = false;
 	  }
 	});
+	let featurePath = this.feature.assets[0].display_path
+	featurePath = this.feature.assets[0].display_path
+	this.featurePath = featurePath
   }
 
   // click() {
@@ -146,6 +138,28 @@ export class ImageBoxComponent implements OnInit {
 	  this.groupsService.setShowGroup(true);
 	}
 
+  }
+
+  getSourcePath() {
+	  console.log(this.featureSource)
+	  console.log(this.feature)
+	  console.log("_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _")
+	  let featurePath = this.feature.assets[0].display_path
+	  console.log(featurePath)
+	  console.log(this.featureSource)
+	  console.log("_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _")
+	  	  /*
+	  //selector for storage system in feature path. Then prepends image's path to it
+	  if(next.system_id === 'designsafe.storage.default'){
+		this.featurePath = "My Data: "
+	} else if (next.system_id === 'designsafe.storage.community') {
+		this.featurePath = "Community Data: "
+	} else {
+		this.featurePath = "Published Data: "
+	}*/
+	featurePath = this.feature.assets[0].display_path
+	//featurePath = this.featurePath + next.system_path
+	this.featurePath
   }
 
   imageZoom(template: TemplateRef<any>) {
