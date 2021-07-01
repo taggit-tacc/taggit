@@ -109,7 +109,7 @@ export interface IFeatureAsset {
   uuid: string;
   feature_id: number;
   asset_type: string;
-  assetPath: string;
+  display_path: string;
 }
 
 export class FeatureAsset implements IFeatureAsset {
@@ -118,6 +118,7 @@ export class FeatureAsset implements IFeatureAsset {
   uuid: string;
   feature_id: number;
   asset_type: string;
+  display_path: string;
 
   // TODO: Implenent this
   get assetPath(): string {

@@ -2,8 +2,8 @@
   <img [ngClass]="status ? 'img-selected' : 'img-unselected'"
 	   [src]="featureSource"
 	   (click)="imageSelect()"
-	   class="img-responsive img-target">
-
+	   class="img-responsive img-target"
+	   title={{featurePath}}>
   <div class="top-overlay">
 	<div class="image-option"
 		 matTooltip="Zoom"
@@ -15,7 +15,7 @@
 	<ng-template #diffSizes>
 	  <div class="zoom-content">
 		<div class="img-container">
-		  <img [src]="featureSource">
+		  <img [src]="featureSource" title={{featurePath}}>
 		</div>
 		<div class="img-details">
 		  <div class="detail-container">
