@@ -140,28 +140,6 @@ export class ImageBoxComponent implements OnInit {
 
   }
 
-  getSourcePath() {
-	  console.log(this.featureSource)
-	  console.log(this.feature)
-	  console.log("_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _")
-	  let featurePath = this.feature.assets[0].display_path
-	  console.log(featurePath)
-	  console.log(this.featureSource)
-	  console.log("_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _")
-	  	  /*
-	  //selector for storage system in feature path. Then prepends image's path to it
-	  if(next.system_id === 'designsafe.storage.default'){
-		this.featurePath = "My Data: "
-	} else if (next.system_id === 'designsafe.storage.community') {
-		this.featurePath = "Community Data: "
-	} else {
-		this.featurePath = "Published Data: "
-	}*/
-	featurePath = this.feature.assets[0].display_path
-	//featurePath = this.featurePath + next.system_path
-	this.featurePath
-  }
-
   imageZoom(template: TemplateRef<any>) {
 	// this.modalRef = this.modalService.show(template, {class: 'full'});
 	this.dialog.open(template);
