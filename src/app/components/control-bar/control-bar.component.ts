@@ -9,6 +9,7 @@ import {BsModalRef, BsModalService} from 'ngx-foundation';
 import {ModalFileBrowserComponent} from '../modal-file-browser/modal-file-browser.component';
 import {ModalDownloadSelectorComponent} from '../modal-download-selector/modal-download-selector.component';
 import {ModalCreateProjectComponent} from '../modal-create-project/modal-create-project.component';
+import {ModalShareProjectComponent} from '../modal-share-project/modal-share-project.component';
 import {interval, Observable, Subscription} from 'rxjs';
 import {RemoteFile} from 'ng-tapis';
 import {GroupsService} from "../../services/groups.service";
@@ -225,6 +226,13 @@ export class ControlBarComponent implements OnInit {
 	// modal.afterClosed().subscribe( (files: Array<RemoteFile>) => {
 	//   this.geoDataService.importFileFromTapis(this.selectedProject.id, files);
 	// });
+  }
+
+  openShareProjectModal(){
+	  this.dialog.open(ModalShareProjectComponent, {
+		  height: '400px',
+		  width: '600px',
+	  })
   }
 
   openProjectModal(project) {

@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
-import {Project} from '../models/models';
+import {tap} from 'rxjs/operators';
+import {Project, IProjectUser} from '../models/models';
 import { environment } from '../../environments/environment';
 import {AuthService} from './authentication.service';
 import { validateBBox } from '@turf/helpers';
@@ -16,6 +17,8 @@ export class ProjectsService {
   public readonly projects: Observable<Project[]> = this._projects.asObservable();
   private _activeProject: ReplaySubject<Project> = new ReplaySubject<Project>(1);
   public readonly  activeProject: Observable<Project> = this._activeProject.asObservable();
+  private _projectUsers: ReplaySubject<Array<IProjectUser>> = new ReplaySubject<Array<IProjectUser>>(1);
+  public readonly projectUsers$: Observable<Array<IProjectUser>> = this._projectUsers.asObservable();
 
   constructor(private http: HttpClient,
     private authService: AuthService) { }
@@ -68,5 +71,32 @@ export class ProjectsService {
         // console.log(this._projects.value[0])
         // this._activeProject.next(this._projects.value[0]);
       });
+  }
+
+  getProjectUsers(proj: Project): Observable<Array<IProjectUser>> {
+    return this.http.get<Array<IProjectUser>>(environment.apiUrl + `/projects/${proj.id}/users/`).pipe(
+      tap(users => {
+        this._projectUsers.next(users);
+      }));
+  }
+
+  addUserToProject(proj: Project, uname: string): void {
+    const payload = {
+      username: uname
+    };
+    this.http.post(environment.apiUrl + `/projects/${proj.id}/users/`, payload)
+      .subscribe( (resp) => {
+        this.getProjectUsers(proj).subscribe();
+      });
+  }
+
+  deleteUserFromProject(proj:Project, user:string): void {
+    this.http.delete(environment.apiUrl + `/projects/${proj.id}/users/${user}/`)
+    .subscribe((resp)=>{
+      this.getProjectUsers(proj).subscribe();
+    },error =>{
+      //TODO: Create popup for an error message.
+      console.log(error)
+    })
   }
 }

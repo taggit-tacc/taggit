@@ -56,6 +56,8 @@ import {MatTreeModule} from '@angular/material/tree';
 import { MatProgressBar } from '@angular/material';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { ModalDownloadSelectorComponent } from './components/modal-download-selector/modal-download-selector.component';
+import { ModalShareProjectComponent } from './components/modal-share-project/modal-share-project.component';
+import {MatCardModule} from '@angular/material/card';
 
 @NgModule({
   declarations: [
@@ -77,7 +79,8 @@ import { ModalDownloadSelectorComponent } from './components/modal-download-sele
 	ModalCreateProjectComponent,
 	ModalCurrentProjectComponent,
 	MatProgressBar,
-	ModalDownloadSelectorComponent
+	ModalDownloadSelectorComponent,
+	ModalShareProjectComponent
   ],
   imports: [
 	// this is for the ng-tapis library
@@ -109,7 +112,8 @@ import { ModalDownloadSelectorComponent } from './components/modal-download-sele
 	MatProgressSpinnerModule,
 	ScrollingModule,
 	MatTreeModule,
-	MatSnackBarModule
+	MatSnackBarModule,
+	MatCardModule
   ],
   providers: [
 	AuthService,
@@ -129,6 +133,6 @@ import { ModalDownloadSelectorComponent } from './components/modal-download-sele
 	}
   ],
   bootstrap: [AppComponent],
-  entryComponents: [ModalFileBrowserComponent, ModalDownloadSelectorComponent, ModalCreateProjectComponent, ModalCurrentProjectComponent]
+  entryComponents: [ModalFileBrowserComponent, ModalDownloadSelectorComponent, ModalCreateProjectComponent, ModalCurrentProjectComponent, ModalShareProjectComponent]
 })
 export class AppModule { }
