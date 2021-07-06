@@ -196,3 +196,8 @@ export class Feature implements AppGeoJSONFeature {
 
   }
 }
+
+export interface IProjectUser {
+  id: number;
+  username: string;
+}
