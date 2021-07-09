@@ -193,13 +193,40 @@ export class ControlBarComponent implements OnInit {
   openFilePicker() {
 	const modal = this.dialog.open(ModalFileBrowserComponent);
 	modal.afterClosed().subscribe( (files: Array<RemoteFile>) => {
-		if (files != null) {this.geoDataService.importFileFromTapis(this.selectedProject.id, files);}
+		//if (files != null) {this.geoDataService.importFileFromTapis(this.selectedProject.id, files);}
+		if (files != null) {this.geoDataService.importImage(this.selectedProject.id, this.createBlankFeature());}
 	});
 
 	// const modal: BsModalRef = this.bsModalService.show(ModalFileBrowserComponent);
 	// modal.content.onClose.subscribe( (files: Array<RemoteFile>) => {
 	//   this.geoDataService.importFileFromTapis(this.selectedProject.id, files);
 	// });
+  }
+
+  //Creates a feature with a long/lat value of 0,0 and no associated image.
+  createBlankFeature(): Feature {
+	  console.log(this.features)
+	  let geometryArgs = {
+		  type: "point",
+		  coordinates: [0,0]
+	  }
+	  let geoJsonArgs:Feature
+	
+	let type = "Feature"
+	let blankFeature:Feature = {
+		geometry: {
+			type: "Point",
+			coordinates: [0,0]
+		},
+		properties: {},
+		//id?: string | number,
+		type: "Feature",
+		//assets?: Array<IFeatureAsset>,
+		styles: {},
+		project_id: this.selectedProject.id
+	  }
+	console.log(this.features)
+	return blankFeature
   }
 
   openDownloadSelector(fileName:string){

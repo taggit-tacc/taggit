@@ -150,6 +150,21 @@ export class GeoDataService {
 	  });
   }
 
+  //An alternate function for importing images with no GPS data. A feature is created elsewhere, and the image is added to the feature
+  //Inputs:
+  //projectId: Id number of current project
+  //features: A pre-created features with user-defined or zeroed out gps data
+  importImage(projectId: number, feature:Feature): void {
+	console.log(feature)
+	let featureId = feature.id
+	//ToDo: Figure out what to stuff in this payload
+	let payload
+	this.http.post(environment.apiUrl + `/${projectId}/features/${featureId}/assets/`, payload)
+	.subscribe( (resp) => {
+		console.log(resp)
+	});
+  }
+
   downloadGeoJSON(projectId: number, query: AssetFilters = new AssetFilters()) {
 	const qstring: string = querystring.stringify(query.toJson());
 	const downloadLink = document.createElement('a');
