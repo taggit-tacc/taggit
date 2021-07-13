@@ -19,13 +19,13 @@ export class ImageBoxComponent implements OnInit {
   // @Output() clickRequest = new EventEmitter<Feature>();
   environment: AppEnvironment;
   featureSource: string;
+  featurePath: string;
   status: boolean = false;
   hasGroup: boolean = false;
   colors: Array<string> = [];
   groupList: Array<any>;
   coordinates: Array<any>;
   containingGroupList: Array<any>;
-  // This is for tooltip
   currentGroup: string = "hello";
   tempGroup: Array<Feature>;
   modalRef: BsModalRef;
@@ -50,7 +50,6 @@ export class ImageBoxComponent implements OnInit {
 	let featureSource = this.environment.apiUrl + '/assets/' + this.feature.assets[0].path;
 	featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
 	this.featureSource = featureSource;
-
 	this.coordinates = this.feature.geometry['coordinates'];
 	// console.log(coordinates[0]);
 
@@ -92,6 +91,9 @@ export class ImageBoxComponent implements OnInit {
 		this.status = false;
 	  }
 	});
+	let featurePath = this.feature.assets[0].display_path
+	featurePath = this.feature.assets[0].display_path
+	this.featurePath = featurePath
   }
 
   // click() {

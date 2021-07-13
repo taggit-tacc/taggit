@@ -1,0 +1,30 @@
+<h4>Share this project</h4>
+<small><em> People you share your project with will have full ability to edit and delete this project on Taggit and on HazMapper. </em></small>
+
+<form [formGroup]="projShareForm" (ngSubmit)="submit()" id="share-project-form">
+    <mat-form-field>
+        <mat-label>Username:</mat-label>
+        <input matInput type="text" formControlName="name" required="true">
+    </mat-form-field>
+
+<div class="button-group small">
+    <button mat-raised-button color="warn" class="button small warning" type="button" (click)="close()">Close</button>
+    <button mat-raised-button color="primary" class="button small align-right" type="submit" [disabled]="!projShareForm.valid">Add Member</button>
+</div>
+
+<br>
+<h5>Current Users</h5>
+<div *ngFor="let user of projectUsers">
+    <br>
+    <mat-card class="card-container">
+        <span class="card-item">
+            {{user.username}}
+        </span>
+        <span class="card-buttons">
+            <button mat-raised-button color="warn" class="button small warning" type="button" (click)="delete(user.username)">
+                <i class="fas fa-trash"></i>
+            </button>
+        </span>
+    </mat-card>
+</div>
+</form>

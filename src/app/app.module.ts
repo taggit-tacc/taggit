@@ -62,6 +62,8 @@ import { FormDropDownComponent } from './components/side-bar/tag-images/form-gen
 import { FormFileComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-file/form-file.component';
 import { FormRadioComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-radio/form-radio.component';
 import { FormTextBoxComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-textbox/form-textbox.component';
+import { ModalShareProjectComponent } from './components/modal-share-project/modal-share-project.component';
+import {MatCardModule} from '@angular/material/card';
 
 @NgModule({
   declarations: [
@@ -90,6 +92,7 @@ import { FormTextBoxComponent } from './components/side-bar/tag-images/form-gene
 	FormFileComponent,
 	FormRadioComponent,
 	FormTextBoxComponent
+	ModalShareProjectComponent
   ],
   imports: [
 	// this is for the ng-tapis library
@@ -121,7 +124,8 @@ import { FormTextBoxComponent } from './components/side-bar/tag-images/form-gene
 	MatProgressSpinnerModule,
 	ScrollingModule,
 	MatTreeModule,
-	MatSnackBarModule
+	MatSnackBarModule,
+	MatCardModule
   ],
   providers: [
 	AuthService,
@@ -141,6 +145,6 @@ import { FormTextBoxComponent } from './components/side-bar/tag-images/form-gene
 	}
   ],
   bootstrap: [AppComponent],
-  entryComponents: [ModalFileBrowserComponent, ModalDownloadSelectorComponent, ModalCreateProjectComponent, ModalCurrentProjectComponent]
+  entryComponents: [ModalFileBrowserComponent, ModalDownloadSelectorComponent, ModalCreateProjectComponent, ModalCurrentProjectComponent, ModalShareProjectComponent]
 })
 export class AppModule { }
