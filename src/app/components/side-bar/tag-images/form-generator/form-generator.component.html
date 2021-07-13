@@ -35,6 +35,7 @@
 		<!-- <mat-checkbox type="checkbox" [checked]="checked" [value]="opt.label" (change)="selected($event.checked, opt)" >
 		  {{opt.label}}
 		</mat-checkbox> -->
+		<!-- the code below is the new way of handling things instead of the above one. This should be done for the others too (the ones above) -->
 		<app-form-checkbox [field]="opt" [form]="field"></app-form-checkbox>
 	  </div>
 	</ng-container>
