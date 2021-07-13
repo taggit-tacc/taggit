@@ -241,6 +241,10 @@ export class ControlBarComponent implements OnInit {
 	});
 }
 
+	apiTest(){
+		this.projectsService.testGeoApi()
+	}
+
   // TODO This should add color
   addToGroupService(name: string) {
 	// TODO: add group data (name) to Individual Feature property

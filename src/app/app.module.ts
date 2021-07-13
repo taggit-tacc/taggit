@@ -56,6 +56,12 @@ import {MatTreeModule} from '@angular/material/tree';
 import { MatProgressBar } from '@angular/material';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { ModalDownloadSelectorComponent } from './components/modal-download-selector/modal-download-selector.component';
+import { FormFieldsComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-fields.component';
+import { FormCheckBoxComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-checkbox/form-checkbox.component';
+import { FormDropDownComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-dropdown/form-dropdown.component';
+import { FormFileComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-file/form-file.component';
+import { FormRadioComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-radio/form-radio.component';
+import { FormTextBoxComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-textbox/form-textbox.component';
 
 @NgModule({
   declarations: [
@@ -77,7 +83,13 @@ import { ModalDownloadSelectorComponent } from './components/modal-download-sele
 	ModalCreateProjectComponent,
 	ModalCurrentProjectComponent,
 	MatProgressBar,
-	ModalDownloadSelectorComponent
+	ModalDownloadSelectorComponent,
+	FormFieldsComponent,
+	FormCheckBoxComponent,
+	FormDropDownComponent,
+	FormFileComponent,
+	FormRadioComponent,
+	FormTextBoxComponent
   ],
   imports: [
 	// this is for the ng-tapis library
