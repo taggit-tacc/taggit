@@ -23,7 +23,7 @@ export class FormCheckBoxComponent {
     console.log(this.form)
 
   
-    
+    // this code checks if the option has been checked or not
     if(this.formsService.getCheckedOpt().length != 0){
       console.log("GOT HERE")
       const index = this.formsService.getCheckedOpt().findIndex(item => item === this.field);
@@ -35,6 +35,7 @@ export class FormCheckBoxComponent {
     console.log("GOT HERE")
   }
 
+  // adds/deletes to/from the list of checked options
   selected(e:any, option:object){
     if(e.target.checked){
       console.log("Checked")

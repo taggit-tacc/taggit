@@ -17,6 +17,7 @@ export class FormFieldsComponent implements OnInit {
 
   constructor() { }
 
+  // This file and the HTML connected to this is useless so don't worry about it 
   ngOnInit() {
 
   }
