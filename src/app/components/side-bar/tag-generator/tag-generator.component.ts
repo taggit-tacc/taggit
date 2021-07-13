@@ -1,5 +1,5 @@
 import { Component, OnInit, TemplateRef, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { FormsService } from '../../../services/forms.service';
+import { FormsService, tags } from '../../../services/forms.service';
 import { GroupsService } from '../../../services/groups.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -114,14 +114,14 @@ export class TagGeneratorComponent implements OnInit {
   }
 
   addFormItem() {
-	let formValueFilter = this.activeFormList.filter(e => e.label == this.formLabel);
-	if (formValueFilter.length == 0 && this.formLabel.length != 0) {
-	  let formItem = {
+	// let formValueFilter = this.activeFormList.filter(e => e.label == this.formLabel);
+	// if (formValueFilter.length == 0 && this.formLabel.length != 0) {
+	  let formItem: tags = {
 		type: this.formType,
-		name: this.formName,
+		groupName: this.formName,
 		label: this.formLabel,
-		value: this.formValue,
-		required: this.formRequired,
+		// value: this.formValue,
+		// required: this.formRequired,
 		options: []
 	  }
 
@@ -141,6 +141,7 @@ export class TagGeneratorComponent implements OnInit {
 
 	  this.formItemList.push(formItem);
 	  this.formsService.addForm(this.activeGroup, formItem);
+	  this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
 
 	  this.formLabel = '';
 	  this.formOptions = [];
@@ -149,7 +150,7 @@ export class TagGeneratorComponent implements OnInit {
 
 	  this.groupsService.setActivePane("tagger");
 	  this.router.navigateByUrl('/tagger', {skipLocationChange: true});
-	}
+	// }
   }
 
   cancelCreate() {

@@ -2,6 +2,8 @@ import { Component, Input, OnInit, OnDestroy, OnChanges, Output, EventEmitter } 
 import { FormsService } from '../../../../services/forms.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { consoleTestResultHandler } from 'tslint/lib/test';
+import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Component({
   selector: 'app-form-generator',
@@ -13,7 +15,8 @@ export class FormGeneratorComponent implements OnInit, OnDestroy {
   @Input() field: any;
   private formGroup$: Subscription;
   form: FormGroup;
-
+  checked: boolean = false;
+  checkedOpt: object [] = this.formsService.getCheckedOpt();
 
   constructor(private formsService: FormsService) { }
 
@@ -23,15 +26,45 @@ export class FormGeneratorComponent implements OnInit, OnDestroy {
 	  this.form = next;
 	});
 
+  // console.log(this.formsService.getCheckedOpt())
+  // this.formsService.addCheckedOpt(this.field.options[0]);
+
+  // this.field.options.forEach(function (value) {
+    
+  // console.log("GOT HERE")
+  //   if(this.formsService.getCheckedOpt().length != 0){
+  //     console.log("GOT HERE")
+  //     const index = this.formsService.getCheckedOpt().findIndex(item => item === value);
+  //     if (index > -1){
+  //       this.checked = true
+  //     }
+  //   }});
+
+  //   console.log("GOT HERE")
+  
+
   }
 
 // export class FormGeneratorComponent implements OnInit, OnChanges {
   name = new FormControl('');
 
-  get isValid() { return this.form.controls[this.field.label].valid; }
+  // get isValid() { return this.form.controls[this.field.label].valid; }
 
   ngOnDestroy() {
 	this.formGroup$.unsubscribe();
+  }
+
+  selected(e:any, option:object){
+    if(e){
+      console.log("Checked")
+      console.log(option)
+      this.formsService.addCheckedOpt(option);
+      // console.log(this.checkedOpt)
+    }else{
+      console.log("Unchecked")
+      this.formsService.deleteCheckedOpt(option);
+      // console.log(this.checkedOpt)
+    }
   }
   // @Output() onSubmit = new EventEmitter();
   // @Input() fields: any[] = [];

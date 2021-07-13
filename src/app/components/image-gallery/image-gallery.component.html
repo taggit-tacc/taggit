@@ -89,9 +89,16 @@
 </div>
 
 <ng-template #loader>
-  <div id="loader">
+  <div *ngIf="projectsExist; else createProj" id="loader">
 	Loading...
   </div>
+
+  <ng-template #createProj> 
+	<div id="new-proj" (click)="openCreateProjectModal()">
+		Start a new project
+	</div>
+</ng-template>
+
 
   <ngx-spinner
 	bdOpacity = 0.9

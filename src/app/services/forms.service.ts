@@ -65,7 +65,7 @@ export class FormsService {
 		  }
 		  return groupObj;
 		});
-	  })).subscribe(current => {this._forms.next(current); console.log(this._forms); console.log(current)});
+	  })).subscribe(current => {this._forms.next(current);console.log("AYA"); console.log(this._forms); console.log(current)});
 
 
 	this.changeGroupForm(groupName);
@@ -143,7 +143,7 @@ export class FormsService {
 		  });
 		}
 		return groupObj
-	  }))).subscribe(current => {this._forms.next(current)});
+	  }))).subscribe(current => {this._forms.next(current);});
 
 	this.forms.pipe(
 	  first(),
@@ -242,4 +242,80 @@ export class FormsService {
 	return finalArray;
   }
 
+  userTag: tags = {type: "text", groupName: "car", label:"Title", options: []};
+  tagData = []
+  checkedOptions = []
+
+  saveTag(gName: string, tag: tags, tLabel: string): void{
+	const index = this.tagData.findIndex(item => item.groupName === gName  && item.label === tLabel);
+
+	if (index > -1) {
+		// console.log("IT WORKED")
+		this.tagData[index].label = tag.label;
+		// this.tagData[index].options = tag.options;
+	}
+	else {
+		tag.groupName = gName;
+		this.tagData.push(tag);
+		// console.log("Tag data:")
+		// console.log(this.tagData)
+	}
+}
+getTags(): tags[]{
+	return this.tagData;
+}
+
+deleteTag(gName: string, tLabel: string): void{
+	const index = this.tagData.findIndex(item => item.groupName === gName && item.label === tLabel);
+    if (index > -1) {
+      // delete this.exampleNote[index];
+      this.tagData.splice(index, 1);
+    }
+}
+
+deleteOpt(gName:string, opt:object, tag: tags): void {
+	const index = this.tagData.findIndex(item => item.groupName === gName && item.label === tag.label);
+	if (index > -1) {
+		const ind = this.tagData[index].options.findIndex(item => item === opt)
+		if (ind > -1){
+			this.tagData[index].options.splice(ind,1);
+		}
+	}
+
+}
+
+addCheckedOpt(opt:object): void {
+	this.checkedOptions.push(opt)
+	console.log(this.checkedOptions)
+}
+
+deleteCheckedOpt(opt:object): void{
+	const index = this.checkedOptions.findIndex(item => item === opt)
+	this.checkedOptions.splice(index,1)
+	console.log(this.checkedOptions)
+}
+
+getCheckedOpt(): object[]{
+	return this.checkedOptions;
+}
+// renameTagOpt(gName:string, opt:object, tag: tags): void {
+// 	const index = this.tagData.findIndex(item => item.groupName === gName  && item.label === tag.label);
+// 	if(index >-1) {
+// 		const ind = this.tagData[index].options.findIndex(item => item === opt)
+// 		if (ind > -1){
+// 			console.log(opt)
+// 			console.log(this.tagData[index].options[ind]);
+// 		}
+// 	}
+// }
+
+}
+
+
+
+export interface tags {
+	type: string,
+	groupName: string,
+	label: string,
+	options: Array<Group>
 }
