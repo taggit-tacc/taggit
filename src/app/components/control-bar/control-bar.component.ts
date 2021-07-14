@@ -242,7 +242,7 @@ export class ControlBarComponent implements OnInit {
 }
 
 	apiTest(){
-		this.projectsService.testGeoApi()
+		// this.projectsService.testGeoApi()
 	}
 
   // TODO This should add color
