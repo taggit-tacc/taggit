@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, Output, TemplateRef } from '@angular/core';
 import { ProjectsService } from '../../services/projects.service';
 import { Feature, Project } from '../../models/models';
 import {FeatureCollection} from 'geojson';
@@ -23,6 +23,7 @@ import { feature } from '@turf/helpers';
 import { TapisFilesService } from '../../services/tapis-files.service'
 import { element } from 'protractor';
 import { consoleTestResultHandler } from 'tslint/lib/test';
+import * as EXIF from 'exif-js';
 
 @Component({
   selector: 'app-control-bar',
@@ -194,8 +195,12 @@ export class ControlBarComponent implements OnInit {
 	const modal = this.dialog.open(ModalFileBrowserComponent);
 	modal.afterClosed().subscribe( (files: Array<RemoteFile>) => {
 		//if (files != null) {this.geoDataService.importFileFromTapis(this.selectedProject.id, files);}
-		if (files != null) {this.geoDataService.importImage(this.selectedProject.id, this.createBlankFeature());}
-	});
+		if (files != null) {
+			files.forEach( (file) => {
+				this.geoDataService.uploadNewFeature(this.selectedProject.id, this.createBlankFeature(), file)
+			})};
+		}
+	);
 
 	// const modal: BsModalRef = this.bsModalService.show(ModalFileBrowserComponent);
 	// modal.content.onClose.subscribe( (files: Array<RemoteFile>) => {
@@ -203,29 +208,21 @@ export class ControlBarComponent implements OnInit {
 	// });
   }
 
+  outputEXIF(){
+	console.log(EXIF.getAllTags(this))
+  }
+
   //Creates a feature with a long/lat value of 0,0 and no associated image.
-  createBlankFeature(): Feature {
-	  console.log(this.features)
-	  let geometryArgs = {
-		  type: "point",
-		  coordinates: [0,0]
-	  }
-	  let geoJsonArgs:Feature
-	
-	let type = "Feature"
+  createBlankFeature() {
 	let blankFeature:Feature = {
-		geometry: {
-			type: "Point",
-			coordinates: [0,0]
+		"type": "Feature",
+		"geometry": {
+		  "type": "Point",
+		  "coordinates": [0, 0]
 		},
-		properties: {},
-		//id?: string | number,
-		type: "Feature",
-		//assets?: Array<IFeatureAsset>,
-		styles: {},
-		project_id: this.selectedProject.id
+		"properties": {
+		}
 	  }
-	console.log(this.features)
 	return blankFeature
   }
 

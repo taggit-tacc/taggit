@@ -142,9 +142,10 @@ export class GeoDataService {
 	};
 	this.http.post(environment.apiUrl + `/projects/${projectId}/features/files/import/`, payload)
 	  .subscribe( (resp) => {
+		console.log(resp)
 		this.getFeatures(projectId);
-		// this.getFeatures(projectId);
 	  }, error => {
+		  console.log(error)
 		// this.getFeatures(projectId);
 	// TODO: Add notification / toast
 	  });
@@ -154,14 +155,26 @@ export class GeoDataService {
   //Inputs:
   //projectId: Id number of current project
   //features: A pre-created features with user-defined or zeroed out gps data
-  importImage(projectId: number, feature:Feature): void {
-	console.log(feature)
+  //file: A Tapis Remote File containing the image to be imported
+  importImage(projectId: number, feature: Feature, file: RemoteFile): void {
 	let featureId = feature.id
-	//ToDo: Figure out what to stuff in this payload
-	let payload
-	this.http.post(environment.apiUrl + `/${projectId}/features/${featureId}/assets/`, payload)
+	let payload = {system_id: file.system, path: file.path};
+	this.http.post(environment.apiUrl + `projects/${projectId}/features/${featureId}/assets/`, payload)
 	.subscribe( (resp) => {
 		console.log(resp)
+	});
+  }
+
+  //Creates a new feature from an uploaded locally created feature
+  uploadNewFeature(projectId: number, feature:Feature, file: RemoteFile): void {
+	let payload = feature;
+	let response
+	//Calls the addFeatureAsset route in GeoAPI, resp is a list of features
+	this.http.post(environment.apiUrl + `projects/${projectId}/features/`, payload)
+	.subscribe( (resp) => {
+		this.getFeatures(projectId)
+		response = new Feature(resp[0])
+		this.importImage(projectId, response, file)
 	});
   }
 
