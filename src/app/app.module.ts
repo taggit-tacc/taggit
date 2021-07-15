@@ -91,7 +91,7 @@ import {MatCardModule} from '@angular/material/card';
 	FormDropDownComponent,
 	FormFileComponent,
 	FormRadioComponent,
-	FormTextBoxComponent
+	FormTextBoxComponent,
 	ModalShareProjectComponent
   ],
   imports: [
