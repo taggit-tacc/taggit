@@ -9,6 +9,7 @@ import {Form} from '@angular/forms';
 import {take} from 'rxjs/operators';
 import * as querystring from 'querystring';
 import {RemoteFile} from 'ng-tapis';
+import * as EXIF from 'exif-js';
 
 @Injectable({
   providedIn: 'root'
@@ -162,7 +163,15 @@ export class GeoDataService {
 	this.http.post(environment.apiUrl + `projects/${projectId}/features/${featureId}/assets/`, payload)
 	.subscribe( (resp) => {
 		console.log(resp)
+		EXIF.getData(file.path, this.outputEXIF())
+		//From here get GPS data with Exif
 	});
+  }
+
+  outputEXIF(){
+	console.log(EXIF.getAllTags(this))
+	console.log(EXIF.getTag(this, "GPSLatitude"))
+	console.log(EXIF.getTag(this, "GPSLongitude"))
   }
 
   //Creates a new feature from an uploaded locally created feature
