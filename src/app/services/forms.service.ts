@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
 import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
 import {Group} from '../models/models';
 import { map, first } from 'rxjs/operators';
@@ -33,6 +33,8 @@ export class FormsService {
   private _formGroup: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(null);
   public formGroup: Observable<FormGroup> = this._formGroup.asObservable();
 
+  private chosenTag: Array<string>; //chosen option of both Radio Buttons and Color tags. Radio info is stored at [0], Color at [1]
+  private notebook: string; //Var for storing note tags
 
   // THIS TODO
   // private _forms: BehaviorSubject<Group> = new BehaviorSubject<Group>({type: 'Group', formList: [], groupName: []});
@@ -309,6 +311,15 @@ getCheckedOpt(): object[]{
 // 	}
 // }
 
+//Functions for radio buttons componentId=0 is for the radio component, componentId=1 is for color
+updateSelectedRadio(selection:string, componentId: number){ this.chosenTag[componentId] = selection; }
+
+getSelectedRadio(componentId: number):string { return this.chosenTag[componentId]; }
+
+//Notes tag functions
+updateNotes(change){this.notebook = change}
+
+getNotes(){ return this.notebook }
 }
 
 

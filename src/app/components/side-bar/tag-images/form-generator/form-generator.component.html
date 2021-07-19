@@ -40,6 +40,12 @@
 	  </div>
 	</ng-container>
 
+	<ng-container *ngSwitchCase="'color'">
+		<div *ngFor="let opt of field.options" [id]="field.label" class="input-group">
+			<app-form-color [field]="opt" [form]="field"></app-form-color>
+		</div>
+	</ng-container>
+
   </div>
 
   <!-- <div class="errorMessage" *ngIf="!isValid"></div> -->
