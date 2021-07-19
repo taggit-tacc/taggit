@@ -16,10 +16,10 @@ export interface AppEnvironment {
 
 export const environment: AppEnvironment = {
   production: false,
-  apiUrl: 'https://agave.designsafe-ci.org/geo/v2/',
-  clientId: 'vtDnU5adn3ue7MMNPTq__bvxSa8a',
-  // apiUrl: 'https://localhost:8888',
-  // clientId: 'RMCJHgW9CwJ6mKjhLTDnUYBo9Hka',
+  // apiUrl: 'https://agave.designsafe-ci.org/geo/v2/',
+  // clientId: 'vtDnU5adn3ue7MMNPTq__bvxSa8a',
+  apiUrl: 'https://localhost:8888',
+  clientId: 'RMCJHgW9CwJ6mKjhLTDnUYBo9Hka',
   baseHref: '/',
   jwt: devJWT,
   backend: EnvironmentType.Local
