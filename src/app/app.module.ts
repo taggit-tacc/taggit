@@ -95,6 +95,7 @@ import {MatCardModule} from '@angular/material/card';
 	FormTextBoxComponent,
 	ModalShareProjectComponent,
 	FormColorComponent
+
   ],
   imports: [
 	// this is for the ng-tapis library
