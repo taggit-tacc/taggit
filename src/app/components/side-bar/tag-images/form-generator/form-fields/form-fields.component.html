@@ -4,6 +4,7 @@
 	<strong class="text-danger" *ngIf="tag.required">*</strong>
   </label>
   <div class="col-md-9" [ngSwitch]="tag.type">
+	<app-form-color *ngSwitchCase="'color'" [field]="field" [form]="form"></app-form-color>
 	<app-form-textbox *ngSwitchCase="'text'" [field]="field" [form]="form"></app-form-textbox>
 	<app-form-dropdown *ngSwitchCase="'dropdown'" [field]="field" [form]="form"></app-form-dropdown>
 	<app-form-checkbox *ngSwitchCase="'checkbox'" [field]="field" [form]="form"></app-form-checkbox>

@@ -1,4 +1,6 @@
 <div  class="form-check form-check">
     <label class="form-check-label">
-        <input class="form-check-input" type="checkbox" [checked]="isChecked" id="inlineCheckbox1" value="field.label" (change)="selected($event, field)" /> {{field.label}}</label>
+        <input class="form-check-input" type="checkbox" [checked]="isChecked" id="inlineCheckbox1" value={{field.label}} (change)="selected($event, field)" /> 
+            {{field.label}}
+        </label>
 </div>
