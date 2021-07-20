@@ -21,5 +21,5 @@ export class FormTextBoxComponent {
     this.note = this.formsService.getNotes()
   }
 
-  change(){ this.formsService.updateNotes(this.note); }
+  updateNotes(){ this.formsService.updateNotes(this.note); }
 }

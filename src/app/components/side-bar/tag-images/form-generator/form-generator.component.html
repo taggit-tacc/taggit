@@ -9,25 +9,30 @@
   <!-- <label [attr.for]="field.label">{{field.label}}</label> -->
 
   <div [ngSwitch]="field.type" class="form-controls">
-	<mat-form-field *ngSwitchCase="'text'">
-	  <input matInput color="primary" 
-			 [id]="field.label" [type]="field.type">
-	</mat-form-field>
+	<ng-container *ngSwitchCase="'text'">
+	  <!--<input matInput color="primary" [id]="field.label" [type]="field.type">-->
+	  	<app-form-textbox [field]="field.options" [form]="field"></app-form-textbox>
 
-	<mat-form-field *ngSwitchCase="'dropdown'">
+	</ng-container>
+
+	<ng-container *ngSwitchCase="'dropdown'">
+	  <!--
 	  <mat-select [id]="field.label" [id]="field.label">
 		<mat-option *ngFor="let opt of field.options" [value]="opt.label">
 		  {{opt.label}}
 		</mat-option>
 	  </mat-select>
-	</mat-form-field>
+
+	  <select *ngFor="let opt of field.options" [id]="field.label" class="input-group">	  -->
+	  	<app-form-dropdown [field]="field.options" [form]="field"></app-form-dropdown>
+
+
+	</ng-container>
 
 	<ng-container *ngSwitchCase="'radio'">
-	  <mat-radio-group  class="radio-group">
-		<mat-radio-button *ngFor="let opt of field.options" class="input-group" type="radio" [value]="opt.label">
-		  {{opt.label}}
-		</mat-radio-button>
-	  </mat-radio-group>
+	  <div *ngFor="let opt of field.options" [id]="field.label" class="input-group">	
+	  	<app-form-radio [field]="opt" [form]="field"></app-form-radio>
+	  </div>
 	</ng-container>
 
 	<ng-container *ngSwitchCase="'checkbox'">

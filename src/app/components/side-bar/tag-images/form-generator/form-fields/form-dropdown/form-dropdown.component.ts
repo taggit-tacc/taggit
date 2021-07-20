@@ -10,12 +10,16 @@ import { FormsService } from 'src/app/services/forms.service';
 export class FormDropDownComponent {
   @Input() field:any = {};
   @Input() form:FormGroup;
+  chosenTag:string;
 
   constructor(private formsService: FormsService) { }
 
+  //The problem is that I don't actually know the shape of the data here, I've never actually looked at the dropdown box, so I don't know how
+  //it operates. Is it one value? A list of values? How should I access them? What should be accessed? 
   ngOnInit() {
-    
+    this.chosenTag = this.formsService.getSelectedRadio(2)
+    console.log(this.chosenTag)
   }
 
-  update(){  }
+  updateCheckedTag(){ console.log(this.chosenTag); this.formsService.updateSelectedRadio(this.chosenTag, 2);}
 }

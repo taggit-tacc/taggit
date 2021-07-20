@@ -17,5 +17,5 @@ export class FormRadioComponent {
     this.chosenTag = this.formsService.getSelectedRadio(0)
   }
 
-  updateCheckedTag(){ this.formsService.updateSelectedRadio(this.chosenTag, 0); }
+  updateCheckedTag(){ this.formsService.updateSelectedRadio(this.chosenTag, 0);}
 }

@@ -33,7 +33,7 @@ export class FormsService {
   private _formGroup: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(null);
   public formGroup: Observable<FormGroup> = this._formGroup.asObservable();
 
-  private chosenTag: Array<string>; //chosen option of both Radio Buttons and Color tags. Radio info is stored at [0], Color at [1]
+  private chosenTag: Array<string> = ["","",""]; //chosen option of both Radio Buttons and Color tags. Radio info is stored at [0], Color at [1]
   private notebook: string; //Var for storing note tags
 
   // THIS TODO
@@ -67,7 +67,7 @@ export class FormsService {
 		  }
 		  return groupObj;
 		});
-	  })).subscribe(current => {this._forms.next(current);console.log("AYA"); console.log(this._forms); console.log(current)});
+	  })).subscribe(current => {this._forms.next(current);/*console.log("AYA"); console.log(this._forms); console.log(current)*/});
 
 
 	this.changeGroupForm(groupName);
