@@ -162,8 +162,11 @@ export class GeoDataService {
 	let payload = {system_id: file.system, path: file.path};
 	this.http.post(environment.apiUrl + `projects/${projectId}/features/${featureId}/assets/`, payload)
 	.subscribe( (resp) => {
-		console.log(resp)
-		EXIF.getData(file.path, this.outputEXIF())
+		//console.log(resp)
+		this.getFeatures(projectId)
+		console.log(this.features)
+		//EXIF.getData(this.features[0].assets[0].path, this.outputEXIF())
+		EXIF.getData("https://agave.designsafe-ci.org/geo/v2/assets/327/ea9a22cd-d3fb-433e-8410-3ebed972bd73.jpeg", this.outputEXIF())
 		//From here get GPS data with Exif
 	});
   }
