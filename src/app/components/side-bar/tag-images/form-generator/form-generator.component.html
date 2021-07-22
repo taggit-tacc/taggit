@@ -10,23 +10,11 @@
 
   <div [ngSwitch]="field.type" class="form-controls">
 	<ng-container *ngSwitchCase="'text'">
-	  <!--<input matInput color="primary" [id]="field.label" [type]="field.type">-->
 	  	<app-form-textbox [field]="field.options" [form]="field"></app-form-textbox>
-
 	</ng-container>
 
 	<ng-container *ngSwitchCase="'dropdown'">
-	  <!--
-	  <mat-select [id]="field.label" [id]="field.label">
-		<mat-option *ngFor="let opt of field.options" [value]="opt.label">
-		  {{opt.label}}
-		</mat-option>
-	  </mat-select>
-
-	  <select *ngFor="let opt of field.options" [id]="field.label" class="input-group">	  -->
 	  	<app-form-dropdown [field]="field.options" [form]="field"></app-form-dropdown>
-
-
 	</ng-container>
 
 	<ng-container *ngSwitchCase="'radio'">
@@ -37,17 +25,13 @@
 
 	<ng-container *ngSwitchCase="'checkbox'">
 	  <div *ngFor="let opt of field.options" [id]="field.label" class="input-group">
-		<!-- <mat-checkbox type="checkbox" [checked]="checked" [value]="opt.label" (change)="selected($event.checked, opt)" >
-		  {{opt.label}}
-		</mat-checkbox> -->
-		<!-- the code below is the new way of handling things instead of the above one. This should be done for the others too (the ones above) -->
 		<app-form-checkbox [field]="opt" [form]="field"></app-form-checkbox>
 	  </div>
 	</ng-container>
 
 	<ng-container *ngSwitchCase="'color'">
 		<div *ngFor="let opt of field.options" [id]="field.label" class="input-group">
-			<app-form-color [field]="opt" [form]="field"></app-form-color>
+			<app-form-color [field]="opt" [form]="field" [color]="colorArray[field.options.indexOf(opt)]"></app-form-color>
 		</div>
 	</ng-container>
 

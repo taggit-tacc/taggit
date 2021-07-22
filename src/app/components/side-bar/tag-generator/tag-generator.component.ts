@@ -50,7 +50,7 @@ export class TagGeneratorComponent implements OnInit {
 	this.formLabel = '';
 	this.formValue = '';
 	this.formRequired = false;
-	this.enabledControls = ["Text", "Checkbox", "Radio", "Dropdown"];
+	this.enabledControls = ["Text", "Checkbox", "Radio", "Dropdown", "Color"];
   }
 
   inputFormLabel (event: any) {

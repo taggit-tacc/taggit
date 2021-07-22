@@ -10,13 +10,17 @@ import { FormsService } from 'src/app/services/forms.service';
 export class FormColorComponent implements OnInit {
   @Input() field:any = {};
   @Input() form:FormGroup;
+  @Input() color:string;
+
   public chosenTag: string;
+  public chosenColor = "#ffffff";
 
   constructor(private formsService: FormsService) { }
 
   ngOnInit() {
     this.chosenTag = this.formsService.getSelectedRadio(1)
+    this.chosenColor = this.color
   }
 
-  updateCheckedTag(){ this.formsService.updateSelectedRadio(this.chosenTag, 1); }
+  updateCheckedTag(){ console.log(this.chosenColor); this.formsService.updateSelectedRadio(this.chosenTag, 1); }
 }

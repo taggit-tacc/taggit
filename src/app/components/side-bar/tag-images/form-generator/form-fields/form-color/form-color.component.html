@@ -1,7 +1,7 @@
-<div [formGroup]="form">
-    <div class="form-check">
-      <mat-radio-group [(ngModel)]="chosenTag" *ngFor="let opt of field.options">
-        <mat-radio-button class="form-check-input" value="opt.key" (change)=updateCheckedTag()>{{opt.label}}</mat-radio-button>
-      </mat-radio-group>
-    </div>
-  </div>
+<div  class="form-check form-check">
+  <label class="form-check-label">
+      <input class="form-check-input" [(ngModel)]="chosenTag" type="radio" id="inlineCheckbox3" value={{field.label}} (change)="updateCheckedTag()" /> 
+          {{field.label}}
+      <input class="form-check-input" [(ngModel)]="chosenColor" type="color" id="inlineCheckbox3"/>
+  </label>
+</div>
