@@ -26,6 +26,15 @@
 				 matTooltipPosition="below">
 			  </i>
 			</div>
+			<!-- <div *ngFor = "let icon of groupIcon">  -->
+				<!-- <div *ngIf = "icon.groupName == activeGroup"> -->
+					<div (click)="openIconSelection(iconModal, group.name)">
+						<span class="fa {{group.icon}}"
+						matTooltip="icons"
+						matTooltipPosition="below"></span>
+					</div>
+				<!-- </div> -->
+			<!-- </div> -->
 		  </div>
 		</label>
 	  </div>
@@ -39,8 +48,29 @@
 	  <br/>
 	  <div class="button-group">
 		<button matDialogClose color="primary" mat-raised-button (click)="renameGroup(groupRename.value)">Rename</button>
+		<!-- <button matDialogClose color="primary" mat-raised-button (click)="saveGroup(groupRename.value, currentIcon)">Rename</button> -->
 		<button matDialogClose mat-button>Cancel</button>
 	  </div>
 	</ng-template>
+
+	<ng-template #iconModal>
+		<div class="iconDropdown">
+		<select class="fa" [(ngModel)]="choice">
+			<!-- <option>------</option> -->
+			<option *ngFor="let icons of iconList" value={{icons.id}} [innerHTML]="icons.unicode"></option>
+			<!-- <option value="fa-house-damage">&#xf6f1; house-damage </option>
+			<option value="fa-car">&#xf1b9; car</option> -->
+			<!-- <option value="fa-tree">&#xf1bb; tree</option> -->
+		</select>
+		<br/>
+	  	<br/>
+		<div class="button-group">
+			<button matDialogClose color="primary" mat-raised-button (click)="saveIcon(choice)">Save</button>
+	<!-- <button matDialogClose color="primary" mat-raised-button (click)="saveGroup(selectedGroup, choice)">Save</button> -->
+			<button matDialogClose mat-button>Cancel</button>
+		  </div>
+	</div>
+	</ng-template>
+
   </div> <!-- subitem -->
 </div> <!-- select-group -->

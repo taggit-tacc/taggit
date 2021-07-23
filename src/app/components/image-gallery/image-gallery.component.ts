@@ -33,7 +33,7 @@ export class ImageGalleryComponent implements OnInit {
   status: boolean;
   groupExist: boolean;
   imagesExist: boolean;
-  projectsExist: boolean = true;
+  projectsExist: boolean;
   featureList: Array<any> = [];
   featureListScroll: Array<any>;
   scrollSum: number = 15;
@@ -60,6 +60,7 @@ export class ImageGalleryComponent implements OnInit {
 	// this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
 
 	this.geoDataService.loaded.subscribe(e => {
+		console.log("loading should work?")
 	  this.loaded = e;
 	}, error => {
 		console.log("GOT HERE- NO PROJ FOUND")
@@ -79,6 +80,7 @@ export class ImageGalleryComponent implements OnInit {
 			this.featureListScroll = this.featureList.slice(0, this.scrollSum);
 		  }
 		} else {
+			console.log("This didn't work")
 		  this.imagesExist = false;
 		}
 	  }
@@ -189,8 +191,6 @@ export class ImageGalleryComponent implements OnInit {
 
   
   openCreateProjectModal() {
-	  
-	console.log("GOT HERE-WHAT")
 	this.dialog.open(ModalCreateProjectComponent, {
 	  height: '400px',
 	  width: '600px',

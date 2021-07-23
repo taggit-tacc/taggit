@@ -7,6 +7,7 @@ import {Project, IProjectUser} from '../models/models';
 import { environment } from '../../environments/environment';
 import {AuthService} from './authentication.service';
 import { validateBBox } from '@turf/helpers';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -23,27 +24,53 @@ export class ProjectsService {
   constructor(private http: HttpClient,
     private authService: AuthService) { }
 
+    testGeoApi():void {
+      const data = {
+        "name": "Awesome Project",
+      "description": "Cool project"
+      }
+      const prom = this.http.post<Project>(`http://localhost:8888/projects/`, data).subscribe( resp => {
+        this._projects.next([...this._projects.value, resp]);
+      // Set the active project to the one just created?
+      this._activeProject.next(resp);
+      });
+
+      this.http.get<Project[]>(`http://localhost:8888/projects/`).subscribe( resp => {
+        this._projects.next(resp);
+        //DEBUG: outputs results of query
+        //console.log(this._projects.getValue())
+      });
+    }
+
   //Queries database for all user projects.
   getProjects(): void {
    this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe( resp => {
      this._projects.next(resp);
      //DEBUG: outputs results of query
      //console.log(this._projects.getValue())
-   });
+   }, error => {
+    console.log("HAHAHA NOPE")
+  });
   }
 
   create(data: Project): Observable<Project> {
+    console.log(environment.apiUrl )
     const prom = this.http.post<Project>(environment.apiUrl + `/projects/`, data);
-    prom.subscribe(proj => {
+    prom.pipe(
+      tap(proj => {
       //below code from here to next comment does nothing
-      const p = new Project();
-      p.name = 'test';
-      p.description = 'test';
+      // const p = new Project();
+      // p.name = 'test';
+      // p.description = 'test';
       // Spread operator, just pushes the new project into the array
       this._projects.next([...this._projects.value, proj]);
       // Set the active project to the one just created?
       this._activeProject.next(proj);
-    });
+
+    }, error => {
+      console.log("HAHAHA NOPE")
+    }),);
+    console.log(this._activeProject)
     return prom;
   }
 
