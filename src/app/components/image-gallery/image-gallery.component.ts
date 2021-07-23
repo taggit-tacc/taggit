@@ -68,23 +68,23 @@ export class ImageGalleryComponent implements OnInit {
 	  });
 
 
-	// this.geoDataService.features.subscribe( (fc: any) => {
-	//   if (fc) {
-	// 	if (fc.features.length > 0) {
-	// 	  this.imagesExist = true;
-	// 	  this.featureList = fc.features.filter(feature => {
-	// 		return feature.assets[0].asset_type == "image";
-	// 	  });
+	this.geoDataService.features.subscribe( (fc: any) => {
+	  if (fc) {
+		if (fc.features.length > 0) {
+		  this.imagesExist = true;
+		  this.featureList = fc.features.filter(feature => {
+			return feature.assets[0].asset_type == "image";
+		  });
 
-	// 	  if (this.scrollSum == 15) {
-	// 		this.featureListScroll = this.featureList.slice(0, this.scrollSum);
-	// 	  }
-	// 	} else {
-	// 		console.log("This didn't work")
-	// 	  this.imagesExist = false;
-	// 	}
-	//   }
-	// });
+		  if (this.scrollSum == 15) {
+			this.featureListScroll = this.featureList.slice(0, this.scrollSum);
+		  }
+		} else {
+			console.log("This didn't work")
+		  this.imagesExist = false;
+		}
+	  }
+	});
 
 	this.projectsService.projects.subscribe((projects) => {
 	  this.projects = projects;

@@ -281,10 +281,14 @@ export class ControlBarComponent implements OnInit {
 		  name: name,
 		  features: this.tempGroup,
 		  color: myRandColor,
+		  icon: "fa-house-damage"
 		  // featureIds: Object.keys(this.tempGroup),
 		});
 		this.groupsService.addGroup(this.groupList);
 		this.formsService.addGroup(this.groupName);
+
+		console.log(this.groupList)
+		console.log(this.tempGroup)
 
 		// TODO make this work for persistence
 		for (let feat of this.tempGroup) {
@@ -294,12 +298,14 @@ export class ControlBarComponent implements OnInit {
 		  // let featProp = {group: []};
 
 		  let featProp = feat.properties;
+		  console.log(feat.properties)
 
 		  if (featProp.group) {
 			console.log("nope");
 			featProp.group.push({
 			  name: name,
 			  color: myRandColor,
+			  icon: "fa-house-damage"
 			});
 		  } else {
 			console.log("This is actually happening");
@@ -307,6 +313,7 @@ export class ControlBarComponent implements OnInit {
 			featPropList.push({
 			  name: name,
 			  color: myRandColor,
+			  icon: "fa-house-damage"
 			});
 		  }
 
