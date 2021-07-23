@@ -7,7 +7,6 @@ import {Project, IProjectUser} from '../models/models';
 import { environment } from '../../environments/environment';
 import {AuthService} from './authentication.service';
 import { validateBBox } from '@turf/helpers';
-import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
