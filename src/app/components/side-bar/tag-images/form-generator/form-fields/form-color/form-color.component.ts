@@ -34,5 +34,8 @@ export class FormColorComponent implements OnInit {
     this.chosenColor = this.color  
   }
 
-  updateCheckedTag(){ console.log(this.chosenColor); this.formsService.updateSelectedRadio(this.chosenTag, 1, this.activeFeatureId); }
+  updateCheckedTag(){ 
+    this.formsService.saveStyes(this.chosenColor)
+    this.formsService.updateSelectedRadio(this.chosenTag, 1, this.activeFeatureId); }
+
 }
