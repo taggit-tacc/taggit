@@ -4,6 +4,8 @@ import {Group} from '../models/models';
 import { map, first } from 'rxjs/operators';
 import { GroupsService } from './groups.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ProjectsService } from './projects.service';
+import { GeoDataService } from './geo-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -46,7 +48,9 @@ export class FormsService {
   // public forms: Observable<Group> = this._forms.asObservable();
 
 
-  constructor(private groupsService: GroupsService) {}
+  constructor(private groupsService: GroupsService,
+			  private projectsService: ProjectsService,
+			  private geoDataService: GeoDataService) {}
 
   // getProjects(): void {
   //  this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe( resp => {
