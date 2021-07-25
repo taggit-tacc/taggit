@@ -301,12 +301,12 @@ export class FormsService {
 	return finalArray;
   }
 
-  userTag: tags = {type: "text", groupName: "car", label:"Title", options: []};
+  userTag: tags = {type: "text", groupName: "car", label:"Title", options: [], feature: ""};
   tagData = []
   checkedOptions = []
 
   saveTag(gName: string, tag: tags, tLabel: string): void{
-	const index = this.tagData.findIndex(item => item.groupName === gName  && item.label === tLabel);
+	const index = this.tagData.findIndex(item => item.groupName === gName  && item.label === tLabel && item.feature === tag.feature);
 
 	if (index > -1) {
 		// console.log("IT WORKED")
@@ -343,18 +343,19 @@ deleteOpt(gName:string, opt:object, tag: tags): void {
 
 }
 
-addCheckedOpt(opt:object): void {
-	this.checkedOptions.push(opt)
+addCheckedOpt(opt:object, id: number): void {
+	let option = { key: opt['key'], label: opt['label'], id: id }
+	this.checkedOptions.push(option)
 	console.log(this.checkedOptions)
 }
 
-deleteCheckedOpt(opt:object): void{
-	const index = this.checkedOptions.findIndex(item => item === opt)
+deleteCheckedOpt(opt:object, id:number): void{
+	const index = this.checkedOptions.findIndex(item => item.label === opt['label'] && item.id === id)
 	this.checkedOptions.splice(index,1)
 	console.log(this.checkedOptions)
 }
 
-getCheckedOpt(): object[]{
+getCheckedOpt(): any[]{
 	return this.checkedOptions;
 }
 // renameTagOpt(gName:string, opt:object, tag: tags): void {
@@ -385,5 +386,6 @@ export interface tags {
 	type: string,
 	groupName: string,
 	label: string,
-	options: Array<Group>
+	options: Array<Group>,
+	feature: string | number
 }

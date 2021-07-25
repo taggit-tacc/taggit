@@ -92,18 +92,6 @@ export class FormGeneratorComponent implements OnInit, OnDestroy {
 	this.formGroup$.unsubscribe();
   }
 
-  selected(e:any, option:object){
-    if(e){
-      console.log("Checked")
-      console.log(option)
-      this.formsService.addCheckedOpt(option);
-      // console.log(this.checkedOpt)
-    }else{
-      console.log("Unchecked")
-      this.formsService.deleteCheckedOpt(option);
-      // console.log(this.checkedOpt)
-    }
-  }
   // @Output() onSubmit = new EventEmitter();
   // @Input() fields: any[] = [];
   // form: FormGroup;
