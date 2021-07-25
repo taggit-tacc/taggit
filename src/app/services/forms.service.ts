@@ -1,16 +1,14 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
 import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
-import {Group, FeatureCollection} from '../models/models';
+import {Group} from '../models/models';
 import { map, first } from 'rxjs/operators';
 import { GroupsService } from './groups.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { GeoDataService } from './geo-data.service';
-import { ProjectsService } from './projects.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class FormsService implements OnInit {
+export class FormsService {
   // private _forms: BehaviorSubject<any[]> = new BehaviorSubject([]);
   // public forms: Observable<any[]> = this._forms.asObservable();
 
@@ -43,30 +41,13 @@ export class FormsService implements OnInit {
   private featureList
   private selectedProject
   private selectedFeatureID
-
   // THIS TODO
   // private _forms: BehaviorSubject<Group> = new BehaviorSubject<Group>({type: 'Group', formList: [], groupName: []});
   // public forms: Observable<Group> = this._forms.asObservable();
 
 
-  constructor(private groupsService: GroupsService,
-			  private geoDataService: GeoDataService,
-			  private projectsService: ProjectsService) {}
+  constructor(private groupsService: GroupsService) {}
 
-  ngOnInit() {
-	  console.log("Fried Chicken")
-	this.groupsService.activeGroup.subscribe((next) => {
-		this.activeGroup = next;
-	  });
-
-	this.groupsService.groups.subscribe((next) => {
-		this.groupList = next;
-	  });
-
-	this.projectsService.activeProject.subscribe(next => {
-		this.selectedProject = next;
-	});
-  }
   // getProjects(): void {
   //  this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe( resp => {
   //    this._projects.next(resp);
