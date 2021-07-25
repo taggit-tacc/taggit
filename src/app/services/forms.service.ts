@@ -6,6 +6,7 @@ import { GroupsService } from './groups.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ProjectsService } from './projects.service';
 import { GeoDataService } from './geo-data.service';
+import { prepareSyntheticListenerFunctionName } from '@angular/compiler/src/render3/util';
 
 @Injectable({
   providedIn: 'root'
@@ -35,8 +36,7 @@ export class FormsService {
   private _formGroup: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(null);
   public formGroup: Observable<FormGroup> = this._formGroup.asObservable();
 
-  private chosenTag: Array<string> = ["","",""]; //chosen option of both Radio Buttons and Color tags. Radio info is stored at [0], Color at [1]
-  private notebook: string; //Var for storing note tags
+  
 
   private activeGroup
   private groupList
@@ -304,6 +304,8 @@ export class FormsService {
   userTag: tags = {type: "text", groupName: "car", label:"Title", options: [], feature: ""};
   tagData = []
   checkedOptions = []
+  chosenTag = [{option:"", id: 0},"",""]; //chosen option of both Radio Buttons and Color tags. Radio info is stored at [0], Color at [1]
+  notebook = []; //Var for storing note tags
 
   saveTag(gName: string, tag: tags, tLabel: string): void{
 	const index = this.tagData.findIndex(item => item.groupName === gName  && item.label === tLabel && item.feature === tag.feature);
@@ -369,15 +371,42 @@ getCheckedOpt(): any[]{
 // 	}
 // }
 
+radioOptions = []
 //Functions for radio buttons componentId=0 is for the radio component, componentId=1 is for color
-updateSelectedRadio(selection:string, componentId: number){ this.chosenTag[componentId] = selection; }
+updateSelectedRadio(selection:string, componentId: number, feature: number){ 
+	const index = this.radioOptions.findIndex(item => item['id'] === feature && item['compId'] === componentId);
 
-getSelectedRadio(componentId: number):string { return this.chosenTag[componentId]; }
+	if (index > -1) {
+		// console.log("IT WORKED")
+		this.radioOptions[index]['option'] = selection;
+		// this.tagData[index].options = tag.options;
+	}
+	else {
+		let rOption = {option: selection, id: feature, compId: componentId} 
+		this.radioOptions.push(rOption);
+		// console.log("Tag data:")
+		// console.log(this.tagData)
+	}
+	// this.chosenTag[componentId] = {option: selection, id:id}; 
+}
+
+getSelectedRadio(): any[] { return this.radioOptions; }
 
 //Notes tag functions
-updateNotes(change){this.notebook = change}
+updateNotes(change, feature: number){
+	const index = this.radioOptions.findIndex(item => item['id'] === feature);
+	if (index > -1) {
+		// console.log("IT WORKED")
+		this.notebook[index]['option'] = change
+	}
+	else {
+		let rOption = {option: change, id: feature} 
+		this.notebook.push(rOption);
+		// console.log(this.tagData)
+	}
+}
 
-getNotes(){ return this.notebook }
+getNotes(): any[]{ return this.notebook }
 }
 
 

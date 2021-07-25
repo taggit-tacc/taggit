@@ -62,6 +62,7 @@ export class TagImagesComponent implements OnInit {
   }
 
   createNewTag() {
+	console.log(this.tagList)
 	  this.groupsService.setActivePane("preset");
 	  this.router.navigateByUrl('/preset', {skipLocationChange: true});
   }
