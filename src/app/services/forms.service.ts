@@ -36,6 +36,11 @@ export class FormsService {
   private chosenTag: Array<string> = ["","",""]; //chosen option of both Radio Buttons and Color tags. Radio info is stored at [0], Color at [1]
   private notebook: string; //Var for storing note tags
 
+  private activeGroup
+  private groupList
+  private featureList
+  private selectedProject
+  private selectedFeatureID
   // THIS TODO
   // private _forms: BehaviorSubject<Group> = new BehaviorSubject<Group>({type: 'Group', formList: [], groupName: []});
   // public forms: Observable<Group> = this._forms.asObservable();
@@ -96,6 +101,54 @@ export class FormsService {
 	  }))).subscribe(current => {this._activeFormList.next(current.find(e => e != undefined))});
 
 	this.updateFormItem();
+  }
+
+  //Inputs:
+  //color:string A 7 digit hexadecimal string (#RRGGBB) passed in from a color tag
+  //This method accesses group services to retrive the current group's icon as well
+  saveStyes(selectedColor:string){
+	  //TODO: Move these subscriptions to ngOnInit, and figure out why ngOnInit isn't firing
+	this.groupsService.activeGroup.subscribe((next) => {
+		this.activeGroup = next;
+	});
+
+	this.groupsService.groups.subscribe((next) => {
+		this.groupList = next;
+	});
+
+	this.projectsService.activeProject.subscribe(next => {
+		this.selectedProject = next;
+	});
+
+	this.groupsService.activeFeatureId.subscribe(next => {
+		console.log(next)
+		this.selectedFeatureID = next
+	})
+	
+
+	let icon:string
+	this.groupList.forEach(group => {
+		if (group.name = this.activeGroup) {
+			console.log(group.features)
+			icon = group.icon//.substring(3)
+			console.log(icon)
+
+			let tempGroup = [{
+				name: group.name,
+				color: group.color,
+				icon: group.icon
+			  }]
+			
+			let payload = {
+				group: tempGroup,
+				style: {
+					faIcon: icon,
+					color: selectedColor
+				}
+			}
+			this.geoDataService.updateFeatureProperty(this.selectedProject.id, this.selectedFeatureID ,payload)
+		}
+	});
   }
 
   addGroup(groupName: string) {
