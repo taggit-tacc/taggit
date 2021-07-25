@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { FormsService } from 'src/app/services/forms.service';
+import { GroupsService } from 'src/app/services/groups.service';
 
 @Component({
   selector: 'app-form-color',
@@ -14,13 +16,23 @@ export class FormColorComponent implements OnInit {
 
   public chosenTag: string;
   public chosenColor = "#ffffff";
+  private activeFeatureId$: Subscription;
+  activeFeatureId: number;
 
-  constructor(private formsService: FormsService) { }
+
+  constructor(private formsService: FormsService,
+    private groupsService: GroupsService) { }
 
   ngOnInit() {
-    this.chosenTag = this.formsService.getSelectedRadio(1)
-    this.chosenColor = this.color
+    this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe((next) => {
+      this.activeFeatureId = next;
+    });
+    const index = this.formsService.getSelectedRadio().findIndex(item => item.id === this.activeFeatureId && item.compId === 1);
+    if (index > -1){
+      this.chosenTag = this.formsService.getSelectedRadio()[index]['option']
+    }
+    this.chosenColor = this.color  
   }
 
-  updateCheckedTag(){ console.log(this.chosenColor); this.formsService.updateSelectedRadio(this.chosenTag, 1); }
+  updateCheckedTag(){ console.log(this.chosenColor); this.formsService.updateSelectedRadio(this.chosenTag, 1, this.activeFeatureId); }
 }
