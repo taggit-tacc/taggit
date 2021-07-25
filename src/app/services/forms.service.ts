@@ -42,6 +42,7 @@ export class FormsService implements OnInit {
   private groupList
   private featureList
   private selectedProject
+  private selectedFeatureID
 
   // THIS TODO
   // private _forms: BehaviorSubject<Group> = new BehaviorSubject<Group>({type: 'Group', formList: [], groupName: []});
@@ -137,6 +138,11 @@ export class FormsService implements OnInit {
 	this.projectsService.activeProject.subscribe(next => {
 		this.selectedProject = next;
 	});
+
+	this.groupsService.activeFeatureId.subscribe(next => {
+		console.log(next)
+		this.selectedFeatureID = next
+	})
 	
 
 	let icon:string
@@ -159,7 +165,7 @@ export class FormsService implements OnInit {
 					color: selectedColor
 				}
 			}
-			this.geoDataService.updateFeatureProperty(this.selectedProject.id, group.features[0].id ,payload)
+			this.geoDataService.updateFeatureProperty(this.selectedProject.id, this.selectedFeatureID ,payload)
 		}
 	});
   }

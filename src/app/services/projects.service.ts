@@ -53,10 +53,8 @@ export class ProjectsService {
   }
 
   create(data: Project): Observable<Project> {
-    console.log(environment.apiUrl )
     const prom = this.http.post<Project>(environment.apiUrl + `/projects/`, data);
-    prom.pipe(
-      tap(proj => {
+    prom.subscribe(proj => {
       //below code from here to next comment does nothing
       // const p = new Project();
       // p.name = 'test';
@@ -65,10 +63,7 @@ export class ProjectsService {
       this._projects.next([...this._projects.value, proj]);
       // Set the active project to the one just created?
       this._activeProject.next(proj);
-
-    }, error => {
-      console.log("HAHAHA NOPE")
-    }),);
+    });
     console.log(this._activeProject)
     return prom;
   }
