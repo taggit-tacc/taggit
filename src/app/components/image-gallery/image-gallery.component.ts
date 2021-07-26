@@ -7,6 +7,8 @@ import {ProjectsService} from "../../services/projects.service";
 import {GroupsService} from "../../services/groups.service";
 import { NgxSpinnerService } from 'ngx-spinner';
 import {startWith} from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
+import { ModalCreateProjectComponent } from '../modal-create-project/modal-create-project.component';
 
 @Component({
   selector: 'app-image-gallery',
@@ -45,9 +47,11 @@ export class ImageGalleryComponent implements OnInit {
 			  private projectsService: ProjectsService,
 			  private groupsService: GroupsService,
 			  private renderer: Renderer2,
-			  private spinner: NgxSpinnerService) { }
+			  private spinner: NgxSpinnerService,
+			  private dialog: MatDialog) { }
 
   ngOnInit() {
+	console.log("GOT HERE- PLS")
 	this.environment = environment;
 
 
@@ -56,8 +60,12 @@ export class ImageGalleryComponent implements OnInit {
 	// this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
 
 	this.geoDataService.loaded.subscribe(e => {
+		console.log("loading should work?")
 	  this.loaded = e;
-	});
+	}, error => {
+		console.log("GOT HERE- NO PROJ FOUND")
+		this.projectsExist = false;
+	  });
 
 
 	this.geoDataService.features.subscribe( (fc: any) => {
@@ -72,6 +80,7 @@ export class ImageGalleryComponent implements OnInit {
 			this.featureListScroll = this.featureList.slice(0, this.scrollSum);
 		  }
 		} else {
+			console.log("This didn't work")
 		  this.imagesExist = false;
 		}
 	  }
@@ -179,4 +188,17 @@ export class ImageGalleryComponent implements OnInit {
 	// }
 	// console.log('scrolled!!');
   }
+
+  
+  openCreateProjectModal() {
+	this.dialog.open(ModalCreateProjectComponent, {
+	  height: '400px',
+	  width: '600px',
+	});
+
+	// modal.afterClosed().subscribe( (files: Array<RemoteFile>) => {
+	//   this.geoDataService.importFileFromTapis(this.selectedProject.id, files);
+	// });
+  }
+
 }

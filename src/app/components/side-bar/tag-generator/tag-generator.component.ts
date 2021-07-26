@@ -1,8 +1,11 @@
 import { Component, OnInit, TemplateRef, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { FormsService } from '../../../services/forms.service';
+import { FormsService, tags } from '../../../services/forms.service';
 import { GroupsService } from '../../../services/groups.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { Feature } from 'src/app/models/models';
+import { feature } from '@turf/turf';
 
 @Component({
   selector: 'app-tag-generator',
@@ -27,6 +30,10 @@ export class TagGeneratorComponent implements OnInit {
   enabledControls: Array<string> = [];
   showSubitem: boolean = true;
   activeFormList: Array<any>;
+  groupList: Array<any>;
+  groups$: Subscription;
+  tempGroup: Array<Feature>;
+
 
   constructor(
 	private formsService: FormsService,
@@ -43,6 +50,10 @@ export class TagGeneratorComponent implements OnInit {
 	  this.activeFormList = next;
 	});
 
+	this.groups$ = this.groupsService.groups.subscribe((next) => {
+		this.groupList = next;
+	  });
+
 	this.formOptions = [];
 	this.formItemList = [];
 	this.formType = 'text';
@@ -50,7 +61,7 @@ export class TagGeneratorComponent implements OnInit {
 	this.formLabel = '';
 	this.formValue = '';
 	this.formRequired = false;
-	this.enabledControls = ["Text", "Checkbox", "Radio", "Dropdown"];
+	this.enabledControls = ["Text", "Checkbox", "Radio", "Dropdown", "Color"];
   }
 
   inputFormLabel (event: any) {
@@ -114,33 +125,44 @@ export class TagGeneratorComponent implements OnInit {
   }
 
   addFormItem() {
-	let formValueFilter = this.activeFormList.filter(e => e.label == this.formLabel);
-	if (formValueFilter.length == 0 && this.formLabel.length != 0) {
-	  let formItem = {
-		type: this.formType,
-		name: this.formName,
-		label: this.formLabel,
-		value: this.formValue,
-		required: this.formRequired,
-		options: []
-	  }
-
-	  this.openOption[this.formLabel] = false;
-
-	  if (this.formType !== "text" && this.formOptions.length != 0) {
-		let myOpts = [];
-		for (const opt of this.formOptions) {
-		  myOpts.push({
-			key: opt[0],
-			label: opt,
-		  })
+	// let formValueFilter = this.activeFormList.filter(e => e.label == this.formLabel);
+	// if (formValueFilter.length == 0 && this.formLabel.length != 0) {
+	this.groupList.forEach(e => {
+		if (e.name == this.activeGroup) {
+			this.tempGroup = e.features;	
 		}
+		});
+		console.log(this.tempGroup)
+		for (let feat of this.tempGroup) {
+			  
+			let formItem: tags = {
+				type: this.formType,
+				groupName: this.formName,
+				label: this.formLabel,
+				// value: this.formValue,
+				// required: this.formRequired,
+				options: [],
+				feature: feat.id
+			}
+			this.openOption[this.formLabel] = false;
 
-		formItem.options = this.formOptions;
-	  }
-
+			if (this.formType !== "text" && this.formOptions.length != 0) {
+				let myOpts = [];
+				for (const opt of this.formOptions) {
+				  myOpts.push({
+					key: opt[0],
+					label: opt,
+					// image:
+				  })
+				}
+		
+				formItem.options = this.formOptions;
+			  }
+			  console.log(formItem)
 	  this.formItemList.push(formItem);
 	  this.formsService.addForm(this.activeGroup, formItem);
+	  this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
+	}
 
 	  this.formLabel = '';
 	  this.formOptions = [];
@@ -149,7 +171,7 @@ export class TagGeneratorComponent implements OnInit {
 
 	  this.groupsService.setActivePane("tagger");
 	  this.router.navigateByUrl('/tagger', {skipLocationChange: true});
-	}
+	// }
   }
 
   cancelCreate() {

@@ -1,9 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
 import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
 import {Group} from '../models/models';
 import { map, first } from 'rxjs/operators';
 import { GroupsService } from './groups.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ProjectsService } from './projects.service';
+import { GeoDataService } from './geo-data.service';
+import { prepareSyntheticListenerFunctionName } from '@angular/compiler/src/render3/util';
 
 @Injectable({
   providedIn: 'root'
@@ -33,13 +36,21 @@ export class FormsService {
   private _formGroup: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(null);
   public formGroup: Observable<FormGroup> = this._formGroup.asObservable();
 
+  
 
+  private activeGroup
+  private groupList
+  private featureList
+  private selectedProject
+  private selectedFeatureID
   // THIS TODO
   // private _forms: BehaviorSubject<Group> = new BehaviorSubject<Group>({type: 'Group', formList: [], groupName: []});
   // public forms: Observable<Group> = this._forms.asObservable();
 
 
-  constructor(private groupsService: GroupsService) {}
+  constructor(private groupsService: GroupsService,
+			  private projectsService: ProjectsService,
+			  private geoDataService: GeoDataService) {}
 
   // getProjects(): void {
   //  this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe( resp => {
@@ -65,7 +76,7 @@ export class FormsService {
 		  }
 		  return groupObj;
 		});
-	  })).subscribe(current => {this._forms.next(current); console.log(this._forms); console.log(current)});
+	  })).subscribe(current => {this._forms.next(current);/*console.log("AYA"); console.log(this._forms); console.log(current)*/});
 
 
 	this.changeGroupForm(groupName);
@@ -94,6 +105,54 @@ export class FormsService {
 	  }))).subscribe(current => {this._activeFormList.next(current.find(e => e != undefined))});
 
 	this.updateFormItem();
+  }
+
+  //Inputs:
+  //color:string A 7 digit hexadecimal string (#RRGGBB) passed in from a color tag
+  //This method accesses group services to retrive the current group's icon as well
+  saveStyes(selectedColor:string){
+	  //TODO: Move these subscriptions to ngOnInit, and figure out why ngOnInit isn't firing
+	this.groupsService.activeGroup.subscribe((next) => {
+		this.activeGroup = next;
+	});
+
+	this.groupsService.groups.subscribe((next) => {
+		this.groupList = next;
+	});
+
+	this.projectsService.activeProject.subscribe(next => {
+		this.selectedProject = next;
+	});
+
+	this.groupsService.activeFeatureId.subscribe(next => {
+		console.log(next)
+		this.selectedFeatureID = next
+	})
+	
+
+	let icon:string
+	this.groupList.forEach(group => {
+		if (group.name = this.activeGroup) {
+			console.log(group.features)
+			icon = group.icon//.substring(3)
+			console.log(icon)
+
+			let tempGroup = [{
+				name: group.name,
+				color: group.color,
+				icon: group.icon
+			  }]
+			
+			let payload = {
+				group: tempGroup,
+				style: {
+					faIcon: icon,
+					color: selectedColor
+				}
+			}
+			this.geoDataService.updateFeatureProperty(this.selectedProject.id, this.selectedFeatureID ,payload)
+		}
+	});
   }
 
   addGroup(groupName: string) {
@@ -143,7 +202,7 @@ export class FormsService {
 		  });
 		}
 		return groupObj
-	  }))).subscribe(current => {this._forms.next(current)});
+	  }))).subscribe(current => {this._forms.next(current);});
 
 	this.forms.pipe(
 	  first(),
@@ -242,4 +301,120 @@ export class FormsService {
 	return finalArray;
   }
 
+  userTag: tags = {type: "text", groupName: "car", label:"Title", options: [], feature: ""};
+  tagData = []
+  checkedOptions = []
+  chosenTag = [{option:"", id: 0},"",""]; //chosen option of both Radio Buttons and Color tags. Radio info is stored at [0], Color at [1]
+  notebook = []; //Var for storing note tags
+
+  saveTag(gName: string, tag: tags, tLabel: string): void{
+	const index = this.tagData.findIndex(item => item.groupName === gName  && item.label === tLabel && item.feature === tag.feature);
+
+	if (index > -1) {
+		// console.log("IT WORKED")
+		this.tagData[index].label = tag.label;
+		// this.tagData[index].options = tag.options;
+	}
+	else {
+		tag.groupName = gName;
+		this.tagData.push(tag);
+		// console.log("Tag data:")
+		// console.log(this.tagData)
+	}
+}
+getTags(): tags[]{
+	return this.tagData;
+}
+
+deleteTag(gName: string, tLabel: string): void{
+	const index = this.tagData.findIndex(item => item.groupName === gName && item.label === tLabel);
+    if (index > -1) {
+      // delete this.exampleNote[index];
+      this.tagData.splice(index, 1);
+    }
+}
+
+deleteOpt(gName:string, opt:object, tag: tags): void {
+	const index = this.tagData.findIndex(item => item.groupName === gName && item.label === tag.label);
+	if (index > -1) {
+		const ind = this.tagData[index].options.findIndex(item => item === opt)
+		if (ind > -1){
+			this.tagData[index].options.splice(ind,1);
+		}
+	}
+
+}
+
+addCheckedOpt(opt:object, id: number): void {
+	let option = { key: opt['key'], label: opt['label'], id: id }
+	this.checkedOptions.push(option)
+	console.log(this.checkedOptions)
+}
+
+deleteCheckedOpt(opt:object, id:number): void{
+	const index = this.checkedOptions.findIndex(item => item.label === opt['label'] && item.id === id)
+	this.checkedOptions.splice(index,1)
+	console.log(this.checkedOptions)
+}
+
+getCheckedOpt(): any[]{
+	return this.checkedOptions;
+}
+// renameTagOpt(gName:string, opt:object, tag: tags): void {
+// 	const index = this.tagData.findIndex(item => item.groupName === gName  && item.label === tag.label);
+// 	if(index >-1) {
+// 		const ind = this.tagData[index].options.findIndex(item => item === opt)
+// 		if (ind > -1){
+// 			console.log(opt)
+// 			console.log(this.tagData[index].options[ind]);
+// 		}
+// 	}
+// }
+
+radioOptions = []
+//Functions for radio buttons componentId=0 is for the radio component, componentId=1 is for color
+updateSelectedRadio(selection:string, componentId: number, feature: number){ 
+	const index = this.radioOptions.findIndex(item => item['id'] === feature && item['compId'] === componentId);
+
+	if (index > -1) {
+		// console.log("IT WORKED")
+		this.radioOptions[index]['option'] = selection;
+		// this.tagData[index].options = tag.options;
+	}
+	else {
+		let rOption = {option: selection, id: feature, compId: componentId} 
+		this.radioOptions.push(rOption);
+		// console.log("Tag data:")
+		// console.log(this.tagData)
+	}
+	// this.chosenTag[componentId] = {option: selection, id:id}; 
+}
+
+getSelectedRadio(): any[] { return this.radioOptions; }
+
+//Notes tag functions
+updateNotes(change, feature: number){
+	const index = this.radioOptions.findIndex(item => item['id'] === feature);
+	if (index > -1) {
+		// console.log("IT WORKED")
+		this.notebook[index]['option'] = change
+	}
+	else {
+		let rOption = {option: change, id: feature} 
+		this.notebook.push(rOption);
+		// console.log(this.tagData)
+	}
+}
+
+getNotes(): any[]{ return this.notebook }
+}
+
+
+
+export interface tags {
+	type: string,
+	groupName: string,
+	label: string,
+	options: Array<Group>,
+	feature: string | number
 }
