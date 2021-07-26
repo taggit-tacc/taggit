@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, TemplateRef} from '@angular/core';
 import { GroupsService } from '../../../services/groups.service';
-import { FormsService } from '../../../services/forms.service';
+import { FormsService, tags } from '../../../services/forms.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -22,6 +22,7 @@ export class TagImagesComponent implements OnInit {
   private activeFeatureId$: Subscription;
   form: FormGroup;
   showSubitem: boolean = true;
+  tagList: tags[] = this.formsService.getTags();
 
   constructor(
 	private groupsService: GroupsService,
@@ -61,14 +62,18 @@ export class TagImagesComponent implements OnInit {
   }
 
   createNewTag() {
+	console.log(this.tagList)
 	  this.groupsService.setActivePane("preset");
 	  this.router.navigateByUrl('/preset', {skipLocationChange: true});
   }
 
   onSubmit() {
 	this.payload = this.form.getRawValue();
-	console.log(this.payload);
-	this.groupsService.setTagFeatureGroup(this.activeGroup, this.activeFeatureId, this.payload);
+	// console.log(this.payload);
+	// this.groupsService.setTagFeatureGroup(this.activeGroup, this.activeFeatureId, this.payload);
+	// console.log(this.form)
+	// this.formsService.saveTag(this.activeGroup, this.form.value, this.payload)
+	console.log(this.tagList)
   }
 
   ngOnDestroy() {

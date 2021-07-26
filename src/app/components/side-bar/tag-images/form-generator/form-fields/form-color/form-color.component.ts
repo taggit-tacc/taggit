@@ -1,19 +1,24 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { FormsService } from 'src/app/services/forms.service';
 import { GroupsService } from 'src/app/services/groups.service';
 
 @Component({
-  selector: 'app-form-radio',
-  templateUrl: './form-radio.component.html',
+  selector: 'app-form-color',
+  templateUrl: './form-color.component.html',
+  styleUrls: ['./form-color.component.scss']
 })
-export class FormRadioComponent {
+export class FormColorComponent implements OnInit {
   @Input() field:any = {};
   @Input() form:FormGroup;
+  @Input() color:string;
+
   public chosenTag: string;
+  public chosenColor = "#ffffff";
   private activeFeatureId$: Subscription;
   activeFeatureId: number;
+
 
   constructor(private formsService: FormsService,
     private groupsService: GroupsService) { }
@@ -22,16 +27,15 @@ export class FormRadioComponent {
     this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe((next) => {
       this.activeFeatureId = next;
     });
-
-    console.log(this.formsService.getSelectedRadio() )
-    // if(this.formsService.getSelectedRadio(0)['id'] === this.activeFeatureId){
-    const index = this.formsService.getSelectedRadio().findIndex(item => item.id === this.activeFeatureId && item.compId === 0);
-    console.log(index)
+    const index = this.formsService.getSelectedRadio().findIndex(item => item.id === this.activeFeatureId && item.compId === 1);
     if (index > -1){
       this.chosenTag = this.formsService.getSelectedRadio()[index]['option']
     }
-  // }
+    this.chosenColor = this.color  
   }
 
-  updateCheckedTag(){ this.formsService.updateSelectedRadio(this.chosenTag, 0, this.activeFeatureId);}
+  updateCheckedTag(){ 
+    this.formsService.saveStyes(this.chosenColor)
+    this.formsService.updateSelectedRadio(this.chosenTag, 1, this.activeFeatureId); }
+
 }

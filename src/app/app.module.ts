@@ -56,6 +56,13 @@ import {MatTreeModule} from '@angular/material/tree';
 import { MatProgressBar } from '@angular/material';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { ModalDownloadSelectorComponent } from './components/modal-download-selector/modal-download-selector.component';
+import { FormFieldsComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-fields.component';
+import { FormCheckBoxComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-checkbox/form-checkbox.component';
+import { FormDropDownComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-dropdown/form-dropdown.component';
+import { FormFileComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-file/form-file.component';
+import { FormRadioComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-radio/form-radio.component';
+import { FormTextBoxComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-textbox/form-textbox.component';
+import { FormColorComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-color/form-color.component';
 import { ModalShareProjectComponent } from './components/modal-share-project/modal-share-project.component';
 import {MatCardModule} from '@angular/material/card';
 
@@ -80,7 +87,15 @@ import {MatCardModule} from '@angular/material/card';
 	ModalCurrentProjectComponent,
 	MatProgressBar,
 	ModalDownloadSelectorComponent,
-	ModalShareProjectComponent
+	FormFieldsComponent,
+	FormCheckBoxComponent,
+	FormDropDownComponent,
+	FormFileComponent,
+	FormRadioComponent,
+	FormTextBoxComponent,
+	ModalShareProjectComponent,
+	FormColorComponent
+
   ],
   imports: [
 	// this is for the ng-tapis library

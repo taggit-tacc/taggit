@@ -80,6 +80,7 @@ export class GroupsService {
 			  name: group.name,
 			  features: [],
 			  color: group.color,
+			  icon: group.icon
 			}
 		  }
 		  tempGroupList[group.name].features.push(feat);

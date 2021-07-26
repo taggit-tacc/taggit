@@ -28,131 +28,111 @@
   </div> <!-- subitem-title -->
 
   <div *ngIf="showSubitem" class="subitem">
-	<div class="subitem-scroll">
-	  <div *ngIf="(formsService.activeFormList | async)?.length > 0; else elseBlock">
-		<form (ngSubmit)="onSubmit()" [formGroup]="formsService.formGroup | async">
- <!--  -->
-		  <div *ngFor="let form of formsService.activeFormList | async" class="main-form-container">
-			<div class="form-item-container">
-
-			  <div class="name-group">
-				{{form.label}} ({{form.type}})
-			  </div> <!-- name-group -->
-
-			  <div class="button-group">
-
-				<div (click)="formsService.deleteForm(activeGroup, form)">
-				  <i class="fas fa-minus"
-					 matTooltip="Delete"
-					 matTooltipPosition="above"
-					 style="cursor: pointer">
-				  </i>
-				</div>
-
-				<div (click)="openRenameOptionModal(renameFormItemModal)">
-				  <i class="fas fa-edit"
-					 matTooltip="Rename"
-					 matTooltipPosition="above"
-					 style="cursor: pointer">
-				  </i>
-				</div>
-
-				<div *ngIf="form.type != 'text'">
-
-				  <div (click)="openOptionToggle(form.label)">
-					<i class="fas fa-ellipsis-h"
-					   style="cursor: pointer"
-					   matTooltip="More Options"
-					   matTooltipPosition="above">
-					</i>
-				  </div>
-
-				</div>
-
-				<ng-template #renameFormItemModal>
-				  <input matInput #formItemRename
-						 placeholder="Rename Form Item">
-				  <br/>
-				  <br/>
-				  <div class="button-group">
-					<button matDialogClose
-							mat-raised-button
-							color="primary"
-							(click)="formsService.renameForm(activeGroup, form, formItemRename.value)">Rename</button>
-					<button matDialogClose
-							mat-button>Cancel</button>
-				  </div>
-				</ng-template>
-
-			  </div> <!-- button group -->
-			</div>  <!-- form-item-container -->
-
-
-
-			<div *ngIf="form.options.length && form.type != 'text' && openOption[form.label]" class="options-container">
-
-			  <div *ngFor="let opt of form.options" class="list-group list-suboptions">
-				<div>
-				  {{opt.label}}
-				</div>
-
+	  <div class="subitem-scroll">
+		  <div *ngFor = "let tag of tagList">
+			<div *ngIf = "tag.groupName == activeGroup">
+				<div *ngIf = "tag.feature == activeFeatureId">
+			<div class="form-item-container">  
+				<div class="name-group"> {{tag.label}} ({{tag.type}})</div>
+				
 				<div class="button-group">
+					<div (click)="formsService.deleteTag(activeGroup, tag.label)">
+						<i class="fas fa-minus"
+						   matTooltip="Delete"
+						   matTooltipPosition="above"
+						   style="cursor: pointer">
+						</i>
+					  </div> <!-- delete button -->
+					
+					<div (click)="openRenameOptionModal(renameFormItemModal)">
+						<i class="fas fa-edit"
+						   matTooltip="Rename"
+						   matTooltipPosition="above"
+						   style="cursor: pointer">
+						</i>
+					</div> <!-- rename button -->
 
-				  <div (click)="formsService.deleteOption(activeGroup, opt, form)">
-					<i class="fas fa-minus"
-					   style="cursor: pointer"
-					   matTooltip="Delete"
-					   matTooltipPosition="below">
-					</i>
-				  </div>
+					<div *ngIf="tag.type != 'text'">
 
-				  <div (click)="openRenameOptionModal(renameDeeperOptionModal)">
-					<i class="fas fa-edit"
-					   matTooltip="Rename"
-					   style="cursor: pointer"
-					   matTooltipPosition="below">
-					</i>
-				  </div>
+						<div (click)="openOptionToggle(tag.label)">
+						  <i class="fas fa-ellipsis-h"
+							 style="cursor: pointer"
+							 matTooltip="More Options"
+							 matTooltipPosition="above">
+						  </i>
+						</div>
+	  
+					  </div> <!-- three dots -->
 
-				  <ng-template #renameDeeperOptionModal>
-					<input matInput #optionDeeperRename
-						   placeholder="Rename Option">
-					<br/>
-					<br/>
-					<div class="button-group">
-					  <button matDialogClose
-							  mat-raised-button
-							  color="primary"
-							  (click)="formsService.renameOption(activeGroup, opt, form, optionDeeperRename.value)">Rename</button>
-					  <button matDialogClose
-							  mat-button>Cancel</button>
-					</div>
-				  </ng-template>
-				</div> <!-- button-ggroup -->
-			  </div> <!-- option loop -->
-			</div> <!-- options container -->
+					<ng-template #renameFormItemModal>
+						<input matInput #formItemRename
+							[(ngModel)]="tag.label"
+							placeholder="Rename Form Item">
+						<br/>
+						<br/>
+						<div class="button-group">
+						  <button matDialogClose
+								  mat-raised-button
+								  color="primary"
+								  >Rename</button>
+								  <!-- (click)="formsService.saveTag(activeGroup, tag, tag.label)" -->
+						  <button matDialogClose
+								  mat-button>Cancel</button>
+						</div> 
+					  </ng-template> <!-- rename modal -->
+
+				</div> <!-- button group -->
+			</div> <!-- form-item-container -->
+
+			<div *ngIf="tag.type != 'text' && openOption[tag.label]" class="options-container">
+				<div *ngFor="let opt of tag.options" class="list-group list-suboptions">
+					<div>
+						{{opt.label}}
+					  </div>
+
+					  <div class="button-group">
+						<div (click)="formsService.deleteOpt(activeGroup, opt, tag)">
+							<i class="fas fa-minus"
+							   style="cursor: pointer"
+							   matTooltip="Delete"
+							   matTooltipPosition="below">
+							</i>
+						  </div>
+					  </div>  <!-- delete opt button -->
+
+					  <div (click)="openRenameOptionModal(renameDeeperOptionModal)">
+						<i class="fas fa-edit"
+						   matTooltip="Rename"
+						   style="cursor: pointer"
+						   matTooltipPosition="below">
+						</i>
+					  </div> <!-- rename opt button -->
+
+					  <ng-template #renameDeeperOptionModal>
+						<input matInput #optionDeeperRename
+						[(ngModel)]="opt.label"
+							   placeholder="Rename Option">
+						<br/>
+						<br/>
+						<div class="button-group">
+						  <button matDialogClose
+								  mat-raised-button
+								  color="primary"
+								  >Rename</button>
+						  <button matDialogClose
+								  mat-button>Cancel</button>
+						</div>
+					  </ng-template> <!-- rename opt modal -->
 
 
-			<!-- <app-form-generator [form]="form"></app-form-generator> -->
-			<app-form-generator [field]="form"></app-form-generator>
-			<!-- Conditional -->
-			<!-- <div *ngIf="(formsService.activeFormList | async)?.length > 0; else elseBlock"> -->
-			  <!-- Does not work without this -->
-			  <!-- <div *ngIf="fields"> -->
-				<!-- <app-form-generator></app-form-generator> -->
-				<!-- <app-form-generator [fields]="getFields()"></app-form-generator> -->
-				<!-- <app-form-generator [fields]="fields"></app-form-generator> -->
-				<!-- </div> -->
-			  <!-- </div> -->
-
-
-		  </div> <!-- loop -->
-
-		  <div class="form-row">
-			<button mat-raised-button color="primary" type="submit" [disabled]="!form.valid">Save</button>
-		  </div>
-		</form>
-	  </div> <!-- conditional -->
+				</div> <!-- opt loop-->
+			  </div> <!-- opt container-->
+			  <!-- <app-form-generator [field]="tagList"></app-form-generator> -->
+			  <app-form-generator [field]="tag"></app-form-generator>
+				</div>
+		</div>
+		
+	</div>
 	</div> <!-- subitem scroll -->
   </div> <!--subitem -->
 
