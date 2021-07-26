@@ -46,6 +46,7 @@ export class FormGeneratorComponent implements OnInit, OnDestroy {
     this.generateColors()
   }
 
+  //something random so github can tell I have made changes to my code (delete this line later) 
   //Generates a key:value list of colors ranging from green (#00FF00) to red (#FF0000) based on passed in info
   generateColors(){
     let itemCount = this.field.options.length
