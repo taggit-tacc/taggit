@@ -16,6 +16,9 @@ import { FormGroup, FormControl } from '@angular/forms';
   styleUrls: ['./modal-download-selector.component.scss']
 })
 export class ModalDownloadSelectorComponent implements OnInit {
+	
+  static limit = 200; //Limits maximum amount of files displayed
+
   @Output() currentPath: EventEmitter<string> = new EventEmitter<string>();
 
   private downloadSelectForm: FormGroup;
@@ -33,6 +36,7 @@ export class ModalDownloadSelectorComponent implements OnInit {
   public passbackData: Array<string> = ["","","",""];
   public fileName:string = "Custom File Name"
   public fileExtension:string =".csv"
+  private offset:number;
 
   constructor(private tapisFilesService: TapisFilesService,
 		  // private modalRef: BsModalRef,
@@ -98,14 +102,22 @@ export class ModalDownloadSelectorComponent implements OnInit {
 	this.currentDirectory = file;
 	// this.selectedFiles.clear();
 	this.filesList = [];
+	this.offset = 0
 	this.inProgress = false;
 	this.getFiles();
   }
 
   getFiles() {
+	let hasMoreFiles = (this.offset % ModalDownloadSelectorComponent.limit) === 0
+
+	if (this.inProgress || !hasMoreFiles){
+		return;
+	}
+
 	this.inProgress = true;
 
-	this.tapisFilesService.listFiles(this.currentDirectory.system, this.currentDirectory.path).subscribe(listing => {
+	this.tapisFilesService.listFiles(this.currentDirectory.system, this.currentDirectory.path, this.offset, ModalDownloadSelectorComponent.limit)
+	.subscribe(listing => {
 		const files = listing.result;
 
 		if (files.length && files[0].name === '.') {
@@ -126,6 +138,7 @@ export class ModalDownloadSelectorComponent implements OnInit {
 
 		  this.inProgress = false;
 		  this.filesList = this.filesList.concat(newFile);
+		  this.offset = this.offset + files.length
 	},
 	error => {
 		this.inProgress = false;
