@@ -55,6 +55,7 @@ export class ControlBarComponent implements OnInit {
   activeGroup: string;
   activePane: string;
   hazMapperLink: string;
+  itemsSelected:boolean = false;
 
   constructor(private projectsService: ProjectsService,
 			  private geoDataService: GeoDataService,
@@ -151,6 +152,10 @@ export class ControlBarComponent implements OnInit {
 		this.tempGroup = next;
 	  });
 
+	  this.groupsService.itemsSelected.subscribe((next) => {
+		this.itemsSelected = next;
+	  })
+
 	});
 
 	this.projectsService.activeProject.subscribe(next => {
@@ -169,6 +174,11 @@ export class ControlBarComponent implements OnInit {
 
 	// FIXME Maybe redundant
 	this.groupsService.setActiveFeatureNum(0);
+  }
+
+  clearAll(){
+	  this.groupsService.setUnselectAll(true);
+	  this.groupsService.setItemsSelected(false);
   }
 
   reloadFeatures() {
