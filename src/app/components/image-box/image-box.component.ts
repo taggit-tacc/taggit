@@ -20,7 +20,7 @@ export class ImageBoxComponent implements OnInit {
   environment: AppEnvironment;
   featureSource: string;
   featurePath: string;
-  status: boolean = false;
+  status: boolean = false; //Controls the whether or not an image box is selected or not
   hasGroup: boolean = false;
   colors: Array<string> = [];
   groupList: Array<any>;
@@ -121,6 +121,7 @@ export class ImageBoxComponent implements OnInit {
 	  this.groupsService.setUnselectAll(false);
 	}
 	this.status = !this.status;
+	this.groupsService.setItemsSelected(this.status)
 
 	if (this.tempGroup.filter(v => v.assets[0].id == this.feature.assets[0].id).length > 0) {
 	  this.tempGroup = this.tempGroup.filter(v => v.assets[0].id != this.feature.assets[0].id);
