@@ -9,6 +9,7 @@ import {BsModalRef, BsModalService} from 'ngx-foundation';
 import {ModalFileBrowserComponent} from '../modal-file-browser/modal-file-browser.component';
 import {ModalDownloadSelectorComponent} from '../modal-download-selector/modal-download-selector.component';
 import {ModalCreateProjectComponent} from '../modal-create-project/modal-create-project.component';
+import {ModalShareProjectComponent} from '../modal-share-project/modal-share-project.component';
 import {interval, Observable, Subscription} from 'rxjs';
 import {RemoteFile} from 'ng-tapis';
 import {GroupsService} from "../../services/groups.service";
@@ -54,6 +55,7 @@ export class ControlBarComponent implements OnInit {
   activeGroup: string;
   activePane: string;
   hazMapperLink: string;
+  itemsSelected:boolean = false;
 
   constructor(private projectsService: ProjectsService,
 			  private geoDataService: GeoDataService,
@@ -150,6 +152,10 @@ export class ControlBarComponent implements OnInit {
 		this.tempGroup = next;
 	  });
 
+	  this.groupsService.itemsSelected.subscribe((next) => {
+		this.itemsSelected = next;
+	  })
+
 	});
 
 	this.projectsService.activeProject.subscribe(next => {
@@ -162,12 +168,17 @@ export class ControlBarComponent implements OnInit {
 	this.geoDataService.mapMouseLocation.pipe(skip(1)).subscribe( (next) => {
 	  this.mapMouseLocation = next;
 	});
-	this.timerSubscription = this.timer.subscribe( () => {
-	  this.reloadFeatures();
-	});
+	// this.timerSubscription = this.timer.subscribe( () => {
+	//   this.reloadFeatures();
+	// });
 
 	// FIXME Maybe redundant
 	this.groupsService.setActiveFeatureNum(0);
+  }
+
+  clearAll(){
+	  this.groupsService.setUnselectAll(true);
+	  this.groupsService.setItemsSelected(false);
   }
 
   reloadFeatures() {
@@ -227,6 +238,13 @@ export class ControlBarComponent implements OnInit {
 	// });
   }
 
+  openShareProjectModal(){
+	  this.dialog.open(ModalShareProjectComponent, {
+		  height: '400px',
+		  width: '600px',
+	  })
+  }
+
   openProjectModal(project) {
 	// console.log(project);
 	this.dialog.open(ModalCurrentProjectComponent, {
@@ -277,10 +295,14 @@ export class ControlBarComponent implements OnInit {
 		  name: name,
 		  features: this.tempGroup,
 		  color: myRandColor,
+		  icon: "fa-house-damage"
 		  // featureIds: Object.keys(this.tempGroup),
 		});
 		this.groupsService.addGroup(this.groupList);
 		this.formsService.addGroup(this.groupName);
+
+		console.log(this.groupList)
+		console.log(this.tempGroup)
 
 		// TODO make this work for persistence
 		for (let feat of this.tempGroup) {
@@ -290,12 +312,14 @@ export class ControlBarComponent implements OnInit {
 		  // let featProp = {group: []};
 
 		  let featProp = feat.properties;
+		  console.log(feat.properties)
 
 		  if (featProp.group) {
 			console.log("nope");
 			featProp.group.push({
 			  name: name,
 			  color: myRandColor,
+			  icon: "fa-house-damage"
 			});
 		  } else {
 			console.log("This is actually happening");
@@ -303,6 +327,7 @@ export class ControlBarComponent implements OnInit {
 			featPropList.push({
 			  name: name,
 			  color: myRandColor,
+			  icon: "fa-house-damage"
 			});
 		  }
 

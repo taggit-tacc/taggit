@@ -19,13 +19,13 @@ export class ImageBoxComponent implements OnInit {
   // @Output() clickRequest = new EventEmitter<Feature>();
   environment: AppEnvironment;
   featureSource: string;
-  status: boolean = false;
+  featurePath: string;
+  status: boolean = false; //Controls the whether or not an image box is selected or not
   hasGroup: boolean = false;
   colors: Array<string> = [];
   groupList: Array<any>;
   coordinates: Array<any>;
   containingGroupList: Array<any>;
-  // This is for tooltip
   currentGroup: string = "hello";
   tempGroup: Array<Feature>;
   modalRef: BsModalRef;
@@ -50,7 +50,6 @@ export class ImageBoxComponent implements OnInit {
 	let featureSource = this.environment.apiUrl + '/assets/' + this.feature.assets[0].path;
 	featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
 	this.featureSource = featureSource;
-
 	this.coordinates = this.feature.geometry['coordinates'];
 	// console.log(coordinates[0]);
 
@@ -92,6 +91,9 @@ export class ImageBoxComponent implements OnInit {
 		this.status = false;
 	  }
 	});
+	let featurePath = this.feature.assets[0].display_path
+	featurePath = this.feature.assets[0].display_path
+	this.featurePath = featurePath
   }
 
   // click() {
@@ -119,6 +121,7 @@ export class ImageBoxComponent implements OnInit {
 	  this.groupsService.setUnselectAll(false);
 	}
 	this.status = !this.status;
+	this.groupsService.setItemsSelected(this.status)
 
 	if (this.tempGroup.filter(v => v.assets[0].id == this.feature.assets[0].id).length > 0) {
 	  this.tempGroup = this.tempGroup.filter(v => v.assets[0].id != this.feature.assets[0].id);

@@ -9,7 +9,7 @@ import { HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import {AuthService} from './authentication.service';
 import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
-import { verify } from 'ts-mockito';
+//import { verify } from 'ts-mockito';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,7 @@ export class TapisFilesService {
   public currentListing: Array<RemoteFile>;
   private _listing: BehaviorSubject<RemoteFile[]> = new BehaviorSubject<RemoteFile[]>([]);
   public readonly listing: Observable<RemoteFile[]> = this._listing.asObservable();
-  public readonly IMPORTABLE_TYPES: Array<string> = ['jpg', 'las', 'laz', 'json', 'geojson', 'geotiff', 'tiff', 'gpx'];
+  public readonly IMPORTABLE_TYPES: Array<string> = ['jpg', 'jpeg', 'las', 'laz', 'json', 'geojson', 'geotiff', 'tiff', 'gpx'];
 
   constructor(private tapis: ApiService,
               private http: HttpClient,
@@ -37,8 +37,8 @@ export class TapisFilesService {
     return file.name.split('.').pop().toLowerCase();
   }
 
-  listFiles(system: string, path: string) {
-    return this.tapis.filesList({systemId: system, filePath: path});
+  listFiles(system: string, path: string, offset: number, limit: number) {
+    return this.tapis.filesList({systemId: system, filePath: path, offset, limit});
   }
 
   public getParentPath(path: string): string {

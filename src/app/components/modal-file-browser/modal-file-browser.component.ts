@@ -15,6 +15,9 @@ import { take } from 'rxjs/operators';
   styleUrls: ['./modal-file-browser.component.scss'],
 })
 export class ModalFileBrowserComponent implements OnInit {
+
+  static limit = 200; //Limits maximum amount of files displayed
+
   @Output() currentPath: EventEmitter<string> = new EventEmitter<string>();
 
   public allowedExtensions: Array<string> = this.tapisFilesService.IMPORTABLE_TYPES;
@@ -30,6 +33,7 @@ export class ModalFileBrowserComponent implements OnInit {
   public communityDataSystem: SystemSummary;
   public publishedDataSystem: SystemSummary;
   public currentDirectory: RemoteFile;
+  private offset:number;
 
   constructor(private tapisFilesService: TapisFilesService,
 		  // private modalRef: BsModalRef,
@@ -89,14 +93,22 @@ export class ModalFileBrowserComponent implements OnInit {
 	this.currentDirectory = file;
 	// this.selectedFiles.clear();
 	this.filesList = [];
+	this.offset = 0
 	this.inProgress = false;
 	this.getFiles();
   }
 
   getFiles() {
+	let hasMoreFiles = (this.offset % ModalFileBrowserComponent.limit) === 0
+
+	if (this.inProgress || !hasMoreFiles){
+		return;
+	}
+
 	this.inProgress = true;
 
-	this.tapisFilesService.listFiles(this.currentDirectory.system, this.currentDirectory.path).subscribe(listing => {
+	this.tapisFilesService.listFiles(this.currentDirectory.system, this.currentDirectory.path, this.offset, ModalFileBrowserComponent.limit)
+	.subscribe(listing => {
 		const files = listing.result;
 
 		if (files.length && files[0].name === '.') {
@@ -117,6 +129,7 @@ export class ModalFileBrowserComponent implements OnInit {
 
 		  this.inProgress = false;
 		  this.filesList = this.filesList.concat(newFile);
+		  this.offset = this.offset + files.length
 	},
 	error => {
 		this.inProgress = false;
