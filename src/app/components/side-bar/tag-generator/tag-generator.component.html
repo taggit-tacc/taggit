@@ -39,7 +39,7 @@
 		<mat-form-field class="input-label-group">
 		  <mat-label>Options</mat-label>
 		  <div class="input-group">
-			<input matInput #optionValue class="input-group-field" placeholder="Option" type="text" [(ngModel)]="optionFilter" name="optionFilter">
+			<input matInput #optionValue class="input-group-field" placeholder="Option" type="text" [(ngModel)]="optionFilter" name="optionFilter" (keyup.enter)="addOptionItem(optionValue.value); optionValue.value = ''; clearOption()">
 		  </div> <!-- input-group -->
 		</mat-form-field>
 
