@@ -43,6 +43,9 @@ export class GroupsService {
   private _tagFeatureGroup: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public tagFeatureGroup: Observable<any> = this._tagFeatureGroup.asObservable();
 
+  private _itemsSelected: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  public itemsSelected: Observable<boolean> = this._itemsSelected.asObservable();
+
   constructor(private projectsService: ProjectsService) {
   }
 
@@ -80,6 +83,7 @@ export class GroupsService {
 			  name: group.name,
 			  features: [],
 			  color: group.color,
+			  icon: group.icon
 			}
 		  }
 		  tempGroupList[group.name].features.push(feat);
@@ -145,6 +149,10 @@ export class GroupsService {
 
   setUnselectAll(select: boolean): void {
 	this._unselectAll.next(select);
+  }
+
+  setItemsSelected(select: boolean): void {
+	this._itemsSelected.next(select)
   }
 
   // TODO Replace this with geo-data.service

@@ -4,42 +4,40 @@
 <!--   <input name="" [formControl]="name"/> -->
 <!-- </label> -->
 
-<div [formGroup]="form">
+<!-- <div [formGroup]="form"> -->
+<div>
   <!-- <label [attr.for]="field.label">{{field.label}}</label> -->
 
   <div [ngSwitch]="field.type" class="form-controls">
-	<mat-form-field *ngSwitchCase="'text'">
-	  <input matInput color="primary" [formControlName]="field.label"
-			 [id]="field.label" [type]="field.type">
-	</mat-form-field>
+	<ng-container *ngSwitchCase="'text'">
+	  	<app-form-textbox [field]="field.options" [form]="field"></app-form-textbox>
+	</ng-container>
 
-	<mat-form-field *ngSwitchCase="'dropdown'">
-	  <mat-select [id]="field.label" [id]="field.label" [formControlName]="field.label">
-		<mat-option *ngFor="let opt of field.options" [value]="opt.label">
-		  {{opt.label}}
-		</mat-option>
-	  </mat-select>
-	</mat-form-field>
+	<ng-container *ngSwitchCase="'dropdown'">
+	  	<app-form-dropdown [field]="field.options" [form]="field"></app-form-dropdown>
+	</ng-container>
 
 	<ng-container *ngSwitchCase="'radio'">
-	  <mat-radio-group [formControlName]="field.label" class="radio-group">
-		<mat-radio-button *ngFor="let opt of field.options" class="input-group" type="radio" [value]="opt.label">
-		  {{opt.label}}
-		</mat-radio-button>
-	  </mat-radio-group>
+	  <div *ngFor="let opt of field.options" [id]="field.label" class="input-group">	
+	  	<app-form-radio [field]="opt" [form]="field"></app-form-radio>
+	  </div>
 	</ng-container>
 
 	<ng-container *ngSwitchCase="'checkbox'">
 	  <div *ngFor="let opt of field.options" [id]="field.label" class="input-group">
-		<mat-checkbox type="checkbox" [value]="opt.label" [formControlName]="field.label">
-		  {{opt.label}}
-		</mat-checkbox>
+		<app-form-checkbox [field]="opt" [form]="field"></app-form-checkbox>
 	  </div>
+	</ng-container>
+
+	<ng-container *ngSwitchCase="'color'">
+		<div *ngFor="let opt of field.options" [id]="field.label" class="input-group">
+			<app-form-color [field]="opt" [form]="field" [color]="colorArray[field.options.indexOf(opt)]"></app-form-color>
+		</div>
 	</ng-container>
 
   </div>
 
-  <div class="errorMessage" *ngIf="!isValid">{{field.label}} is required</div>
+  <!-- <div class="errorMessage" *ngIf="!isValid"></div> -->
 </div>
 
 

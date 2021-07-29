@@ -9,7 +9,7 @@
 		<option *ngFor="let project of projects" [ngValue]="project">{{project.description}}</option>
 	</optgroup>
 </select>
-<div class="fileslisting"  infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="100" [scrollWindow]="false" >
+<div class="fileslisting"  infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="100" [scrollWindow]="false" (scrolled)="getFiles()">
 	<div class="grid-x file-row" *ngFor="let file of filesList" [ngClass]="{'selected':selectedFiles.has(file.path)}">
 		<div class="clickable" (click)="select(file)"  (dblclick)="browse(file)">
 			<i class="fas fa-folder" *ngIf="file.type === 'dir'" ></i>
