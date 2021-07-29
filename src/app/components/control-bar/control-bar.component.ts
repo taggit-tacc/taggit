@@ -178,7 +178,7 @@ export class ControlBarComponent implements OnInit {
 
   clearAll(){
 	  this.groupsService.setUnselectAll(true);
-	  this.groupsService.setItemsSelected(false);
+	  //this.groupsService.setItemsSelected(false);
   }
 
   reloadFeatures() {
