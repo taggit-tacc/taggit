@@ -149,7 +149,7 @@ export class GroupsService {
 
   setUnselectAll(select: boolean): void {
 	this._unselectAll.next(select);
-	this._itemsSelected.next(!select)
+	this._itemsSelected.next(!select);
   }
 
   setItemsSelected(select: boolean): void {
