@@ -327,11 +327,21 @@ getTags(): tags[]{
 }
 
 deleteTag(gName: string, tLabel: string): void{
+    for (let tag in this.tagData){
+		const index = this.tagData.findIndex(item => item.groupName === gName && item.label === tLabel);
+		// if(tag['groupName'] === gName && tag['label'] === tLabel)
+		console.log(tag)
+		if (index > -1) {
+		// delete this.exampleNote[index];
+		this.tagData.splice(index, 1);
+		}
+	}
 	const index = this.tagData.findIndex(item => item.groupName === gName && item.label === tLabel);
-    if (index > -1) {
-      // delete this.exampleNote[index];
-      this.tagData.splice(index, 1);
-    }
+		// if(tag['groupName'] === gName && tag['label'] === tLabel)
+		if (index > -1) {
+		// delete this.exampleNote[index];
+		this.tagData.splice(index, 1);
+		}
 }
 
 deleteOpt(gName:string, opt:object, tag: tags): void {

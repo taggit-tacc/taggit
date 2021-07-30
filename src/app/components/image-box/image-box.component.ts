@@ -227,11 +227,31 @@ export class ImageBoxComponent implements OnInit {
 	  });
 	}
 
+	this.groupList.forEach(e => {
+		if (e.name == this.activeGroup) {
+			this.tempGroup = e.features;	
+		}
+		});
 	console.log(this.tagList)
 	
+	for (let tag of this.tagList){
+		if (tag.feature === this.tempGroup[0].id && tag.groupName === name){
+			let formItem: tags = {
+				type: tag.type,
+				groupName: name,
+				label: tag.label,
+				// value: this.formValue,
+				// required: this.formRequired,
+				options: tag.options,
+				feature: this.feature.id
+			}
+			this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
+		}
+	}
+
 	console.log(name)
 	console.log(featProp)
-	console.log(this.groupList)
+	console.log(this.tempGroup[0].id)
 	this.geoDataService.updateFeatureProperty(this.selectedProject.id,
 											  Number(this.feature.id),
 											  featProp);
