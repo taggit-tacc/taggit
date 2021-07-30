@@ -121,7 +121,9 @@ export class ImageBoxComponent implements OnInit {
 	  this.groupsService.setUnselectAll(false);
 	}
 	this.status = !this.status;
-	this.groupsService.setItemsSelected(this.status)
+	if(this.status) {
+		this.groupsService.setItemsSelected(this.status)
+	}
 
 	if (this.tempGroup.filter(v => v.assets[0].id == this.feature.assets[0].id).length > 0) {
 	  this.tempGroup = this.tempGroup.filter(v => v.assets[0].id != this.feature.assets[0].id);

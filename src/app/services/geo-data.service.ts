@@ -95,7 +95,7 @@ export class GeoDataService {
 	//   description: title,
 	//   conversion_parameters: conversionParams
 	// };
-	this.http.post(environment.apiUrl + `/projects/${projectId}/features/${featureId}/properties/`, groupData)
+	this.http.post(environment.apiUrl + `projects/${projectId}/features/${featureId}/properties/`, groupData)
 	  .subscribe( (resp) => {
 		// this.getFeatures(projectId);
 	  }, error => {
