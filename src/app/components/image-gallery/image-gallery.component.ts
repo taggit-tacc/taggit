@@ -60,10 +60,10 @@ export class ImageGalleryComponent implements OnInit {
 	// this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
 
 	this.geoDataService.loaded.subscribe(e => {
-		console.log("loading should work?")
+		//console.log("loading should work?")
 	  this.loaded = e;
 	}, error => {
-		console.log("GOT HERE- NO PROJ FOUND")
+		//console.log("GOT HERE- NO PROJ FOUND")
 		this.projectsExist = false;
 	  });
 
@@ -80,7 +80,7 @@ export class ImageGalleryComponent implements OnInit {
 			this.featureListScroll = this.featureList.slice(0, this.scrollSum);
 		  }
 		} else {
-			console.log("This didn't work")
+			//console.log("This didn't work")
 		  this.imagesExist = false;
 		}
 	  }
