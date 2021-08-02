@@ -51,7 +51,7 @@ export class ImageGalleryComponent implements OnInit {
 			  private dialog: MatDialog) { }
 
   ngOnInit() {
-	console.log("GOT HERE- PLS")
+	//console.log("GOT HERE- PLS")
 	this.environment = environment;
 
 
@@ -67,7 +67,7 @@ export class ImageGalleryComponent implements OnInit {
 		this.projectsExist = false;
 	  });
 
-
+	//I think doing a more natural refresh in here will cause a dynamic reload
 	this.geoDataService.features.subscribe( (fc: any) => {
 	  if (fc) {
 		if (fc.features.length > 0) {
