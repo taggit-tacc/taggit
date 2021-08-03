@@ -35,7 +35,7 @@ export class FormColorComponent implements OnInit {
   }
 
   updateCheckedTag(){ 
-    this.formsService.saveStyes(this.chosenColor)
+    this.formsService.saveStyles(this.chosenColor)
     this.formsService.updateSelectedRadio(this.chosenTag, 1, this.activeFeatureId); }
 
 }

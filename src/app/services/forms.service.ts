@@ -50,7 +50,24 @@ export class FormsService {
 
   constructor(private groupsService: GroupsService,
 			  private projectsService: ProjectsService,
-			  private geoDataService: GeoDataService) {}
+			  private geoDataService: GeoDataService) {
+
+				this.groupsService.activeGroup.subscribe((next) => {
+					this.activeGroup = next;
+				});
+			
+				this.groupsService.groups.subscribe((next) => {
+					this.groupList = next;
+				});
+			
+				this.projectsService.activeProject.subscribe(next => {
+					this.selectedProject = next;
+				});
+			
+				this.groupsService.activeFeatureId.subscribe(next => {
+					this.selectedFeatureID = next
+				})
+			  }
 
   // getProjects(): void {
   //  this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe( resp => {
@@ -110,49 +127,31 @@ export class FormsService {
   //Inputs:
   //color:string A 7 digit hexadecimal string (#RRGGBB) passed in from a color tag
   //This method accesses group services to retrive the current group's icon as well
-  saveStyes(selectedColor:string){
-	  //TODO: Move these subscriptions to ngOnInit, and figure out why ngOnInit isn't firing
-	this.groupsService.activeGroup.subscribe((next) => {
-		this.activeGroup = next;
-	});
-
-	this.groupsService.groups.subscribe((next) => {
-		this.groupList = next;
-	});
-
-	this.projectsService.activeProject.subscribe(next => {
-		this.selectedProject = next;
-	});
-
-	this.groupsService.activeFeatureId.subscribe(next => {
-		console.log(next)
-		this.selectedFeatureID = next
-	})
-	
-
+  saveStyles(selectedColor:string){
 	let icon:string
+	let payload
+
 	this.groupList.forEach(group => {
-		if (group.name = this.activeGroup) {
-			console.log(group.features)
-			icon = group.icon//.substring(3)
-			console.log(icon)
+		if ((group.name === this.activeGroup)) {
+			icon = group.icon
 
 			let tempGroup = [{
 				name: group.name,
 				color: group.color,
 				icon: group.icon
-			  }]
+			}]
 			
-			let payload = {
+			payload = {
 				group: tempGroup,
 				style: {
 					faIcon: icon,
 					color: selectedColor
 				}
 			}
-			this.geoDataService.updateFeatureProperty(this.selectedProject.id, this.selectedFeatureID ,payload)
 		}
 	});
+	console.log(payload)
+	this.geoDataService.updateFeatureProperty(this.selectedProject.id, this.selectedFeatureID ,payload)
   }
 
   addGroup(groupName: string) {
