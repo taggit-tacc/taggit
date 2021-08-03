@@ -43,6 +43,7 @@ export class FormsService {
   private featureList
   private selectedProject
   private selectedFeatureID
+  private selectedFeature
   // THIS TODO
   // private _forms: BehaviorSubject<Group> = new BehaviorSubject<Group>({type: 'Group', formList: [], groupName: []});
   // public forms: Observable<Group> = this._forms.asObservable();
@@ -66,6 +67,10 @@ export class FormsService {
 			
 				this.groupsService.activeFeatureId.subscribe(next => {
 					this.selectedFeatureID = next
+				})
+
+				this.groupsService.activeFeature.subscribe(next => {
+					this.selectedFeature = next
 				})
 			  }
 
@@ -124,23 +129,40 @@ export class FormsService {
 	this.updateFormItem();
   }
 
+  checkDefault(selectedColor:string){
+	if(selectedColor === "default") {
+		try {
+			selectedColor = this.selectedFeature.properties.style.color
+		} catch (error) {
+			selectedColor = "#00C8FF"
+		}
+	}
+	return selectedColor
+  }
+
   //Inputs:
   //color:string A 7 digit hexadecimal string (#RRGGBB) passed in from a color tag
   //This method accesses group services to retrive the current group's icon as well
-  saveStyles(selectedColor:string){
+  saveStyles(selectedColor:string, currentID:number){
 	let icon:string
 	let payload
 
+	//A check to see if the color isn't supposed to be changed
+	selectedColor = this.checkDefault(selectedColor)
+
+	//Cycles through each group until it finds one that matches the active group
 	this.groupList.forEach(group => {
 		if ((group.name === this.activeGroup)) {
 			icon = group.icon
 
+			//Creates a temporary group with a copy of the current groups info
 			let tempGroup = [{
 				name: group.name,
 				color: group.color,
 				icon: group.icon
 			}]
 			
+			//And adds the temp group to a payload along with the necessary style infromation
 			payload = {
 				group: tempGroup,
 				style: {
@@ -150,8 +172,8 @@ export class FormsService {
 			}
 		}
 	});
-	console.log(payload)
-	this.geoDataService.updateFeatureProperty(this.selectedProject.id, this.selectedFeatureID ,payload)
+	//Finally, sends the payload and projectID to GeoAPI to update the feature
+	this.geoDataService.updateFeatureProperty(this.selectedProject.id, currentID ,payload)
   }
 
   addGroup(groupName: string) {
