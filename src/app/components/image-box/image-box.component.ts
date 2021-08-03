@@ -123,6 +123,7 @@ export class ImageBoxComponent implements OnInit {
 	if (this.unselectAll == true) {
 	  this.unselectAll = false;
 	  this.groupsService.setUnselectAll(false);
+	  this.tempGroup = []
 	}
 	this.status = !this.status;
 	if(this.status) {

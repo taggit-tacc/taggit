@@ -37,7 +37,7 @@ export class ControlBarComponent implements OnInit {
   activeFeatureNum: number;
 
   public currentUser: AuthenticatedUser;
-  private REFRESHTIME = 6000; // 60 secs per reload default, right now it's an hour (6000 sec)
+  private REFRESHTIME = 6; // 60 secs per reload default, right now it's an hour (6000 sec)
   public projects: Project[];
   public selectedProject: Project;
   public mapMouseLocation: LatLng = new LatLng(0, 0);
@@ -156,6 +156,7 @@ export class ControlBarComponent implements OnInit {
 		this.itemsSelected = next;
 	  })
 
+	  //this.setLiveRefresh(true)
 	});
 
 	this.projectsService.activeProject.subscribe(next => {
@@ -189,6 +190,11 @@ export class ControlBarComponent implements OnInit {
 	option ? this.timerSubscription = this.timer.subscribe(() => { this.reloadFeatures(); }) : this.timerSubscription.unsubscribe();
   }
 
+  //Similar to setLiveRefresh, but it runs the time out once and then unsubscribes from the timer
+  startRefreshTimer(option: boolean) {
+	option ? this.timerSubscription = this.timer.subscribe(() => { this.reloadFeatures(); this.setLiveRefresh(false)}) : this.timerSubscription.unsubscribe();
+  }
+
   selectProject(p: Project): void {
 	this.projectsService.setActiveProject(p);
 	this.getDataForProject(p);
@@ -203,7 +209,7 @@ export class ControlBarComponent implements OnInit {
   openFilePicker() {
 	const modal = this.dialog.open(ModalFileBrowserComponent);
 	modal.afterClosed().subscribe( (files: Array<RemoteFile>) => {
-		if (files != null) {this.geoDataService.importFileFromTapis(this.selectedProject.id, files);}
+		if (files != null) {this.geoDataService.importFileFromTapis(this.selectedProject.id, files); this.startRefreshTimer(true)}
 	});
 
 	// const modal: BsModalRef = this.bsModalService.show(ModalFileBrowserComponent);

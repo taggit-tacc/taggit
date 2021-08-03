@@ -43,6 +43,7 @@ export class FormsService {
   private featureList
   private selectedProject
   private selectedFeatureID
+  private selectedFeature
   // THIS TODO
   // private _forms: BehaviorSubject<Group> = new BehaviorSubject<Group>({type: 'Group', formList: [], groupName: []});
   // public forms: Observable<Group> = this._forms.asObservable();
@@ -50,7 +51,28 @@ export class FormsService {
 
   constructor(private groupsService: GroupsService,
 			  private projectsService: ProjectsService,
-			  private geoDataService: GeoDataService) {}
+			  private geoDataService: GeoDataService) {
+
+				this.groupsService.activeGroup.subscribe((next) => {
+					this.activeGroup = next;
+				});
+			
+				this.groupsService.groups.subscribe((next) => {
+					this.groupList = next;
+				});
+			
+				this.projectsService.activeProject.subscribe(next => {
+					this.selectedProject = next;
+				});
+			
+				this.groupsService.activeFeatureId.subscribe(next => {
+					this.selectedFeatureID = next
+				})
+
+				this.groupsService.activeFeature.subscribe(next => {
+					this.selectedFeature = next
+				})
+			  }
 
   // getProjects(): void {
   //  this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe( resp => {
@@ -107,52 +129,51 @@ export class FormsService {
 	this.updateFormItem();
   }
 
+  checkDefault(selectedColor:string){
+	if(selectedColor === "default") {
+		try {
+			selectedColor = this.selectedFeature.properties.style.color
+		} catch (error) {
+			selectedColor = "#00C8FF"
+		}
+	}
+	return selectedColor
+  }
+
   //Inputs:
   //color:string A 7 digit hexadecimal string (#RRGGBB) passed in from a color tag
   //This method accesses group services to retrive the current group's icon as well
-  saveStyes(selectedColor:string){
-	  //TODO: Move these subscriptions to ngOnInit, and figure out why ngOnInit isn't firing
-	this.groupsService.activeGroup.subscribe((next) => {
-		this.activeGroup = next;
-	});
-
-	this.groupsService.groups.subscribe((next) => {
-		this.groupList = next;
-	});
-
-	this.projectsService.activeProject.subscribe(next => {
-		this.selectedProject = next;
-	});
-
-	this.groupsService.activeFeatureId.subscribe(next => {
-		console.log(next)
-		this.selectedFeatureID = next
-	})
-	
-
+  saveStyles(selectedColor:string, currentID:number){
 	let icon:string
-	this.groupList.forEach(group => {
-		if (group.name = this.activeGroup) {
-			console.log(group.features)
-			icon = group.icon//.substring(3)
-			console.log(icon)
+	let payload
 
+	//A check to see if the color isn't supposed to be changed
+	selectedColor = this.checkDefault(selectedColor)
+
+	//Cycles through each group until it finds one that matches the active group
+	this.groupList.forEach(group => {
+		if ((group.name === this.activeGroup)) {
+			icon = group.icon
+
+			//Creates a temporary group with a copy of the current groups info
 			let tempGroup = [{
 				name: group.name,
 				color: group.color,
 				icon: group.icon
-			  }]
+			}]
 			
-			let payload = {
+			//And adds the temp group to a payload along with the necessary style infromation
+			payload = {
 				group: tempGroup,
 				style: {
 					faIcon: icon,
 					color: selectedColor
 				}
 			}
-			this.geoDataService.updateFeatureProperty(this.selectedProject.id, this.selectedFeatureID ,payload)
 		}
 	});
+	//Finally, sends the payload and projectID to GeoAPI to update the feature
+	this.geoDataService.updateFeatureProperty(this.selectedProject.id, currentID ,payload)
   }
 
   addGroup(groupName: string) {
