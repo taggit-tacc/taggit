@@ -23,6 +23,7 @@ import { feature } from '@turf/helpers';
 import { TapisFilesService } from '../../services/tapis-files.service'
 import { element } from 'protractor';
 import { consoleTestResultHandler } from 'tslint/lib/test';
+import { ScrollService } from 'src/app/services/scroll.service';
 
 @Component({
   selector: 'app-control-bar',
@@ -65,7 +66,8 @@ export class ControlBarComponent implements OnInit {
 			  private authService: AuthService,
 			  private filesService: TapisFilesService,
 			  private router: Router,
-			  private dialog: MatDialog) {}
+			  private dialog: MatDialog,
+			  private scrollService: ScrollService) {}
 
   ngOnInit() {
 
@@ -366,6 +368,12 @@ export class ControlBarComponent implements OnInit {
   }
 
   openSidebar() {
+	if( !this.showSidebar) {
+		let scrollPos = document.documentElement.scrollTop
+		this.scrollService.setScrollPosition(scrollPos)
+	} else {
+		this.scrollService.setScrollRestored(true)
+	}
 	let showSidebar = !this.showSidebar;
 	let showGroup = false;
 	// let showGroupButton = !this.showGroupButton;
