@@ -79,9 +79,7 @@ export class ModalFileBrowserComponent implements OnInit {
 		this.selectedSystem = this.myDataSystem;
 		this.tapisFilesService.lastFile = init
 		this.tapisFilesService.noPreviousSelections = false
-		console.log("Does this get called a lot?")
 	}
-	console.log(this.selectedSystem)
 	this.browse(this.tapisFilesService.lastFile);
 	  });
 
@@ -111,7 +109,6 @@ export class ModalFileBrowserComponent implements OnInit {
 	this.offset = 0
 	this.inProgress = false;
 	this.getFiles();
-	console.log(this.selectedSystem)
   }
 
   toRoot() {
