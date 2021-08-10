@@ -62,7 +62,10 @@ export class ModalFileBrowserComponent implements OnInit {
 	this.publishedDataSystem = systems.find( (sys) => sys.id === 'designsafe.storage.published');
 	
 	// This is where they choose which one they start with
-	this.selectedSystem = this.myDataSystem;
+	this.selectedSystem = this.tapisFilesService.lastSystem
+
+	//If the user has already navigated to a folder, restore those options
+	this.currentDirectory = this.tapisFilesService.lastFile
 
 	this.projects = projects;
 	this.currentUser = user;
@@ -71,7 +74,15 @@ export class ModalFileBrowserComponent implements OnInit {
 		type: 'dir',
 		path: this.currentUser.username
 	};
-	this.browse(init);
+	//If the user hasn't yet opened the file browser, set the last file to an init file.
+	if ( this.tapisFilesService.noPreviousSelections) {
+		this.selectedSystem = this.myDataSystem;
+		this.tapisFilesService.lastFile = init
+		this.tapisFilesService.noPreviousSelections = false
+		console.log("Does this get called a lot?")
+	}
+	console.log(this.selectedSystem)
+	this.browse(this.tapisFilesService.lastFile);
 	  });
 
   }
@@ -84,18 +95,34 @@ export class ModalFileBrowserComponent implements OnInit {
 	  type: 'dir',
 	  path: pth
 	};
+	this.selectedSystem = system
+	this.tapisFilesService.lastSystem = this.selectedSystem
 	this.browse(init);
   }
 
 
   browse(file: RemoteFile) {
+	this.selectedSystem = this.selectedSystem //Self-assignment keeps the system name from disappearing while browsing subfolders
 	if (file.type !== 'dir') { return; }
 	this.currentDirectory = file;
+	this.tapisFilesService.lastFile = file //Updates the last directory visted
 	// this.selectedFiles.clear();
 	this.filesList = [];
 	this.offset = 0
 	this.inProgress = false;
 	this.getFiles();
+	console.log(this.selectedSystem)
+  }
+
+  toRoot() {
+	let pth;
+	this.selectedSystem.id === this.myDataSystem.id ? pth = this.currentUser.username : pth = '/';
+	const init = <RemoteFile> {
+	  system: this.selectedSystem.id,
+	  type: 'dir',
+	  path: pth
+	};
+	this.browse(init)
   }
 
   getFiles() {
@@ -160,11 +187,13 @@ export class ModalFileBrowserComponent implements OnInit {
   }
 
   chooseFiles() {
+	this.tapisFilesService.lastSystem = this.selectedSystem
 	const tmp = Array.from(this.selectedFiles.values());
 	this.dialogRef.close(tmp)
   }
 
   cancel() {
+	this.tapisFilesService.lastSystem = this.selectedSystem
 	this.dialogRef.close()
   }
 }

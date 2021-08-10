@@ -10,6 +10,10 @@
 	</optgroup>
 </select>
 <div class="fileslisting"  infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="100" [scrollWindow]="false" (scrolled)="getFiles()">
+	<div class="clickable" class="grid-x file-row" (dblclick)="toRoot()">
+		<i class="fas fa-folder"></i>
+		<span > Home </span>
+	</div>
 	<div class="grid-x file-row" *ngFor="let file of filesList" [ngClass]="{'selected':selectedFiles.has(file.path)}">
 		<div class="clickable" (click)="select(file)"  (dblclick)="browse(file)">
 			<i class="fas fa-folder" *ngIf="file.type === 'dir'" ></i>
