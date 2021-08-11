@@ -4,8 +4,11 @@ import { GroupsService } from '../../../services/groups.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Feature } from 'src/app/models/models';
+import { Feature, Project } from 'src/app/models/models';
 import { feature } from '@turf/turf';
+import { GeoDataService } from 'src/app/services/geo-data.service';
+import { ProjectsService } from 'src/app/services/projects.service';
+import { FeatureCollection } from 'geojson';
 
 @Component({
   selector: 'app-tag-generator',
@@ -33,13 +36,18 @@ export class TagGeneratorComponent implements OnInit {
   groupList: Array<any>;
   groups$: Subscription;
   tempGroup: Array<Feature>;
-
+  private selectedProject;
+  featureList: Array<any> = [];
+  features: FeatureCollection;
+  newTag: object[] = [];
 
   constructor(
 	private formsService: FormsService,
 	private groupsService: GroupsService,
 	private dialog: MatDialog,
-	private router: Router) { }
+	private router: Router,
+	private geoDataService: GeoDataService,
+	private projectsService: ProjectsService,) { }
 
   ngOnInit() {
 	this.groupsService.activeGroup.subscribe((next) => {
@@ -53,6 +61,39 @@ export class TagGeneratorComponent implements OnInit {
 	this.groups$ = this.groupsService.groups.subscribe((next) => {
 		this.groupList = next;
 	  });
+
+	this.projectsService.activeProject.subscribe(next => {
+		this.selectedProject = next;
+		//retrieves uuid for project, formats result into a link to that Hazmapper map
+		// this.hazMapperLink = "https://hazmapper.tacc.utexas.edu/hazmapper/project/" + next.uuid
+	});
+
+	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
+		this.features = fc;
+  
+		if (this.features != undefined) {
+		  this.featureList = this.features.features;
+		//   this.groupsService.setActiveProject(this.featureList[0]);
+  
+		  // TODO This should activate persistence by looping through all features and creating new groups and
+		  //
+		//   this.groupsService.setGroupProperties(this.featureList);
+  
+		  // console.log(this.featureList[this.activeFeatureNum].assets[0].path);
+		  // this.activeFeature = this.featureList[this.activeFeatureNum];
+		}
+	  });
+
+	  for (let feat of this.featureList){
+		console.log(typeof(feat.properties.tag))
+		if(feat.properties.tag != undefined){
+			feat.properties.tag.forEach(tag => {
+			  this.newTag.push(tag)
+			});
+		}
+	}
+
+	  console.log(this.featureList)
 
 	this.formOptions = [];
 	this.formItemList = [];
@@ -125,13 +166,37 @@ export class TagGeneratorComponent implements OnInit {
   }
 
   addFormItem() {
+	let icon:string
+	let payload
 	// let formValueFilter = this.activeFormList.filter(e => e.label == this.formLabel);
 	// if (formValueFilter.length == 0 && this.formLabel.length != 0) {
-	this.groupList.forEach(e => {
-		if (e.name == this.activeGroup) {
-			this.tempGroup = e.features;	
+	this.groupList.forEach(group => {
+		if (group.name == this.activeGroup) {
+			this.tempGroup = group.features;
+				icon = group.icon
+	
+				//Creates a temporary group with a copy of the current groups info
+				let tempGroup = [{
+					name: group.name,
+					color: group.color,
+					icon: group.icon
+				}]
+				
+				//And adds the temp group to a payload along with the necessary style infromation
+				payload = {
+					group: tempGroup,
+					style: {
+						faIcon: icon,
+						color: '#00C8FF'
+					},
+					tag: []
+				}
+				console.log(payload.tag)
+			
 		}
 		});
+
+
 		console.log(this.tempGroup)
 		for (let feat of this.tempGroup) {
 			  
@@ -158,10 +223,28 @@ export class TagGeneratorComponent implements OnInit {
 		
 				formItem.options = this.formOptions;
 			  }
-			  console.log(formItem)
-	  this.formItemList.push(formItem);
-	  this.formsService.addForm(this.activeGroup, formItem);
-	  this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
+
+			  // code from here is a mess
+			  if(feat.properties.tag != undefined){
+				feat.properties.tag.forEach(tag => {
+				  payload.tag.push(tag)
+				});
+			}
+
+			//   console.log(payload)
+			//   console.log(feat.id)
+			// console.log(typeof(formItem))
+			payload.tag.push(this.newTag)
+			payload.tag.push(formItem)
+			// console.log(typeof(payload.tag))
+			// console.log(payload)
+
+			this.formItemList.push(formItem);
+			this.formsService.addForm(this.activeGroup, formItem);
+			  this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
+			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
+			// Clear out the tag section
+			payload.tag = []
 	}
 
 	  this.formLabel = '';

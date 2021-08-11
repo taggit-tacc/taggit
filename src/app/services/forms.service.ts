@@ -7,6 +7,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ProjectsService } from './projects.service';
 import { GeoDataService } from './geo-data.service';
 import { prepareSyntheticListenerFunctionName } from '@angular/compiler/src/render3/util';
+import { fadeInItems } from '@angular/material';
+import { FeatureCollection } from 'geojson';
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +42,8 @@ export class FormsService {
 
   private activeGroup
   private groupList
-  private featureList
+  private featureList: Array<any> = [];
+  features: FeatureCollection;
   private selectedProject
   private selectedFeatureID
   private selectedFeature
@@ -71,7 +74,14 @@ export class FormsService {
 
 				this.groupsService.activeFeature.subscribe(next => {
 					this.selectedFeature = next
-				})
+				});
+				this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
+					this.features = fc;
+			  
+					if (this.features != undefined) {
+					  this.featureList = this.features.features;
+					}
+				  });
 			  }
 
   // getProjects(): void {
@@ -172,6 +182,8 @@ export class FormsService {
 			}
 		}
 	});
+
+	console.log(payload)
 	//Finally, sends the payload and projectID to GeoAPI to update the feature
 	this.geoDataService.updateFeatureProperty(this.selectedProject.id, currentID ,payload)
   }
@@ -339,6 +351,7 @@ export class FormsService {
 	else {
 		tag.groupName = gName;
 		this.tagData.push(tag);
+		// this.geoDataService.updateFeatureProperty()
 		// console.log("Tag data:")
 		// console.log(this.tagData)
 	}
@@ -347,22 +360,70 @@ getTags(): tags[]{
 	return this.tagData;
 }
 
-deleteTag(gName: string, tLabel: string): void{
-    for (let tag in this.tagData){
-		const index = this.tagData.findIndex(item => item.groupName === gName && item.label === tLabel);
-		// if(tag['groupName'] === gName && tag['label'] === tLabel)
-		console.log(tag)
-		if (index > -1) {
-		// delete this.exampleNote[index];
-		this.tagData.splice(index, 1);
+newTag: object[] = [];
+deleteTag(gName: string, tag: tags): void{
+    // for (let tag in this.tagData){
+	// 	const index = this.tagData.findIndex(item => item.groupName === gName && item.label === tLabel);
+	// 	// if(tag['groupName'] === gName && tag['label'] === tLabel)
+	// 	console.log(tag)
+	// 	if (index > -1) {
+	// 	// delete this.exampleNote[index];
+	// 	this.tagData.splice(index, 1);
+	// 	}
+	// }
+	// const index = this.tagData.findIndex(item => item.groupName === gName && item.label === tLabel);
+	// 	// if(tag['groupName'] === gName && tag['label'] === tLabel)
+	// 	if (index > -1) {
+	// 	// delete this.exampleNote[index];
+	// 	this.tagData.splice(index, 1);
+	// 	}
+
+	let icon:string
+	let payload
+	this.groupList.forEach(group => {
+		if (group.name == this.activeGroup) {
+				icon = group.icon
+	
+				//Creates a temporary group with a copy of the current groups info
+				let tempGroup = [{
+					name: group.name,
+					color: group.color,
+					icon: group.icon
+				}]
+				
+				//And adds the temp group to a payload along with the necessary style infromation
+				payload = {
+					group: tempGroup,
+					style: {
+						faIcon: icon,
+						color: '#00C8FF'
+					},
+					tag: []
+				}
+				console.log(payload.tag)
+			
 		}
-	}
-	const index = this.tagData.findIndex(item => item.groupName === gName && item.label === tLabel);
-		// if(tag['groupName'] === gName && tag['label'] === tLabel)
-		if (index > -1) {
-		// delete this.exampleNote[index];
-		this.tagData.splice(index, 1);
+		});
+
+
+		for (let feat of this.featureList){
+			//   console.log(typeof(feat.properties.tag))
+			if(feat.properties.tag != undefined){
+				feat.properties.tag.forEach(tag => {
+					if(tag.groupName != gName){
+					this.newTag.push(tag)
+					}
+				});
+
+				payload.tag.push(this.newTag)
+				this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
+			}
 		}
+
+
+	console.log(this.newTag)
+	this.newTag = []
+	
 }
 
 deleteOpt(gName:string, opt:object, tag: tags): void {

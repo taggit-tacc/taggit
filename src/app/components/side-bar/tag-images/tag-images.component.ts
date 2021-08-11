@@ -5,6 +5,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { GeoDataService } from 'src/app/services/geo-data.service';
+import { FeatureCollection } from 'geojson';
 
 @Component({
   selector: 'app-tag-images',
@@ -23,12 +25,16 @@ export class TagImagesComponent implements OnInit {
   form: FormGroup;
   showSubitem: boolean = true;
   tagList: tags[] = this.formsService.getTags();
+  newTag: object[] = [];
+  featureList: Array<any> = [];
+  features: FeatureCollection;
 
   constructor(
 	private groupsService: GroupsService,
 	private formsService: FormsService,
 	private dialog: MatDialog,
-	private router: Router) { }
+	private router: Router,
+	private geoDataService: GeoDataService,) { }
 
   ngOnInit() {
 	this.activeGroup$ = this.activeGroup$ = this.groupsService.activeGroup.subscribe((next) => {
@@ -42,6 +48,26 @@ export class TagImagesComponent implements OnInit {
 	this.formGroup$ = this.formsService.formGroup.subscribe((next) => {
 	  this.form = next;
 	});
+
+	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
+		this.features = fc;
+  
+		if (this.features != undefined) {
+		  this.featureList = this.features.features;
+		}
+	  });
+
+	  // this is to get the list of tags so far
+	  for (let feat of this.featureList){
+		  console.log(typeof(feat.properties.tag))
+		  if(feat.properties.tag != undefined){
+			  feat.properties.tag.forEach(tag => {
+				this.newTag.push(tag)
+			  });
+		  }
+	  }
+	  console.log(this.newTag)
+	  console.log(this.tagList)
   }
 
   openRenameModal(template: TemplateRef<any>, name: string) {

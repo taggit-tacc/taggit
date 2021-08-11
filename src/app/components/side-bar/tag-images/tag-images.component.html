@@ -29,14 +29,14 @@
 
   <div *ngIf="showSubitem" class="subitem">
 	  <div class="subitem-scroll">
-		  <div *ngFor = "let tag of tagList">
+		  <div *ngFor = "let tag of newTag">
 			<div *ngIf = "tag.groupName == activeGroup">
 				<div *ngIf = "tag.feature == activeFeatureId">
 			<div class="form-item-container">  
 				<div class="name-group"> {{tag.label}} ({{tag.type}})</div>
 				
 				<div class="button-group">
-					<div (click)="formsService.deleteTag(activeGroup, tag.label)">
+					<div (click)="formsService.deleteTag(activeGroup, tag)">
 						<i class="fas fa-minus"
 						   matTooltip="Delete"
 						   matTooltipPosition="above"
