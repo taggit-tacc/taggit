@@ -9,6 +9,7 @@ import { HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import {AuthService} from './authentication.service';
 import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
+import { SystemSummary} from 'ng-tapis';
 //import { verify } from 'ts-mockito';
 
 @Injectable({
@@ -21,6 +22,9 @@ export class TapisFilesService {
   private _listing: BehaviorSubject<RemoteFile[]> = new BehaviorSubject<RemoteFile[]>([]);
   public readonly listing: Observable<RemoteFile[]> = this._listing.asObservable();
   public readonly IMPORTABLE_TYPES: Array<string> = ['jpg', 'jpeg', 'las', 'laz', 'json', 'geojson', 'geotiff', 'tiff', 'gpx'];
+  public lastSystem:SystemSummary //The last filesystem the user was browsing
+  public lastFile:RemoteFile; //The last directory the user was browsing
+  public noPreviousSelections = true
 
   constructor(private tapis: ApiService,
               private http: HttpClient,
