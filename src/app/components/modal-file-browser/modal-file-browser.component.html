@@ -9,6 +9,7 @@
 		<option *ngFor="let project of projects" [ngValue]="project">{{project.description}}</option>
 	</optgroup>
 </select>
+
 <div class="fileslisting"  infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="100" [scrollWindow]="false" (scrolled)="getFiles()">
 	<div class="clickable" class="grid-x file-row" (dblclick)="toRoot()">
 		<i class="fas fa-folder"></i>
@@ -16,6 +17,7 @@
 	</div>
 	<div class="grid-x file-row" *ngFor="let file of filesList" [ngClass]="{'selected':selectedFiles.has(file.path)}">
 		<div class="clickable" (click)="select(file)"  (dblclick)="browse(file)">
+
 			<i class="fas fa-folder" *ngIf="file.type === 'dir'" ></i>
 			<i class="far fa-file" *ngIf="file.type !== 'dir'"></i>
 			<span > {{ file.name }} </span>
@@ -32,6 +34,7 @@
 </div>
 
 <div class="button-group">
+	<button mat-raised-button color="basic" (click)="selectAll()">Select all</button>
 	<button mat-raised-button color="warn" class="button warning" (click)="cancel()">Done</button>
 	<button mat-raised-button color="primary" class="button" [disabled]="!selectedFiles.size" (click)="chooseFiles()">Import</button>
 </div>

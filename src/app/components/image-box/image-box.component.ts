@@ -7,6 +7,7 @@ import {ProjectsService} from "../../services/projects.service";
 import { BsModalService } from 'ngx-foundation/modal';
 import { BsModalRef } from 'ngx-foundation/modal/bs-modal-ref.service';
 import { MatDialog } from '@angular/material/dialog';
+import { FormsService, tags } from 'src/app/services/forms.service';
 
 @Component({
   selector: 'app-image-box',
@@ -35,6 +36,8 @@ export class ImageBoxComponent implements OnInit {
 
   unselectAll: boolean = false;
 
+  tagList: tags[] = this.formsService.getTags();
+
   // FIXME Bad
   imageCollection: any = {};
 
@@ -42,6 +45,7 @@ export class ImageBoxComponent implements OnInit {
 			   private groupsService: GroupsService,
 			   private projectsService: ProjectsService,
 			   private modalService: BsModalService,
+			   private formsService: FormsService,
 			   private dialog: MatDialog
 			 ){ }
 
@@ -201,6 +205,7 @@ export class ImageBoxComponent implements OnInit {
 	this.groupsService.setActiveFeatureNum(0);
 	this.groupList.forEach(e => {
 	  if (e.name == name) {
+		  console.log(this.feature)
 		e.features.push(this.feature);
 		color = e.color;
 	  }
@@ -226,6 +231,31 @@ export class ImageBoxComponent implements OnInit {
 	  });
 	}
 
+	this.groupList.forEach(e => {
+		if (e.name == this.activeGroup) {
+			this.tempGroup = e.features;	
+		}
+		});
+	console.log(this.tagList)
+	
+	for (let tag of this.tagList){
+		if (tag.feature === this.tempGroup[0].id && tag.groupName === name){
+			let formItem: tags = {
+				type: tag.type,
+				groupName: name,
+				label: tag.label,
+				// value: this.formValue,
+				// required: this.formRequired,
+				options: tag.options,
+				feature: this.feature.id
+			}
+			this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
+		}
+	}
+
+	console.log(name)
+	console.log(featProp)
+	console.log(this.tempGroup[0].id)
 	this.geoDataService.updateFeatureProperty(this.selectedProject.id,
 											  Number(this.feature.id),
 											  featProp);

@@ -34,6 +34,7 @@ export class ModalFileBrowserComponent implements OnInit {
   public publishedDataSystem: SystemSummary;
   public currentDirectory: RemoteFile;
   private offset:number;
+  public firstFileIndex: number;
 
   constructor(private tapisFilesService: TapisFilesService,
 		  // private modalRef: BsModalRef,
@@ -161,12 +162,17 @@ export class ModalFileBrowserComponent implements OnInit {
   }
 
   // TODO: Ian: Error message on incorrect file type?
-  select(file: RemoteFile) {
-	if (this.tapisFilesService.checkIfSelectable(file)) {
-	  this.addSelectedFile(file);
+  select(event: any,file: RemoteFile, index: number) {
+	if (event.shiftKey) {
+		this.selectFilesShiftClick(index, file);
+	  }
+	else {
+		if (this.tapisFilesService.checkIfSelectable(file)) {
+			this.addSelectedFile(file, index);
+		}
+		else{
+			// console.log("not selectable")
 	}
-	else{
-		// console.log("not selectable")
 	}
 	// here?
 	// else {
@@ -174,12 +180,24 @@ export class ModalFileBrowserComponent implements OnInit {
 	// }
   }
 
-  addSelectedFile(file: RemoteFile) {
-	if (this.selectedFiles.has(file.path)) {
-	  this.selectedFiles.delete(file.path);
-	} else {
-	  this.selectedFiles.set(file.path, file);
-	//   console.log(this.selectedFiles + "GOT HERE");
+  selectFilesShiftClick(index: number, file: RemoteFile) {
+    // this.selectedFiles.clear();
+    this.selectShift(index, file);
+  }
+
+
+  addSelectedFile(file: RemoteFile, index: number) {
+	if (index != -1) {
+		this.firstFileIndex = index;
+	  }
+
+	if(this.tapisFilesService.checkIfSelectable(file)){
+		if (this.selectedFiles.has(file.path)) {
+			this.selectedFiles.delete(file.path);
+		} else {
+			this.selectedFiles.set(file.path, file);
+		//   console.log(this.selectedFiles + "GOT HERE");
+		}
 	}
   }
 
@@ -192,5 +210,41 @@ export class ModalFileBrowserComponent implements OnInit {
   cancel() {
 	this.tapisFilesService.lastSystem = this.selectedSystem
 	this.dialogRef.close()
+  }
+
+  selectAll(){
+	  let indexTmp = -1
+	  let count = 0
+	  for(let file of this.filesList){
+		if (! this.selectedFiles.has(file.path)) {
+			this.select("",file,indexTmp)
+			count += 1
+		}
+	  }
+	  console.log(count)
+	  if (count == 1){
+		this.selectedFiles.clear();
+	  }
+  }
+
+  selectShift(index: number, file: RemoteFile) {
+    if (this.firstFileIndex != undefined && this.firstFileIndex != index) {
+      this.addRangeFiles(this.firstFileIndex, index, true);
+    } else {
+      this.addSelectedFile(file, index);
+    }
+  }
+
+  addRangeFiles(firstFileIndex: number, lastFileIndex: number, again: boolean) {
+    let maxIndex = Math.max(firstFileIndex, lastFileIndex);
+    let minIndex = Math.min(firstFileIndex, lastFileIndex);
+
+    for (let i = minIndex; i < maxIndex + 1; ++i) {
+      this.addSelectedFile(this.filesList[i], -1);
+    }
+
+    if (again) {
+      this.addSelectedFile(this.filesList[firstFileIndex], -1);
+    }
   }
 }
