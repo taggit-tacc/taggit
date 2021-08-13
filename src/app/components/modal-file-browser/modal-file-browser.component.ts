@@ -44,7 +44,10 @@ export class ModalFileBrowserComponent implements OnInit {
 		  private agaveSystemsService: AgaveSystemsService) { }
 
   ngOnInit() {
-	  // This finds all the projects, and file systems found from a user 
+	//retrive state data
+	//this.tapisFilesService.getState()
+
+	// This finds all the projects, and file systems found from a user 
 	this.agaveSystemsService.list();
 
 	// TODO: change those hard coded systemIds to environment vars or some sort of config
@@ -64,6 +67,11 @@ export class ModalFileBrowserComponent implements OnInit {
 	
 	// This is where they choose which one they start with
 	this.selectedSystem = this.tapisFilesService.lastSystem
+
+	if (this.selectedSystem == null) {
+		this.selectedSystem = this.myDataSystem
+		this.tapisFilesService.lastSystem = this.myDataSystem
+	}
 
 	//If the user has already navigated to a folder, restore those options
 	this.currentDirectory = this.tapisFilesService.lastFile
@@ -203,12 +211,14 @@ export class ModalFileBrowserComponent implements OnInit {
   }
 
   chooseFiles() {
+	this.tapisFilesService.saveState()
 	this.tapisFilesService.lastSystem = this.selectedSystem
 	const tmp = Array.from(this.selectedFiles.values());
 	this.dialogRef.close(tmp)
   }
 
   cancel() {
+	this.tapisFilesService.saveState()
 	this.tapisFilesService.lastSystem = this.selectedSystem
 	this.dialogRef.close()
   }

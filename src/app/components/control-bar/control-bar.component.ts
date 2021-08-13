@@ -70,7 +70,7 @@ export class ControlBarComponent implements OnInit {
 			  private scrollService: ScrollService) {}
 
   ngOnInit() {
-
+	  this.filesService.getState()
 
 	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
 	  this.features = fc;
