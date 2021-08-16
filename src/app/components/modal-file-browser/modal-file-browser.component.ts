@@ -171,7 +171,6 @@ export class ModalFileBrowserComponent implements OnInit {
 
   // TODO: Ian: Error message on incorrect file type?
   select(event: any, file: RemoteFile, index: number) {
-	  console.log(file)
 	if (event.shiftKey) {
 		this.selectFilesShiftClick(index, file);
 	  }
@@ -232,7 +231,6 @@ export class ModalFileBrowserComponent implements OnInit {
 			count += 1
 		}
 	  }
-	  console.log(count)
 	  if (count == 1){
 		this.selectedFiles.clear();
 	  }

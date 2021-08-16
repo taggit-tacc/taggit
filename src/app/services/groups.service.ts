@@ -158,7 +158,6 @@ export class GroupsService {
 
   // TODO Replace this with geo-data.service
   setActiveProject(feat: any): void {
-	// console.log(feat.assets[0].path);
 	this._activeFeature.next(feat);
   }
 

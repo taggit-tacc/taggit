@@ -69,6 +69,9 @@ export class ProjectsService {
   }
 
   setActiveProject(proj: Project): void {
+    console.log(proj)
+    //saves change as last visited project
+    window.localStorage.setItem("lastProj", JSON.stringify(proj))
     this._activeProject.next(proj);
   }
 

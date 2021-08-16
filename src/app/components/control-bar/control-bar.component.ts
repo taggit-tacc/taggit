@@ -109,7 +109,9 @@ export class ControlBarComponent implements OnInit {
 	  this.projects = projects;
 
 	  if (this.projects.length) {
-		this.projectsService.setActiveProject(this.projects[0]);
+		//restores view to the last visited project from local storage
+		this.projectsService.setActiveProject(JSON.parse(window.localStorage.getItem("lastProj")));
+		//this.projectsService.setActiveProject(this.projects[0]);
 	  }
 
 	  this.groupsService.groups.subscribe((next) => {
@@ -157,7 +159,6 @@ export class ControlBarComponent implements OnInit {
 	  this.groupsService.itemsSelected.subscribe((next) => {
 		this.itemsSelected = next;
 	  })
-
 	  //this.setLiveRefresh(true)
 	});
 
