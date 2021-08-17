@@ -145,6 +145,7 @@ export class GeoDataService {
 		this.getFeatures(projectId);
 		// this.getFeatures(projectId);
 	  }, error => {
+		  console.log(error)
 		// this.getFeatures(projectId);
 	// TODO: Add notification / toast
 	  });

@@ -89,7 +89,7 @@ export class ProjectsService {
   delete(data: Project):void{
     this.http.delete(environment.apiUrl  + `/projects/${data.id}/`)
       .subscribe( (resp) => {
-        window.localStorage.setItem("lastProj", JSON.stringify(null))
+        window.localStorage.setItem("lastProj", JSON.stringify("none"))
         this.getProjects();
         // this._projects.next([...this._projects.value]);
         // console.log(this._projects.value[0])
