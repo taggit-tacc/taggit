@@ -110,8 +110,13 @@ export class ControlBarComponent implements OnInit {
 
 	  if (this.projects.length) {
 		//restores view to the last visited project from local storage
-		this.projectsService.setActiveProject(JSON.parse(window.localStorage.getItem("lastProj")));
-		//this.projectsService.setActiveProject(this.projects[0]);
+		let lastProj = JSON.parse(window.localStorage.getItem("lastProj"))
+		console.log(lastProj)
+		//If lastProj is null, then there is no project saved, or can be found, default to the first project in the list
+		if(lastProj == null) {
+			lastProj = this.projectsService.setActiveProject(this.projects[0]);
+		}
+		this.projectsService.setActiveProject(lastProj);
 	  }
 
 	  this.groupsService.groups.subscribe((next) => {
