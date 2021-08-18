@@ -1,9 +1,10 @@
-import {Component, OnInit, Renderer2} from '@angular/core';
+import {AfterViewChecked, Component, OnInit, Renderer2} from '@angular/core';
 import {FeatureCollection} from 'geojson';
 import {GeoDataService} from '../../services/geo-data.service';
 import {FeatureAsset, Feature, Project} from '../../models/models';
 import {AppEnvironment, environment} from '../../../environments/environment';
 import {ProjectsService} from "../../services/projects.service";
+import { ScrollService } from 'src/app/services/scroll.service';
 import {GroupsService} from "../../services/groups.service";
 import { NgxSpinnerService } from 'ngx-spinner';
 import {startWith} from 'rxjs/operators';
@@ -16,7 +17,7 @@ import { ModalCreateProjectComponent } from '../modal-create-project/modal-creat
   styleUrls: ['./image-gallery.component.scss']
 })
 
-export class ImageGalleryComponent implements OnInit {
+export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   environment: AppEnvironment;
   // features: FeatureCollection;
   // FIXME feature collection giving me an error when trying to access assets
@@ -48,10 +49,22 @@ export class ImageGalleryComponent implements OnInit {
 			  private groupsService: GroupsService,
 			  private renderer: Renderer2,
 			  private spinner: NgxSpinnerService,
-			  private dialog: MatDialog) { }
+			  private dialog: MatDialog,
+			  private scrollService: ScrollService) { }
+
+  
+
+  ngAfterViewChecked() {
+	  //console.log("How often does this fire?")
+	  //console.log(this.scrollService.scrollRestored)
+	if ( this.scrollService.scrollRestored ) {
+		this.scrollService.scroll()
+		this.scrollService.setScrollPosition(document.documentElement.scrollTop)
+	}
+  }
 
   ngOnInit() {
-	console.log("GOT HERE- PLS")
+	//console.log("GOT HERE- PLS")
 	this.environment = environment;
 
 
@@ -60,14 +73,14 @@ export class ImageGalleryComponent implements OnInit {
 	// this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
 
 	this.geoDataService.loaded.subscribe(e => {
-		console.log("loading should work?")
+		//console.log("loading should work?")
 	  this.loaded = e;
 	}, error => {
-		console.log("GOT HERE- NO PROJ FOUND")
+		//console.log("GOT HERE- NO PROJ FOUND")
 		this.projectsExist = false;
 	  });
 
-
+	//I think doing a more natural refresh in here will cause a dynamic reload
 	this.geoDataService.features.subscribe( (fc: any) => {
 	  if (fc) {
 		if (fc.features.length > 0) {
@@ -80,7 +93,7 @@ export class ImageGalleryComponent implements OnInit {
 			this.featureListScroll = this.featureList.slice(0, this.scrollSum);
 		  }
 		} else {
-			console.log("This didn't work")
+			//console.log("This didn't work")
 		  this.imagesExist = false;
 		}
 	  }

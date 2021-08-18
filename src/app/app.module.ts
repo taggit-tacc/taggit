@@ -20,6 +20,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSelectModule} from '@angular/material/select';
 import { NgxMasonryModule } from 'ngx-masonry';
+import { ToastrModule } from 'ngx-toastr';
 
 
 import { FileSizeModule } from 'ngx-filesize';
@@ -107,6 +108,7 @@ import {MatCardModule} from '@angular/material/card';
 	InfiniteScrollModule,
 	NgxSpinnerModule,
 	NgxMasonryModule,
+	ToastrModule.forRoot(),
 	ModalModule.forRoot(),
 	MatMenuModule,
 	MatToolbarModule,

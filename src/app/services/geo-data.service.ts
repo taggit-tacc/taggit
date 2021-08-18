@@ -9,6 +9,7 @@ import {Form} from '@angular/forms';
 import {take} from 'rxjs/operators';
 import * as querystring from 'querystring';
 import {RemoteFile} from 'ng-tapis';
+import { NotificationsService } from './notifications.service';
 import * as EXIF from 'exif-js';
 
 @Injectable({
@@ -31,7 +32,8 @@ export class GeoDataService {
   private _loaded: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public loaded: Observable<boolean> = this._loaded.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+	private notificationsService: NotificationsService) {
 	this._features = new BehaviorSubject<FeatureCollection>({type: 'FeatureCollection', features: []});
 	this.features$ = this._features.asObservable();
 	this._activeFeature = new BehaviorSubject<any>(null);
@@ -96,7 +98,7 @@ export class GeoDataService {
 	//   description: title,
 	//   conversion_parameters: conversionParams
 	// };
-	this.http.post(environment.apiUrl + `/projects/${projectId}/features/${featureId}/properties/`, groupData)
+	this.http.post(environment.apiUrl + `projects/${projectId}/features/${featureId}/properties/`, groupData)
 	  .subscribe( (resp) => {
 		// this.getFeatures(projectId);
 	  }, error => {
@@ -145,10 +147,9 @@ export class GeoDataService {
 	  .subscribe( (resp) => {
 		console.log(resp)
 		this.getFeatures(projectId);
+		this.notificationsService.showSuccessToast('Import started!');
 	  }, error => {
-		  console.log(error)
-		// this.getFeatures(projectId);
-	// TODO: Add notification / toast
+		this.notificationsService.showErrorToast('Import started!');
 	  });
   }
 
