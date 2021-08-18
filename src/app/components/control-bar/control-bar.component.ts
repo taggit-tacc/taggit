@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, Output, TemplateRef } from '@angular/core';
 import { ProjectsService } from '../../services/projects.service';
 import { Feature, Project } from '../../models/models';
 import {FeatureCollection} from 'geojson';
@@ -24,6 +24,8 @@ import { TapisFilesService } from '../../services/tapis-files.service'
 import { element } from 'protractor';
 import { consoleTestResultHandler } from 'tslint/lib/test';
 import { ScrollService } from 'src/app/services/scroll.service';
+import { NotificationsService } from 'src/app/services/notifications.service';
+import * as EXIF from 'exif-js';
 
 @Component({
   selector: 'app-control-bar',
@@ -67,10 +69,11 @@ export class ControlBarComponent implements OnInit {
 			  private filesService: TapisFilesService,
 			  private router: Router,
 			  private dialog: MatDialog,
-			  private scrollService: ScrollService) {}
+			  private scrollService: ScrollService,
+			  private notificationsService: NotificationsService) {}
 
   ngOnInit() {
-
+	  this.filesService.getState()
 
 	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
 	  this.features = fc;
@@ -102,6 +105,13 @@ export class ControlBarComponent implements OnInit {
 		console.log(this.activeFeature.assets[0].path);
 	});
 
+	(this.notificationsService.notifications.subscribe(next => {
+		let hasSuccessNotification = next.some(note => note.status === 'success');
+		if (hasSuccessNotification) {
+		  this.geoDataService.getFeatures(this.selectedProject.id);
+		}
+	  }));
+
 	this.authService.currentUser.subscribe(next => this.currentUser = next);
 
 	this.projectsService.getProjects();
@@ -109,7 +119,19 @@ export class ControlBarComponent implements OnInit {
 	  this.projects = projects;
 
 	  if (this.projects.length) {
-		this.projectsService.setActiveProject(this.projects[0]);
+		let lastProj
+		try {
+			//restores view to the last visited project from local storage
+			lastProj = JSON.parse(window.localStorage.getItem("lastProj"))
+		} catch (error) {
+			lastProj = this.projectsService.setActiveProject(this.projects[0]);
+		}
+
+		//If lastProj is null, then there is no project saved, or can be found, default to the first project in the list
+		if(lastProj == "none" || lastProj == null) {
+			lastProj = this.projectsService.setActiveProject(this.projects[0]);
+		}
+		this.projectsService.setActiveProject(lastProj);
 	  }
 
 	  this.groupsService.groups.subscribe((next) => {
@@ -157,7 +179,6 @@ export class ControlBarComponent implements OnInit {
 	  this.groupsService.itemsSelected.subscribe((next) => {
 		this.itemsSelected = next;
 	  })
-
 	  //this.setLiveRefresh(true)
 	});
 
@@ -211,13 +232,36 @@ export class ControlBarComponent implements OnInit {
   openFilePicker() {
 	const modal = this.dialog.open(ModalFileBrowserComponent);
 	modal.afterClosed().subscribe( (files: Array<RemoteFile>) => {
-		if (files != null) {this.geoDataService.importFileFromTapis(this.selectedProject.id, files); this.startRefreshTimer(true)}
-	});
+		//if (files != null) {this.geoDataService.importFileFromTapis(this.selectedProject.id, files);}
+		if (files != null) {
+			files.forEach( (file) => {
+				this.geoDataService.uploadNewFeature(this.selectedProject.id, this.createBlankFeature(), file)
+			})};
+		}
+	);
 
 	// const modal: BsModalRef = this.bsModalService.show(ModalFileBrowserComponent);
 	// modal.content.onClose.subscribe( (files: Array<RemoteFile>) => {
 	//   this.geoDataService.importFileFromTapis(this.selectedProject.id, files);
 	// });
+  }
+
+  outputEXIF(){
+	console.log(EXIF.getAllTags(this))
+  }
+
+  //Creates a feature with a long/lat value of 0,0 and no associated image.
+  createBlankFeature() {
+	let blankFeature:Feature = {
+		"type": "Feature",
+		"geometry": {
+		  "type": "Point",
+		  "coordinates": [0, 0]
+		},
+		"properties": {
+		}
+	  }
+	return blankFeature
   }
 
   openDownloadSelector(fileName:string){

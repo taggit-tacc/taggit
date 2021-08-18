@@ -24,7 +24,7 @@ export class TapisFilesService {
   public readonly IMPORTABLE_TYPES: Array<string> = ['jpg', 'jpeg', 'las', 'laz', 'json', 'geojson', 'geotiff', 'tiff', 'gpx'];
   public lastSystem:SystemSummary //The last filesystem the user was browsing
   public lastFile:RemoteFile; //The last directory the user was browsing
-  public noPreviousSelections = true
+  public noPreviousSelections:boolean
 
   constructor(private tapis: ApiService,
               private http: HttpClient,
@@ -81,5 +81,24 @@ export class TapisFilesService {
       let msg = "Faled to save file to " + systemID + path
       this.popup.open(msg, '', snackbarConfig)
     })
+  }
+
+  //Saves the current file directory and file system to Local Storage
+  saveState() {
+    let sysStr = JSON.stringify(this.lastSystem)
+    let fileStr = JSON.stringify(this.lastFile)
+    window.localStorage.setItem("system", sysStr)
+    window.localStorage.setItem("file", fileStr)
+  }
+
+  //Attempts to retrieve the last used state
+  getState() {
+    try {
+      this.lastSystem = JSON.parse(window.localStorage.getItem("system"));
+      this.lastFile = JSON.parse(window.localStorage.getItem("file"));
+      this.noPreviousSelections = this.lastFile == null;
+    } catch (error) {
+      console.log(error)
+    }
   }
 }

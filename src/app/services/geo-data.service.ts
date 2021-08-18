@@ -9,6 +9,8 @@ import {Form} from '@angular/forms';
 import {take} from 'rxjs/operators';
 import * as querystring from 'querystring';
 import {RemoteFile} from 'ng-tapis';
+import { NotificationsService } from './notifications.service';
+import * as EXIF from 'exif-js';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +32,8 @@ export class GeoDataService {
   private _loaded: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public loaded: Observable<boolean> = this._loaded.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+	private notificationsService: NotificationsService) {
 	this._features = new BehaviorSubject<FeatureCollection>({type: 'FeatureCollection', features: []});
 	this.features$ = this._features.asObservable();
 	this._activeFeature = new BehaviorSubject<any>(null);
@@ -142,12 +145,47 @@ export class GeoDataService {
 	};
 	this.http.post(environment.apiUrl + `/projects/${projectId}/features/files/import/`, payload)
 	  .subscribe( (resp) => {
+		console.log(resp)
 		this.getFeatures(projectId);
-		// this.getFeatures(projectId);
+		this.notificationsService.showSuccessToast('Import started!');
 	  }, error => {
-		// this.getFeatures(projectId);
-	// TODO: Add notification / toast
+		this.notificationsService.showErrorToast('Import started!');
 	  });
+  }
+
+  //An alternate function for importing images with no GPS data. A feature is created elsewhere, and the image is added to the feature
+  //Inputs:
+  //projectId: Id number of current project
+  //features: A pre-created features with user-defined or zeroed out gps data
+  //file: A Tapis Remote File containing the image to be imported
+  importImage(projectId: number, feature: Feature, file: RemoteFile): void {
+	let featureId = feature.id
+	let payload = {system_id: file.system, path: file.path};
+	this.http.post(environment.apiUrl + `projects/${projectId}/features/${featureId}/assets/`, payload)
+	.subscribe( (resp) => {
+		console.log(resp)
+		EXIF.getData(file.path, this.outputEXIF())
+		//From here get GPS data with Exif
+	});
+  }
+
+  outputEXIF(){
+	console.log(EXIF.getAllTags(this))
+	console.log(EXIF.getTag(this, "GPSLatitude"))
+	console.log(EXIF.getTag(this, "GPSLongitude"))
+  }
+
+  //Creates a new feature from an uploaded locally created feature
+  uploadNewFeature(projectId: number, feature:Feature, file: RemoteFile): void {
+	let payload = feature;
+	let response
+	//Calls the addFeatureAsset route in GeoAPI, resp is a list of features
+	this.http.post(environment.apiUrl + `projects/${projectId}/features/`, payload)
+	.subscribe( (resp) => {
+		this.getFeatures(projectId)
+		response = new Feature(resp[0])
+		this.importImage(projectId, response, file)
+	});
   }
 
   downloadGeoJSON(projectId: number, query: AssetFilters = new AssetFilters()) {

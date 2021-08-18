@@ -69,6 +69,8 @@ export class ProjectsService {
   }
 
   setActiveProject(proj: Project): void {
+    //saves change as last visited project
+    window.localStorage.setItem("lastProj", JSON.stringify(proj))
     this._activeProject.next(proj);
   }
 
@@ -82,11 +84,11 @@ export class ProjectsService {
     );
   }
 
-  //Note: This will delete the project for everyone, if the project is shared. 
-  // Need to find a way to unsubscribe a project for one person without affecting the others.
+  //Note: This will delete the project for everyone, if the project is shared.
   delete(data: Project):void{
     this.http.delete(environment.apiUrl  + `/projects/${data.id}/`)
       .subscribe( (resp) => {
+        window.localStorage.setItem("lastProj", JSON.stringify("none"))
         this.getProjects();
         // this._projects.next([...this._projects.value]);
         // console.log(this._projects.value[0])
