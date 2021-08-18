@@ -9,6 +9,7 @@ import {Form} from '@angular/forms';
 import {take} from 'rxjs/operators';
 import * as querystring from 'querystring';
 import {RemoteFile} from 'ng-tapis';
+import { NotificationsService } from './notifications.service';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,8 @@ export class GeoDataService {
   private _loaded: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public loaded: Observable<boolean> = this._loaded.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+	private notificationsService: NotificationsService) {
 	this._features = new BehaviorSubject<FeatureCollection>({type: 'FeatureCollection', features: []});
 	this.features$ = this._features.asObservable();
 	this._activeFeature = new BehaviorSubject<any>(null);
@@ -143,10 +145,9 @@ export class GeoDataService {
 	this.http.post(environment.apiUrl + `/projects/${projectId}/features/files/import/`, payload)
 	  .subscribe( (resp) => {
 		this.getFeatures(projectId);
-		// this.getFeatures(projectId);
+		this.notificationsService.showSuccessToast('Import started!');
 	  }, error => {
-		  console.log(error)
-		// this.getFeatures(projectId);
+		this.notificationsService.showErrorToast('Import started!');
 	// TODO: Add notification / toast
 	  });
   }

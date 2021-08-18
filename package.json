@@ -37,6 +37,7 @@
     "ng-tapis": "^2.1.6",
     "ngx-masonry": "^9.1.1",
     "ngx-spinner": "^9.0.2",
+    "ngx-toastr": "^11.3.3",
     "normalize.css": "^8.0.1",
     "rxjs": "~6.5.4",
     "service": "^0.1.4",
