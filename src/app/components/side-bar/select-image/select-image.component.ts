@@ -115,12 +115,11 @@ export class SelectImageComponent implements OnInit, OnDestroy {
 	  }
 	});
 
-	let featProp = this.getActiveFeatures().properties;
-
-	featProp.group = featProp.group.filter(e => e.name != this.activeGroup);
+	let featProp = this.getActiveFeatures();
+	featProp.group = featProp.filter(e => e.properties.group.name != this.activeGroup);
 
 	this.geoDataService.updateFeatureProperty(this.selectedProject.id,
-											  Number(this.getActiveFeatures().id),
+											  Number(this.getActiveFeatures()[0].id),
 											  featProp);
   }
 

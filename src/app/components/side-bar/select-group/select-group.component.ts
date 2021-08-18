@@ -223,37 +223,20 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
   }
 
   saveIcon(icon: string){
-	console.log(this.activeGroup)
 	this.groupList.forEach(e => {
 	  if (e.name == this.activeGroup) {
 		e.icon = icon;
 		this.tempGroup = e.features;	
 	  }
 	});
-
-	// console.log(this.tempGroup)
-	//  console.log(this.groupList)
 	this.groupsService.addGroup(this.groupList);
 
-	
-
-	// for (let feat of this.tempGroup){
-	// 	console.log(feat)
-	// 	let featProp = feat.properties;
-	// 	console.log(featProp)
-	// 	if (featProp.group) {
-	// 		console.log("nope");
-	// 		featProp.group.push({
-	// 		  name: name,
-	// 		//   color: ,
-	// 		//   icon: "fa-house-damage"
-	// 		});
-	// 	  }#23E99E #473FB4
+	let index = 0
 	for (let feat of this.tempGroup) {
 		let featProp = feat.properties;
-		// console.log(feat.id)
+		 console.log(feat.id)/*
 		// console.log(this.selectedGroup)
-		const index = this.groupList.findIndex(item => item.features[0].id == feat.id);
+		index = this.groupList.findIndex(item => item.features[index].id == feat.id);
 		featProp.group = featProp.group.filter(e => e.name != this.selectedGroup);
 		// console.log(index)
 		if (featProp.group) {
@@ -264,9 +247,10 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 			  icon: icon
 			});
 		  }
-		this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), featProp );
+		this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), featProp );*/
 		
 	this.groupsService.setActiveGroup(this.activeGroup);
+		this.formsService.saveStyles("default", Number(feat.id))
 	}
 
 

@@ -23,6 +23,8 @@ import { feature } from '@turf/helpers';
 import { TapisFilesService } from '../../services/tapis-files.service'
 import { element } from 'protractor';
 import { consoleTestResultHandler } from 'tslint/lib/test';
+import { ScrollService } from 'src/app/services/scroll.service';
+import { NotificationsService } from 'src/app/services/notifications.service';
 import * as EXIF from 'exif-js';
 
 @Component({
@@ -38,7 +40,7 @@ export class ControlBarComponent implements OnInit {
   activeFeatureNum: number;
 
   public currentUser: AuthenticatedUser;
-  private REFRESHTIME = 6000; // 60 secs per reload default, right now it's an hour (6000 sec)
+  private REFRESHTIME = 6; // 60 secs per reload default, right now it's an hour (6000 sec)
   public projects: Project[];
   public selectedProject: Project;
   public mapMouseLocation: LatLng = new LatLng(0, 0);
@@ -56,6 +58,7 @@ export class ControlBarComponent implements OnInit {
   activeGroup: string;
   activePane: string;
   hazMapperLink: string;
+  itemsSelected:boolean = false;
 
   constructor(private projectsService: ProjectsService,
 			  private geoDataService: GeoDataService,
@@ -65,10 +68,12 @@ export class ControlBarComponent implements OnInit {
 			  private authService: AuthService,
 			  private filesService: TapisFilesService,
 			  private router: Router,
-			  private dialog: MatDialog) {}
+			  private dialog: MatDialog,
+			  private scrollService: ScrollService,
+			  private notificationsService: NotificationsService) {}
 
   ngOnInit() {
-
+	  this.filesService.getState()
 
 	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
 	  this.features = fc;
@@ -100,6 +105,13 @@ export class ControlBarComponent implements OnInit {
 		console.log(this.activeFeature.assets[0].path);
 	});
 
+	(this.notificationsService.notifications.subscribe(next => {
+		let hasSuccessNotification = next.some(note => note.status === 'success');
+		if (hasSuccessNotification) {
+		  this.geoDataService.getFeatures(this.selectedProject.id);
+		}
+	  }));
+
 	this.authService.currentUser.subscribe(next => this.currentUser = next);
 
 	this.projectsService.getProjects();
@@ -107,7 +119,19 @@ export class ControlBarComponent implements OnInit {
 	  this.projects = projects;
 
 	  if (this.projects.length) {
-		this.projectsService.setActiveProject(this.projects[0]);
+		let lastProj
+		try {
+			//restores view to the last visited project from local storage
+			lastProj = JSON.parse(window.localStorage.getItem("lastProj"))
+		} catch (error) {
+			lastProj = this.projectsService.setActiveProject(this.projects[0]);
+		}
+
+		//If lastProj is null, then there is no project saved, or can be found, default to the first project in the list
+		if(lastProj == "none" || lastProj == null) {
+			lastProj = this.projectsService.setActiveProject(this.projects[0]);
+		}
+		this.projectsService.setActiveProject(lastProj);
 	  }
 
 	  this.groupsService.groups.subscribe((next) => {
@@ -152,6 +176,10 @@ export class ControlBarComponent implements OnInit {
 		this.tempGroup = next;
 	  });
 
+	  this.groupsService.itemsSelected.subscribe((next) => {
+		this.itemsSelected = next;
+	  })
+	  //this.setLiveRefresh(true)
 	});
 
 	this.projectsService.activeProject.subscribe(next => {
@@ -172,12 +200,22 @@ export class ControlBarComponent implements OnInit {
 	this.groupsService.setActiveFeatureNum(0);
   }
 
+  clearAll(){
+	  this.groupsService.setUnselectAll(true);
+	  this.groupsService.setItemsSelected(false);
+  }
+
   reloadFeatures() {
 	this.geoDataService.getFeatures(this.selectedProject.id);
   }
 
   setLiveRefresh(option: boolean) {
 	option ? this.timerSubscription = this.timer.subscribe(() => { this.reloadFeatures(); }) : this.timerSubscription.unsubscribe();
+  }
+
+  //Similar to setLiveRefresh, but it runs the time out once and then unsubscribes from the timer
+  startRefreshTimer(option: boolean) {
+	option ? this.timerSubscription = this.timer.subscribe(() => { this.reloadFeatures(); this.setLiveRefresh(false)}) : this.timerSubscription.unsubscribe();
   }
 
   selectProject(p: Project): void {
@@ -374,6 +412,12 @@ export class ControlBarComponent implements OnInit {
   }
 
   openSidebar() {
+	if( !this.showSidebar) {
+		let scrollPos = document.documentElement.scrollTop
+		this.scrollService.setScrollPosition(scrollPos)
+	} else {
+		this.scrollService.setScrollRestored(true)
+	}
 	let showSidebar = !this.showSidebar;
 	let showGroup = false;
 	// let showGroupButton = !this.showGroupButton;

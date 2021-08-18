@@ -56,9 +56,13 @@
 	</div>
 
 	<ng-template #deleteImage>
-	  <div>
+	  <div *ngIf="tempGroup.length === 1">
 	  This image will be deleted from the current project. It will not be deleted from the Data Depot.
 	  </div>
+
+	  <div *ngIf="tempGroup.length > 1">
+		{{tempGroup.length}} images will be deleted from the current project. They will not be deleted from the Data Depot.
+		</div>
 
 	  <button mat-raised-button color="primary" matDialogClose (click)="imageDelete()">Delete Image</button>
 	  <button mat-button matDialogClose>Cancel</button>
@@ -114,11 +118,11 @@
 			   (mouseover)="getGroupNameFromColor(color)"
 			   [matTooltip]="currentGroup"
 			   matTooltipPosition="below">
-			<svg class="box" width="25px" height="75px">
+			<svg class="box" width="25px" height="75px" (click)="deleteFromGroup(color)">
 			  <!-- <rect width="15px" height="15px" [style.fill]="color"/> -->
 			  <rect width="15px" height="15px" x="5" y="30" [style.fill]="color"/>
 			  <rect class="inner-del" width="25px" height="15px" rx="3" x="0" y="0" style="fill: #ffffff"/>
-			  <rect (click)="deleteFromGroup(color)" class="inner-del" width="15px" height="5px" x="5" y="5" style="fill: #DE6363"/>
+			  <rect  class="inner-del" width="15px" height="5px" x="5" y="5" style="fill: #DE6363"/>
 			</svg>
 		  </div>
 		</div>
