@@ -10,7 +10,6 @@ import {take} from 'rxjs/operators';
 import * as querystring from 'querystring';
 import {RemoteFile} from 'ng-tapis';
 import { NotificationsService } from './notifications.service';
-import * as EXIF from 'exif-js';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +27,7 @@ export class GeoDataService {
   private _activeOverlay: BehaviorSubject<any>;
   private _pointClouds: BehaviorSubject<Array<IPointCloud>> = new BehaviorSubject<Array<IPointCloud>>(null);
   public readonly pointClouds: Observable<Array<IPointCloud>> = this._pointClouds.asObservable();
+  private fileList: Array<RemoteFile>
 
   private _loaded: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public loaded: Observable<boolean> = this._loaded.asObservable();
@@ -52,6 +52,7 @@ export class GeoDataService {
 	this._loaded.next(false);
 	this.http.get<FeatureCollection>(environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring)
 	  .subscribe( (fc: FeatureCollection) => {
+		  console.log(fc)
 		fc.features = fc.features.map( (feat: Feature) => new Feature(feat));
 		this._features.next(fc);
 		this._loaded.next(true);
@@ -61,6 +62,7 @@ export class GeoDataService {
   deleteFeature(feature: Feature) {
 	this.http.delete(environment.apiUrl + `/projects/${feature.project_id}/features/${feature.id}/`)
 	  .subscribe( (resp) => {
+		  console.log(resp)
 		this.getFeatures(feature.project_id);
 	  });
   }
@@ -143,13 +145,12 @@ export class GeoDataService {
 	const payload = {
 	  files: tmp
 	};
-	this.http.post(environment.apiUrl + `/projects/${projectId}/features/files/import/`, payload)
+	this.fileList = tmp
+	this.http.post(environment.apiUrl + `projects/${projectId}/features/files/import/`, payload)
 	  .subscribe( (resp) => {
-		console.log(resp)
-		this.getFeatures(projectId);
 		this.notificationsService.showSuccessToast('Import started!');
 	  }, error => {
-		this.notificationsService.showErrorToast('Import started!');
+		this.notificationsService.showErrorToast('Import failed! Try again?');
 	  });
   }
 
@@ -158,28 +159,24 @@ export class GeoDataService {
   //projectId: Id number of current project
   //features: A pre-created features with user-defined or zeroed out gps data
   //file: A Tapis Remote File containing the image to be imported
-  importImage(projectId: number, feature: Feature, file: RemoteFile): void {
+  importImage(projectId: number, feature: Feature, path: string): void {
 	let featureId = feature.id
+	let file
+	this.fileList.forEach(remoteFile =>{
+		if (remoteFile.path == path) {
+			file = remoteFile
+		}
+	});
 	let payload = {system_id: file.system, path: file.path};
 	this.http.post(environment.apiUrl + `projects/${projectId}/features/${featureId}/assets/`, payload)
 	.subscribe( (resp) => {
-		//console.log(resp)
-		this.getFeatures(projectId)
-		console.log(this.features)
-		//EXIF.getData(this.features[0].assets[0].path, this.outputEXIF())
-		EXIF.getData("https://agave.designsafe-ci.org/geo/v2/assets/327/ea9a22cd-d3fb-433e-8410-3ebed972bd73.jpeg", this.outputEXIF())
-		//From here get GPS data with Exif
+		this.notificationsService.showSuccessToast('Import started!');
+		//this.getFeatures(projectId)
 	});
   }
 
-  outputEXIF(){
-	console.log(EXIF.getAllTags(this))
-	console.log(EXIF.getTag(this, "GPSLatitude"))
-	console.log(EXIF.getTag(this, "GPSLongitude"))
-  }
-
   //Creates a new feature from an uploaded locally created feature
-  uploadNewFeature(projectId: number, feature:Feature, file: RemoteFile): void {
+  uploadNewFeature(projectId: number, feature:Feature, path: string): void {
 	let payload = feature;
 	let response
 	//Calls the addFeatureAsset route in GeoAPI, resp is a list of features
@@ -187,7 +184,7 @@ export class GeoDataService {
 	.subscribe( (resp) => {
 		this.getFeatures(projectId)
 		response = new Feature(resp[0])
-		this.importImage(projectId, response, file)
+		this.importImage(projectId, response, path)
 	});
   }
 
