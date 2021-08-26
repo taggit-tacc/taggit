@@ -135,6 +135,7 @@ export class ControlBarComponent implements OnInit {
 		try {
 			//restores view to the last visited project from local storage
 			lastProj = JSON.parse(window.localStorage.getItem("lastProj"))
+			console.log(lastProj)
 		} catch (error) {
 			lastProj = this.projectsService.setActiveProject(this.projects[0]);
 		}
@@ -143,7 +144,12 @@ export class ControlBarComponent implements OnInit {
 		if(lastProj == "none" || lastProj == null) {
 			lastProj = this.projectsService.setActiveProject(this.projects[0]);
 		}
-		this.projectsService.setActiveProject(lastProj);
+
+		try {
+			this.projectsService.setActiveProject(lastProj);
+		} catch (error) {
+			this.projectsService.setActiveProject(this.projects[0]);
+		}
 	  }
 
 	  this.groupsService.groups.subscribe((next) => {

@@ -8,6 +8,7 @@ import { BsModalService } from 'ngx-foundation/modal';
 import { BsModalRef } from 'ngx-foundation/modal/bs-modal-ref.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsService, tags } from 'src/app/services/forms.service';
+import { ScrollService } from 'src/app/services/scroll.service';
 
 @Component({
   selector: 'app-image-box',
@@ -46,7 +47,8 @@ export class ImageBoxComponent implements OnInit {
 			   private projectsService: ProjectsService,
 			   private modalService: BsModalService,
 			   private formsService: FormsService,
-			   private dialog: MatDialog
+			   private dialog: MatDialog,
+			   private scrollService: ScrollService
 			 ){ }
 
   ngOnInit() {
@@ -154,10 +156,12 @@ export class ImageBoxComponent implements OnInit {
   }
 
   imageDelete() {
-	  const geoData = this.geoDataService;
+	const geoData = this.geoDataService;
 	this.tempGroup.forEach(function (value) {
 		geoData.deleteFeature(value);
 	})
+	//Resets contents of temp group
+	this.groupsService.addTempGroup([])
   }
 
   openMoreGroupsModal(template: TemplateRef<any>) {
@@ -200,18 +204,18 @@ export class ImageBoxComponent implements OnInit {
 	this.dialog.open(template);
   }
 
-  selectGroupForm (name: string) {
+  selectGroupForm (name: string, feat: Feature) {
 	let color = "";
 	this.groupsService.setActiveFeatureNum(0);
 	this.groupList.forEach(e => {
 	  if (e.name == name) {
-		  console.log(this.feature)
-		e.features.push(this.feature);
+		  console.log(feat)
+		e.features.push(feat);
 		color = e.color;
 	  }
 	});
 
-	let featProp = this.feature.properties;
+	let featProp = feat.properties;
 	if (featProp.group) {
 	  let featGroupList = featProp.group.map(e => {
 		return e.name;
@@ -247,7 +251,7 @@ export class ImageBoxComponent implements OnInit {
 				// value: this.formValue,
 				// required: this.formRequired,
 				options: tag.options,
-				feature: this.feature.id
+				feature: feat.id
 			}
 			this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
 		}
@@ -257,11 +261,17 @@ export class ImageBoxComponent implements OnInit {
 	console.log(featProp)
 	console.log(this.tempGroup[0].id)
 	this.geoDataService.updateFeatureProperty(this.selectedProject.id,
-											  Number(this.feature.id),
+											  Number(feat.id),
 											  featProp);
 
 	this.groupsService.addGroup(this.groupList);
   }
+
+  addGroups(name: string) {
+	  this.tempGroup.forEach( (feat) => {
+		  this.selectGroupForm(name, feat)
+	  })
+	}
 
   getGroupNameFromColor(color: string) {
 	this.groupList.forEach(e => {

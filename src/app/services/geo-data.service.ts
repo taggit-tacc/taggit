@@ -60,7 +60,7 @@ export class GeoDataService {
   }
 
   deleteFeature(feature: Feature) {
-	this.http.delete(environment.apiUrl + `/projects/${feature.project_id}/features/${feature.id}/`)
+	this.http.delete(environment.apiUrl + `projects/${feature.project_id}/features/${feature.id}/`)
 	  .subscribe( (resp) => {
 		  console.log(resp)
 		this.getFeatures(feature.project_id);

@@ -57,7 +57,7 @@
 		<div class="iconDropdown">
 		<select class="fa" [(ngModel)]="choice">
 			<!-- <option>------</option> -->
-			<option class="fa" *ngFor="let icons of iconList" value={{icons.id}} [innerHTML]="icons.unicode"></option>
+			<option *ngFor="let icons of iconList" value={{icons.id}} [innerHTML]="icons.unicode"></option>
 		</select>
 		<br/>
 	  	<br/>
