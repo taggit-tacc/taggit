@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, Output, TemplateRef } from '@angular/core';
 import { ProjectsService } from '../../services/projects.service';
 import { Feature, Project } from '../../models/models';
 import {FeatureCollection} from 'geojson';
@@ -23,6 +23,8 @@ import { feature } from '@turf/helpers';
 import { TapisFilesService } from '../../services/tapis-files.service'
 import { element } from 'protractor';
 import { consoleTestResultHandler } from 'tslint/lib/test';
+import { ScrollService } from 'src/app/services/scroll.service';
+import { NotificationsService } from 'src/app/services/notifications.service';
 
 @Component({
   selector: 'app-control-bar',
@@ -56,6 +58,7 @@ export class ControlBarComponent implements OnInit {
   activePane: string;
   hazMapperLink: string;
   itemsSelected:boolean = false;
+  foundFilePaths = []
 
   constructor(private projectsService: ProjectsService,
 			  private geoDataService: GeoDataService,
@@ -65,10 +68,12 @@ export class ControlBarComponent implements OnInit {
 			  private authService: AuthService,
 			  private filesService: TapisFilesService,
 			  private router: Router,
-			  private dialog: MatDialog) {}
+			  private dialog: MatDialog,
+			  private scrollService: ScrollService,
+			  private notificationsService: NotificationsService) {}
 
   ngOnInit() {
-
+	  this.filesService.getState()
 
 	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
 	  this.features = fc;
@@ -100,6 +105,25 @@ export class ControlBarComponent implements OnInit {
 		console.log(this.activeFeature.assets[0].path);
 	});
 
+	(this.notificationsService.notifications.subscribe(next => {
+		let hasSuccessNotification = next.some(note => note.status === 'success');
+		let hasFailureNotification = next.some(note => note.status === 'error');
+		if (hasSuccessNotification) {
+		  this.geoDataService.getFeatures(this.selectedProject.id);
+		}
+		if (hasFailureNotification) {
+			next.forEach(item => {
+				//Compiles a list of all necessary files to import via the alt method
+				if( (item.message.substring(0,16) == "Error importing ") && !( this.foundFilePaths.some(filePath => filePath === item.message.substring(16)) ) ) {
+					let path = item.message.substring(16)
+					console.log(path)
+					this.geoDataService.uploadNewFeature(this.selectedProject.id, this.createBlankFeature(), path)
+					this.foundFilePaths.push(path)
+				}
+			});
+		}
+	}));
+
 	this.authService.currentUser.subscribe(next => this.currentUser = next);
 
 	this.projectsService.getProjects();
@@ -107,7 +131,25 @@ export class ControlBarComponent implements OnInit {
 	  this.projects = projects;
 
 	  if (this.projects.length) {
-		this.projectsService.setActiveProject(this.projects[0]);
+		let lastProj
+		try {
+			//restores view to the last visited project from local storage
+			lastProj = JSON.parse(window.localStorage.getItem("lastProj"))
+			console.log(lastProj)
+		} catch (error) {
+			lastProj = this.projectsService.setActiveProject(this.projects[0]);
+		}
+
+		//If lastProj is null, then there is no project saved, or can be found, default to the first project in the list
+		if(lastProj == "none" || lastProj == null) {
+			lastProj = this.projectsService.setActiveProject(this.projects[0]);
+		}
+
+		try {
+			this.projectsService.setActiveProject(lastProj);
+		} catch (error) {
+			this.projectsService.setActiveProject(this.projects[0]);
+		}
 	  }
 
 	  this.groupsService.groups.subscribe((next) => {
@@ -155,7 +197,6 @@ export class ControlBarComponent implements OnInit {
 	  this.groupsService.itemsSelected.subscribe((next) => {
 		this.itemsSelected = next;
 	  })
-
 	  //this.setLiveRefresh(true)
 	});
 
@@ -207,15 +248,36 @@ export class ControlBarComponent implements OnInit {
   }
 
   openFilePicker() {
+	//Refreshes the list of found paths used in importing images without Geo tagging
+	this.foundFilePaths = []
 	const modal = this.dialog.open(ModalFileBrowserComponent);
 	modal.afterClosed().subscribe( (files: Array<RemoteFile>) => {
-		if (files != null) {this.geoDataService.importFileFromTapis(this.selectedProject.id, files); this.startRefreshTimer(true)}
-	});
+		if (files != null) {this.geoDataService.importFileFromTapis(this.selectedProject.id, files);}
+		/*if (files != null) {
+			files.forEach( (file) => {
+				this.geoDataService.uploadNewFeature(this.selectedProject.id, this.createBlankFeature(), file)
+			})};*/
+		}
+	);
 
 	// const modal: BsModalRef = this.bsModalService.show(ModalFileBrowserComponent);
 	// modal.content.onClose.subscribe( (files: Array<RemoteFile>) => {
 	//   this.geoDataService.importFileFromTapis(this.selectedProject.id, files);
 	// });
+  }
+
+  //Creates a feature with a long/lat value of 0,0 and no associated image.
+  createBlankFeature() {
+	let blankFeature:Feature = {
+		"type": "Feature",
+		"geometry": {
+		  "type": "Point",
+		  "coordinates": [0, 0]
+		},
+		"properties": {
+		}
+	  }
+	return blankFeature
   }
 
   openDownloadSelector(fileName:string){
@@ -366,6 +428,12 @@ export class ControlBarComponent implements OnInit {
   }
 
   openSidebar() {
+	if( !this.showSidebar) {
+		let scrollPos = document.documentElement.scrollTop
+		this.scrollService.setScrollPosition(scrollPos)
+	} else {
+		this.scrollService.setScrollRestored(true)
+	}
 	let showSidebar = !this.showSidebar;
 	let showGroup = false;
 	// let showGroupButton = !this.showGroupButton;

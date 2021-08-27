@@ -96,7 +96,7 @@
 	  <!-- </select> -->
 	  <!-- <button mat-raised-button color="primary" matDialogClose (click)="selectGroupForm(selectGroup.value)">Add To Group</button> -->
 	  <p>
-		<button mat-raised-button color="primary" matDialogClose (click)="selectGroupForm(activeGroup)" [disabled]="!activeGroup">Add To Group</button>
+		<button mat-raised-button color="primary" matDialogClose (click)="addGroups(activeGroup)" [disabled]="!activeGroup">Add To Group</button>
 		<button mat-button color="secondary" matDialogClose>Cancel</button>
 	  </p>
 
@@ -117,7 +117,7 @@
 			   class="center"
 			   (mouseover)="getGroupNameFromColor(color)"
 			   [matTooltip]="currentGroup"
-			   matTooltipPosition="below">
+			   matTooltipPosition="above">
 			<svg class="box" width="25px" height="75px" (click)="deleteFromGroup(color)">
 			  <!-- <rect width="15px" height="15px" [style.fill]="color"/> -->
 			  <rect width="15px" height="15px" x="5" y="30" [style.fill]="color"/>

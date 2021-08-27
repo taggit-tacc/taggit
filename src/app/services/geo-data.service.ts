@@ -9,6 +9,7 @@ import {Form} from '@angular/forms';
 import {take} from 'rxjs/operators';
 import * as querystring from 'querystring';
 import {RemoteFile} from 'ng-tapis';
+import { NotificationsService } from './notifications.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,11 +27,13 @@ export class GeoDataService {
   private _activeOverlay: BehaviorSubject<any>;
   private _pointClouds: BehaviorSubject<Array<IPointCloud>> = new BehaviorSubject<Array<IPointCloud>>(null);
   public readonly pointClouds: Observable<Array<IPointCloud>> = this._pointClouds.asObservable();
+  private fileList: Array<RemoteFile>
 
   private _loaded: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public loaded: Observable<boolean> = this._loaded.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+	private notificationsService: NotificationsService) {
 	this._features = new BehaviorSubject<FeatureCollection>({type: 'FeatureCollection', features: []});
 	this.features$ = this._features.asObservable();
 	this._activeFeature = new BehaviorSubject<any>(null);
@@ -49,6 +52,7 @@ export class GeoDataService {
 	this._loaded.next(false);
 	this.http.get<FeatureCollection>(environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring)
 	  .subscribe( (fc: FeatureCollection) => {
+		  console.log(fc)
 		fc.features = fc.features.map( (feat: Feature) => new Feature(feat));
 		this._features.next(fc);
 		this._loaded.next(true);
@@ -56,8 +60,9 @@ export class GeoDataService {
   }
 
   deleteFeature(feature: Feature) {
-	this.http.delete(environment.apiUrl + `/projects/${feature.project_id}/features/${feature.id}/`)
+	this.http.delete(environment.apiUrl + `projects/${feature.project_id}/features/${feature.id}/`)
 	  .subscribe( (resp) => {
+		  console.log(resp)
 		this.getFeatures(feature.project_id);
 	  });
   }
@@ -140,14 +145,47 @@ export class GeoDataService {
 	const payload = {
 	  files: tmp
 	};
-	this.http.post(environment.apiUrl + `/projects/${projectId}/features/files/import/`, payload)
+	this.fileList = tmp
+	this.http.post(environment.apiUrl + `projects/${projectId}/features/files/import/`, payload)
 	  .subscribe( (resp) => {
-		this.getFeatures(projectId);
-		// this.getFeatures(projectId);
+		this.notificationsService.showSuccessToast('Import started!');
 	  }, error => {
-		// this.getFeatures(projectId);
-	// TODO: Add notification / toast
+		this.notificationsService.showErrorToast('Import failed! Try again?');
 	  });
+  }
+
+  //An alternate function for importing images with no GPS data. A feature is created elsewhere, and the image is added to the feature
+  //Inputs:
+  //projectId: Id number of current project
+  //features: A pre-created features with user-defined or zeroed out gps data
+  //file: A Tapis Remote File containing the image to be imported
+  importImage(projectId: number, feature: Feature, path: string): void {
+	let featureId = feature.id
+	let file
+	this.fileList.forEach(remoteFile =>{
+		if (remoteFile.path == path) {
+			file = remoteFile
+		}
+	});
+	let payload = {system_id: file.system, path: file.path};
+	this.http.post(environment.apiUrl + `projects/${projectId}/features/${featureId}/assets/`, payload)
+	.subscribe( (resp) => {
+		this.notificationsService.showSuccessToast('Import started!');
+		//this.getFeatures(projectId)
+	});
+  }
+
+  //Creates a new feature from an uploaded locally created feature
+  uploadNewFeature(projectId: number, feature:Feature, path: string): void {
+	let payload = feature;
+	let response
+	//Calls the addFeatureAsset route in GeoAPI, resp is a list of features
+	this.http.post(environment.apiUrl + `projects/${projectId}/features/`, payload)
+	.subscribe( (resp) => {
+		this.getFeatures(projectId)
+		response = new Feature(resp[0])
+		this.importImage(projectId, response, path)
+	});
   }
 
   downloadGeoJSON(projectId: number, query: AssetFilters = new AssetFilters()) {
