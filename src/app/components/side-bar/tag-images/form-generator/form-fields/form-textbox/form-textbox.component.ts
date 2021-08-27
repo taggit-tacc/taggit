@@ -17,6 +17,9 @@ export class FormTextBoxComponent {
   private activeFeatureId$: Subscription;
   activeFeatureId: number;
 
+  activeGroup: string;
+  private activeGroup$: Subscription;
+
   get isValid() { return this.form.controls[this.field.name].valid; }
   get isDirty() { return this.form.controls[this.field.name].dirty; }
 
@@ -27,11 +30,34 @@ export class FormTextBoxComponent {
     this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe((next) => {
       this.activeFeatureId = next;
     });
-    const index = this.formsService.getNotes().findIndex(item => item.id === this.activeFeatureId);
-    if (index > -1){
-      this.note = this.formsService.getNotes()[index]['option']
-    }
+
+    this.activeGroup$ = this.activeGroup$ = this.groupsService.activeGroup.subscribe((next) => {
+      this.activeGroup = next;
+    });
+
+    let index
+    this.formsService.getSelectedRadio().forEach(opt=> {
+      // console.log(opt)
+      if(opt != undefined){
+        index = opt.findIndex(item => item.id === this.activeFeatureId && item.compID === 3&&item.groupName === this.activeGroup && item.label === this.form['label']);
+        // console.log(index)
+        if (index > -1){
+          // console.log(opt[index].option)
+          this.note = opt[index].option
+        }
+      }
+      
+      
+    });
+
+    // const index = this.formsService.getNotes().findIndex(item => item.id === this.activeFeatureId);
+    // if (index > -1){
+    //   this.note = this.formsService.getNotes()[index]['option']
+    // }
   }
 
-  updateNotes(){ this.formsService.updateNotes(this.note, this.activeFeatureId); }
+  updateNotes(){ 
+    // console.log(this.form['label'])
+    // console.log(this.form.name)
+    this.formsService.updateNotes(this.note, 3, this.activeFeatureId, this.activeGroup, this.form['label']); }
 }

@@ -25,7 +25,7 @@ export class TagImagesComponent implements OnInit {
   form: FormGroup;
   showSubitem: boolean = true;
   tagList: tags[] = this.formsService.getTags();
-  newTag: object[] = [];
+  newTag: tags[] = [];
   featureList: Array<any> = [];
   features: FeatureCollection;
 
@@ -59,15 +59,17 @@ export class TagImagesComponent implements OnInit {
 
 	  // this is to get the list of tags so far
 	  for (let feat of this.featureList){
-		  console.log(typeof(feat.properties.tag))
+		//   console.log(typeof(feat.properties.tag))
 		  if(feat.properties.tag != undefined){
 			  feat.properties.tag.forEach(tag => {
+				//   console.log(tag)
 				this.newTag.push(tag)
 			  });
 		  }
 	  }
-	  console.log(this.newTag)
-	  console.log(this.tagList)
+
+	//   console.log(this.newTag)
+	//   console.log(this.tagList)
   }
 
   openRenameModal(template: TemplateRef<any>, name: string) {

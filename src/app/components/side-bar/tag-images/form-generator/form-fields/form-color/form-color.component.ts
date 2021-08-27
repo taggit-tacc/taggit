@@ -19,6 +19,8 @@ export class FormColorComponent implements OnInit {
   private activeFeatureId$: Subscription;
   activeFeatureId: number;
 
+  activeGroup: string;
+  private activeGroup$: Subscription;
 
   constructor(private formsService: FormsService,
     private groupsService: GroupsService) { }
@@ -27,15 +29,30 @@ export class FormColorComponent implements OnInit {
     this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe((next) => {
       this.activeFeatureId = next;
     });
-    const index = this.formsService.getSelectedRadio().findIndex(item => item.id === this.activeFeatureId && item.compId === 1);
-    if (index > -1){
-      this.chosenTag = this.formsService.getSelectedRadio()[index]['option']
-    }
-    this.chosenColor = this.color  
+
+    this.activeGroup$ = this.activeGroup$ = this.groupsService.activeGroup.subscribe((next) => {
+      this.activeGroup = next;
+    });
+
+    let index
+    this.formsService.getSelectedRadio().forEach(opt=> {
+      console.log(opt)
+      if(opt != undefined){
+        index = opt.findIndex(item => item.id === this.activeFeatureId && item.compId === 1 && item.groupName === this.activeGroup && item.label === this.form['label']);
+      console.log(index)
+      if (index > -1){
+        console.log(opt[index].option)
+        this.chosenTag = opt[index].option
+      }
+      }
+      
+      this.chosenColor = this.color 
+      
+    });
   }
 
   updateCheckedTag(){ 
     this.formsService.saveStyles(this.chosenColor, this.activeFeatureId)
-    this.formsService.updateSelectedRadio(this.chosenTag, 1, this.activeFeatureId); }
+    this.formsService.updateSelectedRadio(this.chosenTag, 1, this.activeFeatureId, this.activeGroup, this.form['label']); }
 
 }

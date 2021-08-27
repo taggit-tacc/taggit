@@ -44,15 +44,15 @@
 						</i>
 					  </div> <!-- delete button -->
 					
-					<div (click)="openRenameOptionModal(renameFormItemModal)">
+					<!-- <div (click)="openRenameOptionModal(renameFormItemModal)">
 						<i class="fas fa-edit"
 						   matTooltip="Rename"
 						   matTooltipPosition="above"
 						   style="cursor: pointer">
 						</i>
-					</div> <!-- rename button -->
+					</div> rename button -->
 
-					<div *ngIf="tag.type != 'text'">
+					<!-- <div *ngIf="tag.type != 'text'">
 
 						<div (click)="openOptionToggle(tag.label)">
 						  <i class="fas fa-ellipsis-h"
@@ -62,7 +62,7 @@
 						  </i>
 						</div>
 	  
-					  </div> <!-- three dots -->
+					  </div> three dots -->
 
 					<ng-template #renameFormItemModal>
 						<input matInput #formItemRename

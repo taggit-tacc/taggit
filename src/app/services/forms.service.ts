@@ -8,7 +8,7 @@ import { ProjectsService } from './projects.service';
 import { GeoDataService } from './geo-data.service';
 import { prepareSyntheticListenerFunctionName } from '@angular/compiler/src/render3/util';
 import { fadeInItems } from '@angular/material';
-import { FeatureCollection } from 'geojson';
+import { Feature, FeatureCollection } from 'geojson';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +47,7 @@ export class FormsService {
   private selectedProject
   private selectedFeatureID
   private selectedFeature
+  tempGroup: Array<Feature>;
   // THIS TODO
   // private _forms: BehaviorSubject<Group> = new BehaviorSubject<Group>({type: 'Group', formList: [], groupName: []});
   // public forms: Observable<Group> = this._forms.asObservable();
@@ -334,7 +335,7 @@ export class FormsService {
 	return finalArray;
   }
 
-  userTag: tags = {type: "text", groupName: "car", label:"Title", options: [], feature: ""};
+  userTag: tags = {type: "text", groupName: "car", label:"Title", options: [], feature: "", extra: []};
   tagData = []
   checkedOptions = []
   chosenTag = [{option:"", id: 0},"",""]; //chosen option of both Radio Buttons and Color tags. Radio info is stored at [0], Color at [1]
@@ -351,6 +352,7 @@ export class FormsService {
 	else {
 		tag.groupName = gName;
 		this.tagData.push(tag);
+		console.log("IT WORKED")
 		// this.geoDataService.updateFeatureProperty()
 		// console.log("Tag data:")
 		// console.log(this.tagData)
@@ -377,11 +379,12 @@ deleteTag(gName: string, tag: tags): void{
 	// 	// delete this.exampleNote[index];
 	// 	this.tagData.splice(index, 1);
 	// 	}
-
+	console.log(tag)
 	let icon:string
 	let payload
 	this.groupList.forEach(group => {
 		if (group.name == this.activeGroup) {
+			this.tempGroup = group.features;
 				icon = group.icon
 	
 				//Creates a temporary group with a copy of the current groups info
@@ -405,52 +408,233 @@ deleteTag(gName: string, tag: tags): void{
 		}
 		});
 
+		console.log(this.tempGroup)
+		for (let feat of this.tempGroup){
 
-		for (let feat of this.featureList){
+			if(feat.properties.tag != undefined || feat.properties.tag != []){
+				// feat.properties.tag.forEach(tag => {
+				//   this.newTag.push(tag)
+				// });
+				console.log(feat.properties)
+				console.log(this.activeGroup)
+				feat.properties.group.forEach(group => {
+					if(group.name != this.activeGroup){
+						let tempGroup = {
+							name: group.name,
+							color: group.color,
+							icon: group.icon
+						}
+					payload.group.push(tempGroup)}
+				});
+			} 
+			
+			console.log(feat)
 			//   console.log(typeof(feat.properties.tag))
 			if(feat.properties.tag != undefined){
-				feat.properties.tag.forEach(tag => {
-					if(tag.groupName != gName){
-					this.newTag.push(tag)
+				feat.properties.tag.forEach(tTag => {
+					console.log(tTag)
+					console.log(tag)
+					// console.log(tTag != tag)
+					console.log((tTag.groupName === tag.groupName &&  tTag.label === tag.label &&  tag.type === tag.type))
+					if((tTag.groupName === tag.groupName && tTag.label === tag.label &&  tag.type === tag.type)){
+					// this.newTag.push(tTag)
+					}
+					else{
+						payload.tag.push(tTag)
 					}
 				});
 
-				payload.tag.push(this.newTag)
-				this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
+				// payload.tag.push(this.newTag)
+				
+				// console.log(payload)
+				// this.newTag = []
 			}
+			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
+			payload.tag = []
 		}
 
 
-	console.log(this.newTag)
-	this.newTag = []
+	console.log(payload)
+	// this.newTag = []
 	
 }
 
+optData = []
 deleteOpt(gName:string, opt:object, tag: tags): void {
-	const index = this.tagData.findIndex(item => item.groupName === gName && item.label === tag.label);
+	const index = this.optData.findIndex(item => item.groupName === gName && item.label === tag.label);
 	if (index > -1) {
-		const ind = this.tagData[index].options.findIndex(item => item === opt)
+		const ind = this.optData[index].options.findIndex(item => item === opt)
 		if (ind > -1){
-			this.tagData[index].options.splice(ind,1);
+			this.optData[index].options.splice(ind,1);
 		}
 	}
 
 }
 
-addCheckedOpt(opt:object, id: number): void {
-	let option = { key: opt['key'], label: opt['label'], id: id }
+addCheckedOpt(opt:object, id: number, group: string, label:string): void {
+	let option = { key: opt['key'], label: opt['label'], id: id , group: group, title: label}
 	this.checkedOptions.push(option)
 	console.log(this.checkedOptions)
+	let icon:string
+	let payload
+	// let formValueFilter = this.activeFormList.filter(e => e.label == this.formLabel);
+	// if (formValueFilter.length == 0 && this.formLabel.length != 0) {
+	this.groupList.forEach(tGroup => {
+		if (tGroup.name == group) {
+			this.tempGroup = tGroup.features;
+				icon = tGroup.icon
+	
+				//Creates a temporary group with a copy of the current groups info
+				let tempGroup = [{
+					name: tGroup.name,
+					color: tGroup.color,
+					icon: tGroup.icon
+				}]
+				
+				//And adds the temp group to a payload along with the necessary style infromation
+				payload = {
+					group: tempGroup,
+					style: {
+						faIcon: icon,
+						color: '#00C8FF'
+					},
+					tag:[]
+				}
+				console.log(payload)
+			
+		}
+		});
+
+
+		console.log(this.tempGroup)
+		for (let feat of this.tempGroup) {
+
+			if(feat.properties.tag != undefined || feat.properties.tag != []){
+				// feat.properties.tag.forEach(tag => {
+				//   this.newTag.push(tag)
+				// });
+				console.log(feat.properties)
+				console.log(this.activeGroup)
+				feat.properties.group.forEach(group => {
+					if(group.name != this.activeGroup){
+						let tempGroup = {
+							name: group.name,
+							color: group.color,
+							icon: group.icon
+						}
+					payload.group.push(tempGroup)}
+				});
+			}
+			  
+
+			  // code from here is a mess
+			  if(feat.properties.tag != undefined){
+				feat.properties.tag.forEach(tag => {
+					if(tag.feature === id && tag.groupName === group){
+						tag.extra.push(option)
+					}
+				  payload.tag.push(tag)
+				});
+			}
+
+			console.log(payload)
+			// console.log(typeof(payload.tag))
+			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
+			// Clear out the tag section
+			payload.tag = []
+	}
 }
 
-deleteCheckedOpt(opt:object, id:number): void{
-	const index = this.checkedOptions.findIndex(item => item.label === opt['label'] && item.id === id)
+deleteCheckedOpt(opt:object, id:number, group: string, label: string): void{
+	const index = this.checkedOptions.findIndex(item => item.label === opt['label'] && item.id === id && item.group === group && item.title === label)
 	this.checkedOptions.splice(index,1)
 	console.log(this.checkedOptions)
+
+	let icon:string
+	let payload
+	// let formValueFilter = this.activeFormList.filter(e => e.label == this.formLabel);
+	// if (formValueFilter.length == 0 && this.formLabel.length != 0) {
+	this.groupList.forEach(tGroup => {
+		if (tGroup.name == group) {
+			this.tempGroup = tGroup.features;
+				icon = tGroup.icon
+	
+				//Creates a temporary group with a copy of the current groups info
+				let tempGroup = [{
+					name: tGroup.name,
+					color: tGroup.color,
+					icon: tGroup.icon
+				}]
+				
+				//And adds the temp group to a payload along with the necessary style infromation
+				payload = {
+					group: tempGroup,
+					style: {
+						faIcon: icon,
+						color: '#00C8FF'
+					},
+					tag:[]
+				}
+				console.log(payload)
+			
+		}
+		});
+
+
+		console.log(this.tempGroup)
+		for (let feat of this.tempGroup) {
+
+			if(feat.properties.tag != undefined || feat.properties.tag != []){
+				// feat.properties.tag.forEach(tag => {
+				//   this.newTag.push(tag)
+				// });
+				console.log(feat.properties)
+				console.log(this.activeGroup)
+				feat.properties.group.forEach(group => {
+					if(group.name != this.activeGroup){
+						let tempGroup = {
+							name: group.name,
+							color: group.color,
+							icon: group.icon
+						}
+					payload.group.push(tempGroup)}
+				});
+			}
+			  
+
+			  // code from here is a mess
+			  if(feat.properties.tag != undefined){
+				feat.properties.tag.forEach(tag => {
+					if(tag.feature === id && tag.groupName === group){
+						const index = tag.extra.findIndex(item => item.label === opt['label'] && item.id === id && item.group === group && item.title === label)
+						tag.extra.splice(index,1)
+					}
+				  payload.tag.push(tag)
+				});
+			}
+
+			console.log(payload)
+			// console.log(typeof(payload.tag))
+			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
+			// Clear out the tag section
+			payload.tag = []
+	}
 }
 
+newOpt: object[] = [];
 getCheckedOpt(): any[]{
-	return this.checkedOptions;
+	this.newOpt = []
+	for (let feat of this.featureList){
+		//   console.log(typeof(feat.properties.tag))
+		  if(feat.properties.tag != undefined){
+			  feat.properties.tag.forEach(tag => {
+				//   console.log(tag)
+				this.newOpt.push(tag.extra)
+			  });
+		  }
+	  }
+	//   console.log(this.newOpt)
+	return this.newOpt;
 }
 // renameTagOpt(gName:string, opt:object, tag: tags): void {
 // 	const index = this.tagData.findIndex(item => item.groupName === gName  && item.label === tag.label);
@@ -465,37 +649,209 @@ getCheckedOpt(): any[]{
 
 radioOptions = []
 //Functions for radio buttons componentId=0 is for the radio component, componentId=1 is for color
-updateSelectedRadio(selection:string, componentId: number, feature: number){ 
-	const index = this.radioOptions.findIndex(item => item['id'] === feature && item['compId'] === componentId);
+updateSelectedRadio(selection:string, componentId: number, feature: number, group: string, label: string){ 
 
-	if (index > -1) {
-		// console.log("IT WORKED")
-		this.radioOptions[index]['option'] = selection;
-		// this.tagData[index].options = tag.options;
+	let icon:string
+	let payload
+	// let formValueFilter = this.activeFormList.filter(e => e.label == this.formLabel);
+	// if (formValueFilter.length == 0 && this.formLabel.length != 0) {
+	this.groupList.forEach(tGroup => {
+		console.log(tGroup)
+		console.log(group)
+		if (tGroup.name == group) {
+			this.tempGroup = tGroup.features;
+				icon = tGroup.icon
+	
+				//Creates a temporary group with a copy of the current groups info
+				let tempGroup = [{
+					name: tGroup.name,
+					color: tGroup.color,
+					icon: tGroup.icon
+				}]
+				
+				//And adds the temp group to a payload along with the necessary style infromation
+				payload = {
+					group: tempGroup,
+					style: {
+						faIcon: icon,
+						color: '#00C8FF'
+					},
+					tag:[]
+				}
+				console.log(payload)
+			
+		}
+		});
+
+
+		console.log(this.tempGroup)
+		for (let feat of this.tempGroup) {
+
+			if(feat.properties.tag != undefined || feat.properties.tag != []){
+				// feat.properties.tag.forEach(tag => {
+				//   this.newTag.push(tag)
+				// });
+				console.log(feat.properties)
+				console.log(this.activeGroup)
+				feat.properties.group.forEach(group => {
+					if(group.name != this.activeGroup){
+						let tempGroup = {
+							name: group.name,
+							color: group.color,
+							icon: group.icon
+						}
+					payload.group.push(tempGroup)}
+				});
+			}
+			  
+
+			  // code from here is a mess
+			  if(feat.properties.tag != undefined){
+				feat.properties.tag.forEach(tag => {
+					if(tag.feature === feature && tag.groupName === group){
+						const index = tag.extra.findIndex(item => item['id'] === feature && item['compId'] === componentId && item['groupName'] === group && item['label'] === label);
+						// const index = tag.extra.findIndex(item => item.label === opt['label'] && item.id === id && item.group === group)
+
+						if(index > -1){
+							tag.extra[index]['option'] = selection
+						}
+						else{
+							let rOption = {option: selection, id: feature, compId: componentId, groupName: group, label: label}
+							tag.extra.push(rOption)
+						}
+					}
+				  payload.tag.push(tag)
+				});
+			}
+
+			// console.log(typeof(payload.tag))
+			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
+			// Clear out the tag section
+			payload.tag = []
 	}
-	else {
-		let rOption = {option: selection, id: feature, compId: componentId} 
-		this.radioOptions.push(rOption);
-		// console.log("Tag data:")
-		// console.log(this.tagData)
-	}
+
+	// if (index > -1) {
+	// 	// console.log("IT WORKED")
+	// 	this.radioOptions[index]['option'] = selection;
+	// 	// this.tagData[index].options = tag.options;
+	// }
+	// else {
+	// 	let rOption = {option: selection, id: feature, compId: componentId} 
+	// 	this.radioOptions.push(rOption);
+	// 	// console.log("Tag data:")
+	// 	// console.log(this.tagData)
+	// }
 	// this.chosenTag[componentId] = {option: selection, id:id}; 
 }
 
-getSelectedRadio(): any[] { return this.radioOptions; }
+getSelectedRadio(): any[] { 
+	this.newOpt = []
+	for (let feat of this.featureList){
+		//   console.log(typeof(feat.properties.tag))
+		  if(feat.properties.tag != undefined){
+			  feat.properties.tag.forEach(tag => {
+				//   console.log(tag)
+				this.newOpt.push(tag.extra)
+			  });
+		  }
+	  }
+	//   console.log(this.newOpt)
+	return this.newOpt;
+ }
 
 //Notes tag functions
-updateNotes(change, feature: number){
-	const index = this.radioOptions.findIndex(item => item['id'] === feature);
-	if (index > -1) {
-		// console.log("IT WORKED")
-		this.notebook[index]['option'] = change
-	}
-	else {
-		let rOption = {option: change, id: feature} 
-		this.notebook.push(rOption);
-		// console.log(this.tagData)
-	}
+updateNotes(change, componentID: number, feature: number, group:string, label:string){
+	// const index = this.radioOptions.findIndex(item => item['id'] === feature);
+	let icon:string
+	let payload
+	// let formValueFilter = this.activeFormList.filter(e => e.label == this.formLabel);
+	// if (formValueFilter.length == 0 && this.formLabel.length != 0) {
+	this.groupList.forEach(tGroup => {
+		// console.log(tGroup)
+		// console.log(group)
+		if (tGroup.name == group) {
+			this.tempGroup = tGroup.features;
+				icon = tGroup.icon
+	
+				//Creates a temporary group with a copy of the current groups info
+				let tempGroup = [{
+					name: tGroup.name,
+					color: tGroup.color,
+					icon: tGroup.icon
+				}]
+				
+				//And adds the temp group to a payload along with the necessary style infromation
+				payload = {
+					group: tempGroup,
+					style: {
+						faIcon: icon,
+						color: '#00C8FF'
+					},
+					tag:[]
+				}
+				// console.log(payload)
+			
+		}
+		});
+
+
+		console.log(this.tempGroup)
+		for (let feat of this.tempGroup) {
+
+			if(feat.properties.tag != undefined || feat.properties.tag != []){
+				// feat.properties.tag.forEach(tag => {
+				//   this.newTag.push(tag)
+				// });
+				console.log(feat.properties)
+				console.log(this.activeGroup)
+				feat.properties.group.forEach(group => {
+					if(group.name != this.activeGroup){
+						let tempGroup = {
+							name: group.name,
+							color: group.color,
+							icon: group.icon
+						}
+					payload.group.push(tempGroup)}
+				});
+			}
+			  
+
+			  // code from here is a mess
+			  if(feat.properties.tag != undefined){
+				feat.properties.tag.forEach(tag => {
+					if(tag.feature === feature && tag.groupName === group){
+						const index = tag.extra.findIndex(item => item['id'] === feature && item['compID'] === componentID && item['groupName'] === group  && item['label'] === label);
+						// const index = tag.extra.findIndex(item => item.label === opt['label'] && item.id === id && item.group === group)
+
+						if(index > -1){
+							console.log(tag.extra)
+							console.log(tag.extra[index])
+							tag.extra[index]['option'] = change
+						}
+						else{
+							let rOption = {option: change, id: feature, groupName: group, compID: componentID, label:label} 
+							console.log(rOption)
+							tag.extra.push(rOption);
+						}
+					}
+				  payload.tag.push(tag)
+				});
+			}
+
+			// console.log(typeof(payload.tag))
+			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
+			// Clear out the tag section
+			payload.tag = []
+		}
+	// if (index > -1) {
+	// 	// console.log("IT WORKED")
+	// 	this.notebook[index]['option'] = change
+	// }
+	// else {
+	// 	let rOption = {option: change, id: feature, groupName: group} 
+	// 	this.notebook.push(rOption);
+	// 	// console.log(this.tagData)
+	// }
 }
 
 getNotes(): any[]{ return this.notebook }
@@ -508,5 +864,6 @@ export interface tags {
 	groupName: string,
 	label: string,
 	options: Array<Group>,
-	feature: string | number
+	feature: string | number,
+	extra: Array<Group>
 }

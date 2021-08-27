@@ -10,6 +10,7 @@ import { GeoDataService } from 'src/app/services/geo-data.service';
 import { ProjectsService } from 'src/app/services/projects.service';
 import { FeatureCollection } from 'geojson';
 
+
 @Component({
   selector: 'app-tag-generator',
   templateUrl: './tag-generator.component.html',
@@ -40,6 +41,7 @@ export class TagGeneratorComponent implements OnInit {
   featureList: Array<any> = [];
   features: FeatureCollection;
   newTag: object[] = [];
+  newGroup:object[] = [];
 
   constructor(
 	private formsService: FormsService,
@@ -84,16 +86,6 @@ export class TagGeneratorComponent implements OnInit {
 		}
 	  });
 
-	  for (let feat of this.featureList){
-		console.log(typeof(feat.properties.tag))
-		if(feat.properties.tag != undefined){
-			feat.properties.tag.forEach(tag => {
-			  this.newTag.push(tag)
-			});
-		}
-	}
-
-	  console.log(this.featureList)
 
 	this.formOptions = [];
 	this.formItemList = [];
@@ -189,16 +181,49 @@ export class TagGeneratorComponent implements OnInit {
 						faIcon: icon,
 						color: '#00C8FF'
 					},
-					tag: []
+					tag:[]
 				}
-				console.log(payload.tag)
+				// console.log(payload)
 			
 		}
 		});
 
 
+		console.log(this.groupList)
+
+
 		console.log(this.tempGroup)
 		for (let feat of this.tempGroup) {
+
+			console.log(this.groupList)
+
+			if(feat.properties.tag != undefined || feat.properties.tag != []){
+				// feat.properties.tag.forEach(tag => {
+				//   this.newTag.push(tag)
+				// });
+				// console.log(feat.properties)
+				// console.log(this.activeGroup)
+				if(feat.properties.group.length > 1){
+					feat.properties.group.forEach(group => {
+						if(group.name != this.activeGroup){
+							let tempGroup = {
+								name: group.name,
+								color: group.color,
+								icon: group.icon
+							}
+						payload.group.push(tempGroup)
+						console.log(this.groupList)
+
+					}
+						
+					});
+				}
+				else {
+					console.log("duck")
+				}
+			}
+			// console.log(this.newGroup)
+			// console.log(this.newTag)
 			  
 			let formItem: tags = {
 				type: this.formType,
@@ -207,7 +232,8 @@ export class TagGeneratorComponent implements OnInit {
 				// value: this.formValue,
 				// required: this.formRequired,
 				options: [],
-				feature: feat.id
+				feature: feat.id,
+				extra: []
 			}
 			this.openOption[this.formLabel] = false;
 
@@ -231,27 +257,50 @@ export class TagGeneratorComponent implements OnInit {
 				});
 			}
 
+			// payload.group.push(this.groupList)
+
+			// feat.properties.group.forEach(groupList => {
+			// 	payload.group.push(groupList)
+			// });
+
+			console.log(this.groupList)
+
 			//   console.log(payload)
 			//   console.log(feat.id)
 			// console.log(typeof(formItem))
-			payload.tag.push(this.newTag)
-			payload.tag.push(formItem)
+			// payload.tag.push(this.newTag)
+			// console.log(payload.tag[0])
+			// console.log(!payload.tag[0].hasOwnProperty("groupName"))
+			if(payload.tag[0] == undefined ){
+				payload.tag[0] = formItem
+			}else{
+				if(!payload.tag[0].hasOwnProperty("groupName")){payload.tag[0] = formItem}
+				else {payload.tag.push(formItem)}
+			}
 			// console.log(typeof(payload.tag))
 			// console.log(payload)
 
+			console.log(this.groupList)
+
 			this.formItemList.push(formItem);
-			this.formsService.addForm(this.activeGroup, formItem);
+			// this.formsService.addForm(this.activeGroup, formItem);
 			  this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
 			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
 			// Clear out the tag section
+			
+			console.log(this.groupList)
+			
 			payload.tag = []
+			this.newGroup = []
 	}
 
 	  this.formLabel = '';
 	  this.formOptions = [];
 	  this.labelFilter = '';
 	  this.changed = true;
-
+	  
+	  console.log(this.featureList)
+	  
 	  this.groupsService.setActivePane("tagger");
 	  this.router.navigateByUrl('/tagger', {skipLocationChange: true});
 	// }

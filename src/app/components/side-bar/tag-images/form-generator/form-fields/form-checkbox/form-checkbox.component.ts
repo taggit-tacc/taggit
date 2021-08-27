@@ -14,6 +14,8 @@ export class FormCheckBoxComponent {
   isChecked: boolean = false;
   private activeFeatureId$: Subscription;
   activeFeatureId: number;
+  private activeGroup$: Subscription;
+  activeGroup: string;
   // get isValid() { return this.form.controls[this.field.name].valid; }
   // get isDirty() { return this.form.controls[this.field.name].dirty; }
 
@@ -27,14 +29,27 @@ export class FormCheckBoxComponent {
     // console.log(this.form)
     this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe((next) => {
       this.activeFeatureId = next;
+    
+      this.activeGroup$ = this.activeGroup$ = this.groupsService.activeGroup.subscribe((next) => {
+      this.activeGroup = next;
+    });
     });
 
     // this code checks if the option has been checked or not
     if(this.formsService.getCheckedOpt().length != 0){
-      const index = this.checkedOpt.findIndex(item => item.id === this.activeFeatureId && item.label === this.field.label );
-      if (index > -1){
-        this.isChecked = true
-      }
+      // console.log(this.checkedOpt)
+      let index 
+      this.checkedOpt.forEach(opt => {      
+        console.log("what")
+        // console.log(opt)
+        if(opt != undefined){index = opt.findIndex(item => item.id === this.activeFeatureId && item.label === this.field.label && item.group === this.activeGroup && item.title === this.form['label']);
+          // console.log(index)
+          if (index > -1){
+            this.isChecked = true
+          }}
+      })
+      // const index = this.checkedOpt.findIndex(item => item.id === this.activeFeatureId && item.label === this.field.label );
+
     }
   }
 
@@ -46,11 +61,11 @@ export class FormCheckBoxComponent {
   selected(e:any, option:object){
     if(e.target.checked){
       console.log("Checked")
-      this.formsService.addCheckedOpt(option, this.activeFeatureId);
+      this.formsService.addCheckedOpt(option, this.activeFeatureId, this.activeGroup, this.form['label']);
 
     }else{
       console.log("Unchecked")
-      this.formsService.deleteCheckedOpt(option, this.activeFeatureId);
+      this.formsService.deleteCheckedOpt(option, this.activeFeatureId, this.activeGroup, this.form['label']);
     }
   }
 }
