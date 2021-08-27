@@ -55,8 +55,6 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   
 
   ngAfterViewChecked() {
-	  //console.log("How often does this fire?")
-	  //console.log(this.scrollService.scrollRestored)
 	if ( this.scrollService.scrollRestored ) {
 		this.scrollService.scroll()
 		this.scrollService.setScrollPosition(document.documentElement.scrollTop)

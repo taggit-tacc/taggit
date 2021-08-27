@@ -25,7 +25,6 @@ import { element } from 'protractor';
 import { consoleTestResultHandler } from 'tslint/lib/test';
 import { ScrollService } from 'src/app/services/scroll.service';
 import { NotificationsService } from 'src/app/services/notifications.service';
-import * as EXIF from 'exif-js';
 
 @Component({
   selector: 'app-control-bar',
@@ -59,6 +58,7 @@ export class ControlBarComponent implements OnInit {
   activePane: string;
   hazMapperLink: string;
   itemsSelected:boolean = false;
+  foundFilePaths = []
 
   constructor(private projectsService: ProjectsService,
 			  private geoDataService: GeoDataService,
@@ -107,10 +107,22 @@ export class ControlBarComponent implements OnInit {
 
 	(this.notificationsService.notifications.subscribe(next => {
 		let hasSuccessNotification = next.some(note => note.status === 'success');
+		let hasFailureNotification = next.some(note => note.status === 'error');
 		if (hasSuccessNotification) {
 		  this.geoDataService.getFeatures(this.selectedProject.id);
 		}
-	  }));
+		if (hasFailureNotification) {
+			next.forEach(item => {
+				//Compiles a list of all necessary files to import via the alt method
+				if( (item.message.substring(0,16) == "Error importing ") && !( this.foundFilePaths.some(filePath => filePath === item.message.substring(16)) ) ) {
+					let path = item.message.substring(16)
+					console.log(path)
+					this.geoDataService.uploadNewFeature(this.selectedProject.id, this.createBlankFeature(), path)
+					this.foundFilePaths.push(path)
+				}
+			});
+		}
+	}));
 
 	this.authService.currentUser.subscribe(next => this.currentUser = next);
 
@@ -123,6 +135,7 @@ export class ControlBarComponent implements OnInit {
 		try {
 			//restores view to the last visited project from local storage
 			lastProj = JSON.parse(window.localStorage.getItem("lastProj"))
+			console.log(lastProj)
 		} catch (error) {
 			lastProj = this.projectsService.setActiveProject(this.projects[0]);
 		}
@@ -131,7 +144,12 @@ export class ControlBarComponent implements OnInit {
 		if(lastProj == "none" || lastProj == null) {
 			lastProj = this.projectsService.setActiveProject(this.projects[0]);
 		}
-		this.projectsService.setActiveProject(lastProj);
+
+		try {
+			this.projectsService.setActiveProject(lastProj);
+		} catch (error) {
+			this.projectsService.setActiveProject(this.projects[0]);
+		}
 	  }
 
 	  this.groupsService.groups.subscribe((next) => {
@@ -230,13 +248,15 @@ export class ControlBarComponent implements OnInit {
   }
 
   openFilePicker() {
+	//Refreshes the list of found paths used in importing images without Geo tagging
+	this.foundFilePaths = []
 	const modal = this.dialog.open(ModalFileBrowserComponent);
 	modal.afterClosed().subscribe( (files: Array<RemoteFile>) => {
-		//if (files != null) {this.geoDataService.importFileFromTapis(this.selectedProject.id, files);}
-		if (files != null) {
+		if (files != null) {this.geoDataService.importFileFromTapis(this.selectedProject.id, files);}
+		/*if (files != null) {
 			files.forEach( (file) => {
 				this.geoDataService.uploadNewFeature(this.selectedProject.id, this.createBlankFeature(), file)
-			})};
+			})};*/
 		}
 	);
 
@@ -244,10 +264,6 @@ export class ControlBarComponent implements OnInit {
 	// modal.content.onClose.subscribe( (files: Array<RemoteFile>) => {
 	//   this.geoDataService.importFileFromTapis(this.selectedProject.id, files);
 	// });
-  }
-
-  outputEXIF(){
-	console.log(EXIF.getAllTags(this))
   }
 
   //Creates a feature with a long/lat value of 0,0 and no associated image.

@@ -16,6 +16,9 @@ export class FormDropDownComponent {
   private activeFeatureId$: Subscription;
   activeFeatureId: number;
 
+  activeGroup: string;
+  private activeGroup$: Subscription;
+
   constructor(private formsService: FormsService,
     private groupsService: GroupsService) { }
 
@@ -25,13 +28,32 @@ export class FormDropDownComponent {
     this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe((next) => {
       this.activeFeatureId = next;
     });
-    const index = this.formsService.getSelectedRadio().findIndex(item => item.id === this.activeFeatureId && item.compId === 2);
-    if (index > -1){
-      this.chosenTag = this.formsService.getSelectedRadio()[index]['option']
-    }
+
+    this.activeGroup$ = this.activeGroup$ = this.groupsService.activeGroup.subscribe((next) => {
+      this.activeGroup = next;
+    });
+
+    let index
+    this.formsService.getSelectedRadio().forEach(opt=> {
+      // console.log(opt)
+      if(opt != undefined){
+        index = opt.findIndex(item => item.id === this.activeFeatureId && item.compId === 2 && item.groupName === this.activeGroup && item.title === this.form['label']);
+        // console.log(index)
+        if (index > -1){
+          // console.log(opt[index].option)
+          this.chosenTag = opt[index].option
+        }}
+      
+      
+    });
+
+    // const index = this.formsService.getSelectedRadio().findIndex(item => item.id === this.activeFeatureId && item.compId === 2);
+    // if (index > -1){
+    //   this.chosenTag = this.formsService.getSelectedRadio()[index]['option']
+    // }
     
-    console.log(this.chosenTag)
+    // console.log(this.chosenTag)
   }
 
-  updateCheckedTag(){ console.log(this.chosenTag); this.formsService.updateSelectedRadio(this.chosenTag, 2, this.activeFeatureId);}
+  updateCheckedTag(){ console.log(this.chosenTag); this.formsService.updateSelectedRadio(this.chosenTag, 2, this.activeFeatureId, this.activeGroup, this.form['label']);}
 }

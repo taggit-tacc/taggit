@@ -29,14 +29,14 @@
 
   <div *ngIf="showSubitem" class="subitem">
 	  <div class="subitem-scroll">
-		  <div *ngFor = "let tag of tagList">
+		  <div *ngFor = "let tag of newTag">
 			<div *ngIf = "tag.groupName == activeGroup">
 				<div *ngIf = "tag.feature == activeFeatureId">
 			<div class="form-item-container">  
 				<div class="name-group"> {{tag.label}} ({{tag.type}})</div>
 				
 				<div class="button-group">
-					<div (click)="formsService.deleteTag(activeGroup, tag.label)">
+					<div (click)="formsService.deleteTag(activeGroup, tag)">
 						<i class="fas fa-minus"
 						   matTooltip="Delete"
 						   matTooltipPosition="above"
@@ -44,15 +44,15 @@
 						</i>
 					  </div> <!-- delete button -->
 					
-					<div (click)="openRenameOptionModal(renameFormItemModal)">
+					<!-- <div (click)="openRenameOptionModal(renameFormItemModal)">
 						<i class="fas fa-edit"
 						   matTooltip="Rename"
 						   matTooltipPosition="above"
 						   style="cursor: pointer">
 						</i>
-					</div> <!-- rename button -->
+					</div> rename button -->
 
-					<div *ngIf="tag.type != 'text'">
+					<!-- <div *ngIf="tag.type != 'text'">
 
 						<div (click)="openOptionToggle(tag.label)">
 						  <i class="fas fa-ellipsis-h"
@@ -62,7 +62,7 @@
 						  </i>
 						</div>
 	  
-					  </div> <!-- three dots -->
+					  </div> three dots -->
 
 					<ng-template #renameFormItemModal>
 						<input matInput #formItemRename
