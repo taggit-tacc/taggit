@@ -76,9 +76,7 @@ export class GroupsService {
 
 		  //if it exist
 		  if (!tempGroupList[group.name]) {
-			// console.log("RENEWING");
-			// console.log(group.name);
-			// console.log(feat);
+
 			tempGroupList[group.name] = {
 			  name: group.name,
 			  features: [],
@@ -86,36 +84,12 @@ export class GroupsService {
 			  icon: group.icon
 			}
 		  }
+		//   console.log(tempGroupList[group.name].features)
+		  let index = tempGroupList[group.name].features.findIndex(item => (item == feat))
+		  if(index == -1){
 		  tempGroupList[group.name].features.push(feat);
+		  }
 
-		  // console.log("Inside Service");
-		  // console.log(tempGroupList);
-		  // tempFeatList[group.name].push(feat);
-
-		  // if (tempGroupList[group.name] != undefined) {
-		  //	tempGroupList[group.name].features = tempFeatList[group.name];
-		  // } else {
-		  //	tempGroupList[group.name] = {
-		  //	  name: group.name,
-		  //	  features: tempFeatList[group.name],
-		  //	  color: group.color,
-		  //	}
-		  // }
-		  //	{
-		  //	name: group.name,
-		  //	features: tempFeatList[group.name],
-		  //	color: group.color,
-		  // });
-
-		  // if (!tempGroupList.) {
-
-		  // }
-
-		  // tempGroupList.push({
-		  //	name: group.name,
-		  //	features: tempFeatList[group.name],
-		  //	color: group.color,
-		  // });
 
 		}
 	  }

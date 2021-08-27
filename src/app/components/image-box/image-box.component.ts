@@ -66,9 +66,14 @@ export class ImageBoxComponent implements OnInit {
 	this.groupsService.groups.subscribe((next) => {
 	  this.groupList = next;
 
+	//   console.log(this.groupList)
+	//   console.log("HELLOOOOOOO")
 	  if (this.groupList != null && this.groupList.length > 0 && this.featureSource != null) {
+		// console.log(this.groupList)
+		
 		this.groupList.forEach(e => {
-		  e.features.forEach(c => {
+			// console.log(e)
+			e.features.forEach(c => {
 
 			if (c.id == this.feature.id) {
 			  if (!this.colors.includes(e.color)) {
@@ -175,7 +180,7 @@ export class ImageBoxComponent implements OnInit {
   }
 
   deleteFromGroup(color: string) {
-	console.log(this.groupList);
+	// console.log(this.groupList);
 	this.groupList.forEach(e => {
 	  // When it is the sole feature
 	  if (e.features.length <= 1) {
@@ -209,8 +214,8 @@ export class ImageBoxComponent implements OnInit {
 	this.groupsService.setActiveFeatureNum(0);
 	this.groupList.forEach(e => {
 	  if (e.name == name) {
-		  console.log(feat)
-		e.features.push(feat);
+		//   console.log(this.feature)
+		e.features.push(this.feature);
 		color = e.color;
 	  }
 	});
@@ -240,7 +245,7 @@ export class ImageBoxComponent implements OnInit {
 			this.tempGroup = e.features;	
 		}
 		});
-	console.log(this.tagList)
+	// console.log(this.tagList)
 	
 	for (let tag of this.tagList){
 		if (tag.feature === this.tempGroup[0].id && tag.groupName === name){
@@ -251,15 +256,16 @@ export class ImageBoxComponent implements OnInit {
 				// value: this.formValue,
 				// required: this.formRequired,
 				options: tag.options,
-				feature: feat.id
+				feature: this.feature.id,
+				extra: []
 			}
 			this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
 		}
 	}
 
-	console.log(name)
-	console.log(featProp)
-	console.log(this.tempGroup[0].id)
+	// console.log(name)
+	// console.log(featProp)
+	// console.log(this.tempGroup[0].id)
 	this.geoDataService.updateFeatureProperty(this.selectedProject.id,
 											  Number(feat.id),
 											  featProp);

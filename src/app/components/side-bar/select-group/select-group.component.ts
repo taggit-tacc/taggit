@@ -146,7 +146,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 	  this.groupsService.tempGroup.subscribe((next) => {
 		this.tempGroup = next;
 	  });
-	  console.log(this.tempGroup)
+	//   console.log(this.tempGroup)
 
 	this.projectsService.activeProject.subscribe(next => {
 	  this.selectedProject = next;
@@ -156,7 +156,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 	  this.groupList = next;
 	});
 
-	console.log(this.groupList)
+	// console.log(this.groupList)
 
 	this.activeGroup$ = this.groupsService.activeGroup.subscribe((next) => {
 	  this.activeGroup = next;
