@@ -86,6 +86,7 @@ export class ProjectsService {
 
   //Note: This will delete the project for everyone, if the project is shared.
   delete(data: Project):void{
+    window.localStorage.setItem("lastProj", JSON.stringify("none"))
     this.http.delete(environment.apiUrl  + `/projects/${data.id}/`)
       .subscribe( (resp) => {
         window.localStorage.setItem("lastProj", JSON.stringify("none"))
