@@ -71,7 +71,12 @@ export class ProjectsService {
   setActiveProject(proj: Project): void {
     //saves change as last visited project
     window.localStorage.setItem("lastProj", JSON.stringify(proj))
-    this._activeProject.next(proj);
+    try {
+      this._activeProject.next(proj);
+    } catch (error) {
+      return error
+    }
+
   }
 
   
