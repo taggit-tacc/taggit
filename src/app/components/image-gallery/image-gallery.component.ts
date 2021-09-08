@@ -87,9 +87,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
 			return feature.assets[0].asset_type == "image";
 		  });
 
-		  if (this.scrollSum == 15) {
 			this.featureListScroll = this.featureList.slice(0, this.scrollSum);
-		  }
 		} else {
 			//console.log("This didn't work")
 		  this.imagesExist = false;
@@ -169,13 +167,14 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
 
   appendSum() {
 	if (this.featureList.length != 0) {
-	  if (this.scrollSum > this.featureList.length) {
-		this.scrollSum = this.featureList.length;
-	  }
 	  if (this.scrollSum == this.featureList.length) {
 		this.spinner.hide();
 		this.scrolling = false;
 		return;
+	  }
+		//If scrollSum is larger than the length of the feature list, curtail it to just be the length
+	  if (this.scrollSum > this.featureList.length) {
+		this.scrollSum = this.featureList.length;
 	  }
 	}
 	this.featureListScroll = this.featureList.slice(0, this.scrollSum);
