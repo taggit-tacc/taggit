@@ -147,6 +147,7 @@ export class ImageBoxComponent implements OnInit {
 	// Hide group-bar
 	if (this.tempGroup.length == 0) {
 	  this.groupsService.setShowGroup(false);
+	  this.groupsService.setItemsSelected(false);
 	} else {
 	  this.groupsService.setShowGroup(true);
 	}
