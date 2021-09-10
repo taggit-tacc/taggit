@@ -52,7 +52,6 @@ export class GeoDataService {
 	this._loaded.next(false);
 	this.http.get<FeatureCollection>(environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring)
 	  .subscribe( (fc: FeatureCollection) => {
-		  console.log(fc)
 		fc.features = fc.features.map( (feat: Feature) => new Feature(feat));
 		this._features.next(fc);
 		this._loaded.next(true);
@@ -62,7 +61,6 @@ export class GeoDataService {
   deleteFeature(feature: Feature) {
 	this.http.delete(environment.apiUrl + `projects/${feature.project_id}/features/${feature.id}/`)
 	  .subscribe( (resp) => {
-		  console.log(resp)
 		this.getFeatures(feature.project_id);
 	  });
   }
@@ -182,7 +180,7 @@ export class GeoDataService {
 	//Calls the addFeatureAsset route in GeoAPI, resp is a list of features
 	this.http.post(environment.apiUrl + `projects/${projectId}/features/`, payload)
 	.subscribe( (resp) => {
-		this.getFeatures(projectId)
+		//this.getFeatures(projectId)
 		response = new Feature(resp[0])
 		this.importImage(projectId, response, path)
 	});
