@@ -431,8 +431,7 @@ export class ControlBarComponent implements OnInit {
 
   openSidebar() {
 	if( !this.showSidebar) {
-		let scrollPos = document.documentElement.scrollTop
-		this.scrollService.setScrollPosition(scrollPos)
+		this.scrollService.setScrollPosition()
 	} else {
 		this.scrollService.setScrollRestored(true)
 	}

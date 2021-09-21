@@ -55,9 +55,8 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   
 
   ngAfterViewChecked() {
-	if ( this.scrollService.scrollRestored ) {
+	if ( this.scrollService.scrollRestored) {
 		this.scrollService.scroll()
-		this.scrollService.setScrollPosition(document.documentElement.scrollTop)
 	}
   }
 
@@ -83,9 +82,13 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
 	  if (fc) {
 		if (fc.features.length > 0) {
 		  this.imagesExist = true;
-		  this.featureList = fc.features.filter(feature => {
-			return feature.assets[0].asset_type == "image";
-		  });
+		  try {
+			this.featureList = fc.features.filter(feature => {
+				return feature.assets[0].asset_type == "image";
+			  });
+		  } catch (error) {
+			  console.log(error)
+		  }
 
 			this.featureListScroll = this.featureList.slice(0, this.scrollSum);
 		} else {

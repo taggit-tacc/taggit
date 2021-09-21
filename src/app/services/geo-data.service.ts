@@ -10,6 +10,7 @@ import {take} from 'rxjs/operators';
 import * as querystring from 'querystring';
 import {RemoteFile} from 'ng-tapis';
 import { NotificationsService } from './notifications.service';
+import { ScrollService } from './scroll.service';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +34,8 @@ export class GeoDataService {
   public loaded: Observable<boolean> = this._loaded.asObservable();
 
   constructor(private http: HttpClient,
-	private notificationsService: NotificationsService) {
+	private notificationsService: NotificationsService,
+	private scrollService: ScrollService) {
 	this._features = new BehaviorSubject<FeatureCollection>({type: 'FeatureCollection', features: []});
 	this.features$ = this._features.asObservable();
 	this._activeFeature = new BehaviorSubject<any>(null);
@@ -47,7 +49,7 @@ export class GeoDataService {
 	this._activeOverlay = new BehaviorSubject<any>(null);
   }
 
-  getFeatures(projectId: number, query: AssetFilters = new AssetFilters()): void {
+  getFeatures(projectId: number, query: AssetFilters = new AssetFilters(), restoreScroll = false): void {
 	const qstring: string = querystring.stringify(query.toJson());
 	this._loaded.next(false);
 	this.http.get<FeatureCollection>(environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring)
@@ -55,13 +57,17 @@ export class GeoDataService {
 		fc.features = fc.features.map( (feat: Feature) => new Feature(feat));
 		this._features.next(fc);
 		this._loaded.next(true);
+
+		if ( restoreScroll ) {
+			this.scrollService.setScrollRestored(true)
+		}
 	  });
   }
 
   deleteFeature(feature: Feature) {
 	this.http.delete(environment.apiUrl + `projects/${feature.project_id}/features/${feature.id}/`)
 	  .subscribe( (resp) => {
-		this.getFeatures(feature.project_id);
+		this.getFeatures(feature.project_id, new AssetFilters(), true);
 	  });
   }
 

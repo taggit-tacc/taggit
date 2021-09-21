@@ -15,6 +15,13 @@
 		<i class="fas fa-folder"></i>
 		<span > Home </span>
 	</div>
+	<div class="clickable" class="grid-x file-row">
+		<i class="fas fa-folder-open"></i>
+		<span class="lineBreak"> {{selectedPath}} </span>
+	</div>
+	<div *ngIf="retrievalError" class="grid-x file-row" class="error">
+		Error retrieving files
+	</div>
 	<div class="grid-x file-row" *ngFor="let file of filesList; let fileIndex = index" [ngClass]="{'selected':selectedFiles.has(file.path)}">
 		<div class="clickable" (click)="select($event, file, fileIndex)"  (dblclick)="browse(file)">
 
