@@ -23,8 +23,10 @@ export class ModalFileBrowserComponent implements OnInit {
   public allowedExtensions: Array<string> = this.tapisFilesService.IMPORTABLE_TYPES;
  
   private currentUser: AuthenticatedUser;
+  public selectedPath;
   public filesList: Array<RemoteFile> = [];
   public inProgress= true;
+  public retrievalError = false;
   public selectedFiles: Map<string, RemoteFile> = new Map();
   public onClose: Subject<Array<RemoteFile>> = new Subject<Array<RemoteFile>>();
   public projects: Array<SystemSummary>;
@@ -109,6 +111,7 @@ export class ModalFileBrowserComponent implements OnInit {
 
 
   browse(file: RemoteFile) {
+	this.selectedPath = file.path
 	this.selectedSystem = this.selectedSystem //Self-assignment keeps the system name from disappearing while browsing subfolders
 	if (file.type !== 'dir') { return; }
 	this.currentDirectory = file;
@@ -139,7 +142,6 @@ export class ModalFileBrowserComponent implements OnInit {
 	}
 
 	this.inProgress = true;
-
 	this.tapisFilesService.listFiles(this.currentDirectory.system, this.currentDirectory.path, this.offset, ModalFileBrowserComponent.limit)
 	.subscribe(listing => {
 		const files = listing.result;
@@ -161,10 +163,13 @@ export class ModalFileBrowserComponent implements OnInit {
           }})
 
 		  this.inProgress = false;
+		  this.retrievalError = false;
 		  this.filesList = this.filesList.concat(newFile);
 		  this.offset = this.offset + files.length
 	},
 	error => {
+		//If retrieving the files from DesignSafe bugs out due to the site being down, this is where it ends up
+		this.retrievalError = true;
 		this.inProgress = false;
 	});
   }

@@ -110,17 +110,19 @@ export class ControlBarComponent implements OnInit {
 		let hasFailureNotification = next.some(note => note.status === 'error');
 		if (hasSuccessNotification) {
 		  this.geoDataService.getFeatures(this.selectedProject.id);
+		  console.log("Features Got")
 		}
 		if (hasFailureNotification) {
 			next.forEach(item => {
 				//Compiles a list of all necessary files to import via the alt method
+				//The substring from 0 to 16 contains the phrase "Error importing", everything after this is the file path
 				if( (item.message.substring(0,16) == "Error importing ") && !( this.foundFilePaths.some(filePath => filePath === item.message.substring(16)) ) ) {
 					let path = item.message.substring(16)
-					console.log(path)
 					this.geoDataService.uploadNewFeature(this.selectedProject.id, this.createBlankFeature(), path)
 					this.foundFilePaths.push(path)
 				}
 			});
+			this.geoDataService.getFeatures(this.selectedProject.id);
 		}
 	}));
 
@@ -429,8 +431,7 @@ export class ControlBarComponent implements OnInit {
 
   openSidebar() {
 	if( !this.showSidebar) {
-		let scrollPos = document.documentElement.scrollTop
-		this.scrollService.setScrollPosition(scrollPos)
+		this.scrollService.setScrollPosition()
 	} else {
 		this.scrollService.setScrollRestored(true)
 	}

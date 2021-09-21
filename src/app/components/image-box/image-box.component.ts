@@ -168,6 +168,7 @@ export class ImageBoxComponent implements OnInit {
 	})
 	//Resets contents of temp group
 	this.groupsService.addTempGroup([])
+	this.scrollService.setScrollRestored(true)
   }
 
   openMoreGroupsModal(template: TemplateRef<any>) {
@@ -176,6 +177,7 @@ export class ImageBoxComponent implements OnInit {
   }
 
   openImageDeleteModal(template: TemplateRef<any>) {
+	this.scrollService.setScrollPosition()
 	// this.modalRef = this.modalService.show(template, {class: 'tiny'});
 	this.dialog.open(template);
   }

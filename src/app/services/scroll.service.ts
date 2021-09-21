@@ -12,7 +12,7 @@ export class ScrollService {
 
   setScrollRestored(change:boolean) { this.scrollRestored = change; }
 
-  setScrollPosition(newPos:number) { this.scrollPosition = document.documentElement.scrollTop; }
+  setScrollPosition() { this.scrollPosition = document.documentElement.scrollTop;}
 
   scroll() {
     //Attempts to scroll to the specified location

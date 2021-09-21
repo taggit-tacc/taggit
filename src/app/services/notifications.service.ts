@@ -55,7 +55,8 @@ export class NotificationsService {
   }
 
   showErrorToast(message: string): void {
-    this.toastr.error(message);
+    //this.toastr.error(message);
+    this.toastr.error(message + ", trying alternate method")
   }
 
 }
