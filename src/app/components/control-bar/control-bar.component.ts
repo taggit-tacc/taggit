@@ -77,6 +77,7 @@ export class ControlBarComponent implements OnInit {
 
 	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
 	  this.features = fc;
+	  console.log(this.features)
 
 	  if (this.features != undefined) {
 		this.featureList = this.features.features;
@@ -144,7 +145,7 @@ export class ControlBarComponent implements OnInit {
 
 		//If lastProj is null, then there is no project saved, or can be found, default to the first project in the list
 		if(lastProj == "none" || lastProj == null) {
-			lastProj = this.projectsService.setActiveProject(this.projects[0]);
+			this.projectsService.setActiveProject(this.projects[0]);
 		}
 
 		try {
