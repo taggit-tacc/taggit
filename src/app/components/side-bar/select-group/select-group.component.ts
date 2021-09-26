@@ -181,33 +181,34 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 	this.dialog.open(template);
   }
 
-  deleteGroup() {
-	this.groupsService.addGroup(this.groupList.filter(what => what.name != this.activeGroup))
+  deleteGroup(name: string) {
 
-	for (let feat of this.featureList) {
-	  // this should be a shared group of
-	  // all the currently created objects of a particular feature
+	
+	this.groupList.forEach(group => {
+		if (group.name == name){
+			this.tempGroup = group.features;
+			this.groupList = this.groupList.filter(e => e.name != name);
+		}
+	});
 
-	  let featProp = feat.properties;
-	  featProp.group = featProp.group.filter(e => e.name != this.activeGroup);
+	for (let feat of this.tempGroup){
 
-	  this.geoDataService.updateFeatureProperty(this.selectedProject.id,
-												Number(feat.id),
-												featProp);
+		let featProp = feat.properties;
+
+		featProp.group = featProp.group.filter(e => e.name != name);
+	
+			this.geoDataService.updateFeatureProperty(this.selectedProject.id,
+													Number(feat.id),
+													featProp);
+
+		this.groupsService.addGroup(this.groupList);
 	}
+
 	if (this.groupList.length <= 0) {
 	  this.showSidebar = false;
 	  this.groupsService.setShowSidebar(this.showSidebar);
 	} else {
 	  this.groupsService.setActiveGroup(this.groupList[0].name);
-
-	  // let activeGroup = this.groupList.filter(what => what.name == this.activeGroup[0].name);
-
-	  // if (activeGroup[0].features.length == 0) {
-	  //	this.groupsService.setFeatureImagesExist(false);
-	  // } else {
-	  //	this.groupsService.setFeatureImagesExist(true);
-	  // }
 	}
   }
 
