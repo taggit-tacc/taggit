@@ -145,7 +145,7 @@ export class ControlBarComponent implements OnInit {
 
 		//If lastProj is null, then there is no project saved, or can be found, default to the first project in the list
 		if(lastProj == "none" || lastProj == null) {
-			this.projectsService.setActiveProject(this.projects[0]);
+			lastProj = this.projects[0];
 		}
 
 		try {
