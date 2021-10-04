@@ -148,11 +148,7 @@ export class ControlBarComponent implements OnInit {
 			lastProj = this.projects[0];
 		}
 
-		try {
-			this.projectsService.setActiveProject(lastProj);
-		} catch (error) {
-			this.projectsService.setActiveProject(this.projects[0]);
-		}
+		this.projectsService.setActiveProject(lastProj);
 	  }
 
 	  this.groupsService.groups.subscribe((next) => {
@@ -318,7 +314,7 @@ export class ControlBarComponent implements OnInit {
 
   openProjectModal(project) {
 	// console.log(project);
-	this.dialog.open(ModalCurrentProjectComponent, {
+	let modal = this.dialog.open(ModalCurrentProjectComponent, {
 	  height: '400px',
 	  width: '600px',
 	  data: {
@@ -327,6 +323,10 @@ export class ControlBarComponent implements OnInit {
 		description: project.description,
 		uuid: project.uuid
 	  }
+	});
+
+	modal.afterClosed().subscribe( (passbackData: Array<string>) => {
+		this.projectsService.setActiveProject(this.projects[0])
 	});
 }
 

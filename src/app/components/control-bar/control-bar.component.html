@@ -74,7 +74,7 @@
 	</a>
 
 	<button mat-raised-button
-			(click)="openAddGroupModal(addGroupModal)">Add Group</button>
+			(click)="openAddGroupModal(addGroupModal)" *ngIf="itemsSelected && !showSidebar">Add Group</button>
 
 	<ng-template #addGroupModal>
 	  <mat-form-field>

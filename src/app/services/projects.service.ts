@@ -71,7 +71,12 @@ export class ProjectsService {
   setActiveProject(proj: Project): void {
     //saves change as last visited project
     window.localStorage.setItem("lastProj", JSON.stringify(proj))
-    this._activeProject.next(proj);
+    try {
+      this._activeProject.next(proj);
+    } catch (error) {
+      return error
+    }
+
   }
 
   
@@ -86,6 +91,7 @@ export class ProjectsService {
 
   //Note: This will delete the project for everyone, if the project is shared.
   delete(data: Project):void{
+    window.localStorage.setItem("lastProj", JSON.stringify("none"))
     this.http.delete(environment.apiUrl  + `/projects/${data.id}/`)
       .subscribe( (resp) => {
         window.localStorage.setItem("lastProj", JSON.stringify("none"))

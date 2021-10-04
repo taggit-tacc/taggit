@@ -6,6 +6,7 @@ import { GeoDataService } from '../../../services/geo-data.service';
 import { FormsService } from '../../../services/forms.service';
 import { GroupsService } from '../../../services/groups.service';
 import { Subscription } from 'rxjs';
+import { Feature } from '@turf/turf';
 
 @Component({
   selector: 'app-select-image',
@@ -25,6 +26,7 @@ export class SelectImageComponent implements OnInit, OnDestroy {
   activeFeatureNum: number;
   showSidebar: boolean
   showSubitem: boolean = true;
+  tempGroup: Array<Feature>;
 
   constructor(private formsService: FormsService,
 			  private groupsService: GroupsService,
@@ -80,19 +82,26 @@ export class SelectImageComponent implements OnInit, OnDestroy {
 	return this.activeFeatureNum == index;
   }
 
-  deleteGroup() {
-	this.groupsService.addGroup(this.groupList.filter(what => what.name != this.activeGroup))
+  deleteGroup(name: string) {
+	
+	this.groupList.forEach(group => {
+		if (group.name == name){
+			this.tempGroup = group.features;
+			this.groupList = this.groupList.filter(e => e.name != name);
+		}
+	});
 
-	for (let feat of this.featureList) {
-	  // this should be a shared group of
-	  // all the currently created objects of a particular feature
+	for (let feat of this.tempGroup){
 
-	  let featProp = feat.properties;
-	  featProp.group = featProp.group.filter(e => e.name != this.activeGroup);
+		let featProp = feat.properties;
 
-	  this.geoDataService.updateFeatureProperty(this.selectedProject.id,
-												Number(feat.id),
-												featProp);
+		featProp.group = featProp.group.filter(e => e.name != name);
+	
+			this.geoDataService.updateFeatureProperty(this.selectedProject.id,
+													Number(feat.id),
+													featProp);
+
+		this.groupsService.addGroup(this.groupList);
 	}
 
 	if (this.groupList.length <= 0) {
@@ -106,22 +115,26 @@ export class SelectImageComponent implements OnInit, OnDestroy {
   deleteAsset(assetId: any) {
 	this.groupList.forEach(group => {
 	  if (group.name === this.activeGroup) {
+		this.tempGroup = group.features;
 		if (group.features.length == 1) {
-		  this.deleteGroup();
+		  this.deleteGroup(group.name);
 		} else {
 		  group.features = group.features.filter(asset => asset.id != assetId);
-		  this.groupsService.addGroup(this.groupList);
+
 		}
 	  }
 	});
 
-	let featProp = this.getActiveFeatures();
-	featProp.group = featProp.filter(e => e.properties.group.name != this.activeGroup);
+	for (let feat of this.tempGroup){
+
+	let featProp = feat.properties;
+	featProp.group = featProp.group.filter(e => e.name != this.activeGroup);
 
 	this.geoDataService.updateFeatureProperty(this.selectedProject.id,
-											  Number(this.getActiveFeatures()[0].id),
+											  Number(feat.id),
 											  featProp);
-  }
+	this.groupsService.addGroup(this.groupList);
+	}}
 
   getAssetDisplay(asset: any) {
 	if (asset.assets[0].display_path) {
