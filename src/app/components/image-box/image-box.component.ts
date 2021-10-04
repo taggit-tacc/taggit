@@ -274,12 +274,15 @@ export class ImageBoxComponent implements OnInit {
 											  featProp);
 
 	this.groupsService.addGroup(this.groupList);
+	this.geoDataService.getFeatures(Number(feat.project_id));
   }
 
   addGroups(name: string) {
 	  this.tempGroup.forEach( (feat) => {
 		  this.selectGroupForm(name, feat)
 	  })
+	  //this.groupsService.setUnselectAll(true);
+	  //this.groupsService.setItemsSelected(false);
 	}
 
   getGroupNameFromColor(color: string) {
