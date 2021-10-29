@@ -29,7 +29,7 @@
 
   <div *ngIf="showSubitem" class="subitem">
 	  <div class="subitem-scroll">
-		  <div *ngFor = "let tag of newTag">
+		  <div *ngFor = "let tag of tagList">
 			<div *ngIf = "tag.groupName == activeGroup">
 				<div *ngIf = "tag.feature == activeFeatureId">
 			<div class="form-item-container">  

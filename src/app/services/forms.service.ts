@@ -342,24 +342,51 @@ export class FormsService {
   notebook = []; //Var for storing note tags
 
   saveTag(gName: string, tag: tags, tLabel: string): void{
-	const index = this.tagData.findIndex(item => item.groupName === gName  && item.label === tLabel && item.feature === tag.feature);
+	const index = this.tempData.findIndex(item => item.groupName === gName  && item.label === tLabel && item.feature === tag.feature);
 
 	if (index > -1) {
 		// console.log("IT WORKED")
-		this.tagData[index].label = tag.label;
+		this.tempData[index].label = tag.label;
 		// this.tagData[index].options = tag.options;
 	}
 	else {
 		tag.groupName = gName;
-		this.tagData.push(tag);
+		this.tempData.push(tag);
 		console.log("IT WORKED")
 		// this.geoDataService.updateFeatureProperty()
 		// console.log("Tag data:")
 		// console.log(this.tagData)
 	}
 }
+
+tempData = [];
 getTags(): tags[]{
-	return this.tagData;
+	this.tempData = [];
+	let count = 0
+	// console.log(this.tempData)
+	this.tempData = this.tagData
+	// console.log(this.tempData)
+	// console.log(this.tagData)
+	for (let feat of this.featureList){
+		//   console.log(typeof(feat.properties.tag))
+		  if(feat.properties.tag != undefined){
+			  feat.properties.tag.forEach(tag => {
+				//   console.log(tag)
+				//   console.log(this.tempData)
+				const index = this.tempData.findIndex(item => item.groupName === tag.groupName  && item.label === tag.label && item.feature === tag.feature);
+				// console.log(index)
+
+				if(index == -1){
+					// count += 1
+					this.tempData.push(tag)
+				}
+			  });
+		  }
+	  }
+	// console.log(this.tagData)
+	// console.log(this.tempData)
+	// console.log(count)
+	return this.tempData;
 }
 
 newTag: object[] = [];
@@ -373,13 +400,19 @@ deleteTag(gName: string, tag: tags): void{
 	// 	this.tagData.splice(index, 1);
 	// 	}
 	// }
-	// const index = this.tagData.findIndex(item => item.groupName === gName && item.label === tLabel);
-	// 	// if(tag['groupName'] === gName && tag['label'] === tLabel)
-	// 	if (index > -1) {
-	// 	// delete this.exampleNote[index];
-	// 	this.tagData.splice(index, 1);
-	// 	}
-	console.log(tag)
+	let data = this.tempData;
+	while(true){
+		const index = data.findIndex(item => item.groupName === gName && item.label === tag.label && item.type === tag.type);
+		// delete this.exampleNote[index];
+		if (index > -1) {
+		data.splice(index, 1);
+		}else{
+			break;
+		}
+	}
+
+	this.tempData = data;
+
 	let icon:string
 	let payload
 	this.groupList.forEach(group => {
@@ -428,35 +461,34 @@ deleteTag(gName: string, tag: tags): void{
 				});
 			} 
 			
-			console.log(feat)
-			//   console.log(typeof(feat.properties.tag))
-			if(feat.properties.tag != undefined){
-				feat.properties.tag.forEach(tTag => {
-					console.log(tTag)
-					console.log(tag)
-					// console.log(tTag != tag)
-					console.log((tTag.groupName === tag.groupName &&  tTag.label === tag.label &&  tag.type === tag.type))
-					if((tTag.groupName === tag.groupName && tTag.label === tag.label &&  tag.type === tag.type)){
-					// this.newTag.push(tTag)
-					}
-					else{
-						payload.tag.push(tTag)
-					}
-				});
+			console.log(data)
+			payload.tag = data;
+			console.log(payload.tag)
 
-				// payload.tag.push(this.newTag)
+			//   console.log(typeof(feat.properties.tag))
+			// if(feat.properties.tag != undefined){
+			// 	feat.properties.tag.forEach(tTag => {
+			// 		console.log(tTag)
+			// 		console.log(tag)
+			// 		// console.log(tTag != tag)
+			// 		console.log((tTag.groupName === tag.groupName &&  tTag.label === tag.label &&  tag.type === tag.type))
+			// 		if((tTag.groupName === tag.groupName && tTag.label === tag.label &&  tag.type === tag.type)){
+			// 		// this.newTag.push(tTag)
+			// 		}
+			// 		else{
+			// 			payload.tag.push(tTag)
+			// 		}
+			// 	});
+
+			// 	// payload.tag.push(this.newTag)
 				
-				// console.log(payload)
-				// this.newTag = []
-			}
+			// 	// console.log(payload)
+			// 	// this.newTag = []
+			// }
 			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
 			payload.tag = []
 		}
-
-
-	console.log(payload)
 	// this.newTag = []
-	
 }
 
 optData = []
