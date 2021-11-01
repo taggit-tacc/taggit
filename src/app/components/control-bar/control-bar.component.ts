@@ -521,9 +521,11 @@ export class ControlBarComponent implements OnInit {
 
   //saves project as a CSV file by first organizing a JSON or a CSV and converting it. Saves to either MyData or local
   saveFile(isJSON:Boolean, forExport:Boolean = false, systemID = "", path = "", fileName) {
-	  let CSVHolder = "longitude,latitude,src,groupName,groupColor\r\n"
+	  let CSVHolder = "FeatureID,longitude,latitude,src,groupName,groupColor,groupIcon,Icon,Color"
 	  let JSONHolder: Array<object> = []
 	  let projID = ""
+	  let tagsPresent = true
+	  let headerTagOptions = 0 //Controls how many tagOption columns are in the final CSV
 
 	  this.featureList.forEach(element => {
 			//Retrieves project ID for building a filename
@@ -542,16 +544,49 @@ export class ControlBarComponent implements OnInit {
 			//NOTE: future group properties can be accessed in the same way
 			let groupName:String = ""
 			let groupColor:String = ""
+			let group, styles, tag
 			try {
+				group = element.properties['group']
+				styles = element.properties['style']
+				tag = element.properties['tag']
 				groupName = element.properties['group'][0].name
-				groupColor = element.properties['group'][0].color	
+				groupColor = element.properties['group'][0].color
+
+				//Check if the tag var has any data, if so, add new lines to the header
+				if ( tag[0] != undefined && tagsPresent) {
+					//Add a few more lines to the holder to accomodate tags
+					CSVHolder += ",tagType,tagSelection"
+					tag.forEach(tag => {
+						let tempTagOptionNum = 0
+						tag.options.forEach(option => {
+							tempTagOptionNum++
+							if (tempTagOptionNum > headerTagOptions) {
+								CSVHolder += ",tagOption"
+								headerTagOptions = tempTagOptionNum
+							}
+						});
+					});
+					CSVHolder += "\r\n"
+					tagsPresent = false
+				} else {
+					//If not, indent the last line.
+					CSVHolder +="\r\n"
+				}
+
 			} catch (error) {
+				group = {
+					"color": "#000000",
+					"name": "N/A",
+					"icon": "fa-house-damage"
+				}
+				tag = []
+
 				groupName = "N/A"
 				groupColor = "#000000"
 			}
 
 			if (isJSON) {
-				//Alternately compiles it into a JSON
+				//Compile the data it into a JSON
 				let transferJSON = {
 					"longitude": coordinates[0],
 					"latitude": coordinates[1],
@@ -564,9 +599,34 @@ export class ControlBarComponent implements OnInit {
 			
 			} else {
 				//Compiles the attributes into a CSV format
-				let tempCSV = coordinates[0] + "," + coordinates[1] + "," + featureSource + "," + groupName + "," + groupColor + "\r\n"
-				//And adds it to a growing full CSV file
-				CSVHolder += tempCSV
+				group.forEach(group => {
+					//If tags exist, try to add each tag to the CSV
+					if ( tag[0] != undefined) {
+						tag.forEach(tag => {
+							//If the tag is in the group, compile a row
+							if(tag.groupName === group.name) {
+								console.log(tag);
+								let tempCSV = element.id + "," + coordinates[0] + "," + coordinates[1] + "," + featureSource + ","
+								+ group.name+ "," + group.color + "," + group.icon + "," + styles.faIcon + "," + styles.color + "," 
+								+ tag.type + "," + tag.extra[0].option
+								tag.options.forEach(option => {
+									//Save each option in the tag to the CSV
+									//Adds just the label to the CSV, we can reconstruct the key from that.
+									tempCSV += "," + option.label
+								});
+								tempCSV += "\r\n"
+								//And adds it to a growing full CSV file
+								CSVHolder += tempCSV
+							}
+						});
+					} else {
+						let tempCSV = element.id + "," + coordinates[0] + "," + coordinates[1] + "," + featureSource + ","
+						+ group.name+ "," + group.color + "," + group.icon + "\r\n"
+						//And adds it to a growing full CSV file
+						CSVHolder += tempCSV
+					}
+
+				});
 			}
 	  });
 	  let content
