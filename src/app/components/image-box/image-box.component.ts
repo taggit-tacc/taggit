@@ -57,7 +57,6 @@ export class ImageBoxComponent implements OnInit {
 	featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
 	this.featureSource = featureSource;
 	this.coordinates = this.feature.geometry['coordinates'];
-	// console.log(coordinates[0]);
 
 	this.projectsService.activeProject.subscribe(next => {
 	  this.selectedProject = next;
@@ -66,8 +65,6 @@ export class ImageBoxComponent implements OnInit {
 	this.groupsService.groups.subscribe((next) => {
 	  this.groupList = next;
 
-	//   console.log(this.groupList)
-	//   console.log("HELLOOOOOOO")
 	  if (this.groupList != null && this.groupList.length > 0 && this.featureSource != null) {
 		// console.log(this.groupList)
 		
@@ -208,6 +205,7 @@ export class ImageBoxComponent implements OnInit {
   }
 
   openImageAddModal(template: TemplateRef<any>) {
+	this.scrollService.setScrollPosition()
 	// this.modalRef = this.modalService.show(template, {class: 'tiny'});
 	this.dialog.open(template);
   }
@@ -274,6 +272,9 @@ export class ImageBoxComponent implements OnInit {
 											  featProp);
 
 	this.groupsService.addGroup(this.groupList);
+	//Yes, I know there are two identical lines here. It doesn't work unless it does it twice
+	//I don't know why that is, but if you can figure out a better way, go ahead.
+	this.geoDataService.getFeatures(Number(feat.project_id));
 	this.geoDataService.getFeatures(Number(feat.project_id));
   }
 
@@ -281,8 +282,8 @@ export class ImageBoxComponent implements OnInit {
 	  this.tempGroup.forEach( (feat) => {
 		  this.selectGroupForm(name, feat)
 	  })
-	  //this.groupsService.setUnselectAll(true);
-	  //this.groupsService.setItemsSelected(false);
+	  this.groupsService.setUnselectAll(true);
+	  this.scrollService.setScrollRestored(true)
 	}
 
   getGroupNameFromColor(color: string) {

@@ -472,7 +472,7 @@ deleteOpt(gName:string, opt:object, tag: tags): void {
 }
 
 addCheckedOpt(opt:object, id: number, group: string, label:string): void {
-	let option = { key: opt['key'], label: opt['label'], id: id , group: group, title: label}
+	let option = { key: opt['key'], label: opt['label'], choice: opt['key'], id: id , group: group, title: label}
 	this.checkedOptions.push(option)
 	console.log(this.checkedOptions)
 	let icon:string

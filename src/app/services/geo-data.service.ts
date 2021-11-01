@@ -154,7 +154,7 @@ export class GeoDataService {
 	  .subscribe( (resp) => {
 		this.notificationsService.showSuccessToast('Import started!');
 	  }, error => {
-		this.notificationsService.showErrorToast('Import failed! Try again?');
+		this.notificationsService.showImportErrorToast('Import failed! Try again?');
 	  });
   }
 

@@ -7,6 +7,7 @@ import {Project, IProjectUser} from '../models/models';
 import { environment } from '../../environments/environment';
 import {AuthService} from './authentication.service';
 import { validateBBox } from '@turf/helpers';
+import { NotificationsService } from './notifications.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,8 @@ export class ProjectsService {
   public readonly projectUsers$: Observable<Array<IProjectUser>> = this._projectUsers.asObservable();
 
   constructor(private http: HttpClient,
-    private authService: AuthService) { }
+    private authService: AuthService,
+    private notificationsService: NotificationsService) { }
 
     testGeoApi():void {
       const data = {
@@ -49,6 +51,7 @@ export class ProjectsService {
      //console.log(this._projects.getValue())
    }, error => {
     console.log("HAHAHA NOPE")
+    this.notificationsService.showErrorToast("Error importing files Design Safe, GeoAPI might be down")
   });
   }
 

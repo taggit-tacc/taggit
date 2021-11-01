@@ -83,7 +83,8 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
 			  try{
 				return feature.assets[0].asset_type === "image";
 		  	  } catch (error) {
-			  	console.log(error)
+			  	console.error(error)
+				return false
 		  	  }
 			});
 			this.featureListScroll = this.featureList.slice(0, this.scrollSum);
