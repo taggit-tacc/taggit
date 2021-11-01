@@ -250,12 +250,16 @@ export class TagGeneratorComponent implements OnInit {
 				formItem.options = this.formOptions;
 			  }
 
+			  payload.tag = this.formsService.getTags();
+
 			  // code from here is a mess
-			  if(feat.properties.tag != undefined){
-				feat.properties.tag.forEach(tag => {
-				  payload.tag.push(tag)
-				});
-			}
+			//   if(feat.properties.tag != undefined){
+			// 	feat.properties.tag.forEach(tag => {
+			// 		const index = payload.tag.findIndex(item => item.groupName === tag.groupName  && item.label === tag.label && item.feature === tag.feature);
+			// 	  	if(index == -1) {payload.tag.push(tag)}
+
+			// 	});
+			// }
 
 			// payload.group.push(this.groupList)
 
@@ -271,12 +275,12 @@ export class TagGeneratorComponent implements OnInit {
 			// payload.tag.push(this.newTag)
 			// console.log(payload.tag[0])
 			// console.log(!payload.tag[0].hasOwnProperty("groupName"))
-			if(payload.tag[0] == undefined ){
-				payload.tag[0] = formItem
-			}else{
-				if(!payload.tag[0].hasOwnProperty("groupName")){payload.tag[0] = formItem}
-				else {payload.tag.push(formItem)}
-			}
+			// if(payload.tag[0] == undefined ){
+			// 	payload.tag[0] = formItem
+			// }else{
+			// 	if(!payload.tag[0].hasOwnProperty("groupName")){payload.tag[0] = formItem}
+			// 	else {payload.tag.push(formItem)}
+			// }
 			// console.log(typeof(payload.tag))
 			// console.log(payload)
 
