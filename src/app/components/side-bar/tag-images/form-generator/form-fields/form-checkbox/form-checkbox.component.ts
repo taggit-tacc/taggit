@@ -37,13 +37,12 @@ export class FormCheckBoxComponent {
 
     // this code checks if the option has been checked or not
     if(this.formsService.getCheckedOpt().length != 0){
-      // console.log(this.checkedOpt)
+ 
       let index 
       this.checkedOpt.forEach(opt => {      
-        console.log("what")
-        // console.log(opt)
+
         if(opt != undefined){index = opt.findIndex(item => item.id === this.activeFeatureId && item.label === this.field.label && item.group === this.activeGroup && item.title === this.form['label']);
-          // console.log(index)
+
           if (index > -1){
             this.isChecked = true
           }}

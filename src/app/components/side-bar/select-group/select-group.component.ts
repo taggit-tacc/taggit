@@ -183,6 +183,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 
   deleteGroup(name: string) {
 
+	this.formsService.deleteGroupTags(name);
 	
 	this.groupList.forEach(group => {
 		if (group.name == name){

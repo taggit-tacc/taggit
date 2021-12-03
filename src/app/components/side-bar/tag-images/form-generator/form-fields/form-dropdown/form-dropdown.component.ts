@@ -37,7 +37,7 @@ export class FormDropDownComponent {
     this.formsService.getSelectedRadio().forEach(opt=> {
       // console.log(opt)
       if(opt != undefined){
-        index = opt.findIndex(item => item.id === this.activeFeatureId && item.compId === 2 && item.groupName === this.activeGroup && item.title === this.form['label']);
+        index = opt.findIndex(item => item.id === this.activeFeatureId && item.compId === 2 && item.groupName === this.activeGroup && item.label === this.form['label']);
         // console.log(index)
         if (index > -1){
           // console.log(opt[index].option)
@@ -55,5 +55,5 @@ export class FormDropDownComponent {
     // console.log(this.chosenTag)
   }
 
-  updateCheckedTag(){ console.log(this.chosenTag); this.formsService.updateSelectedRadio(this.chosenTag, 2, this.activeFeatureId, this.activeGroup, this.form['label']);}
+  updateCheckedTag(){ this.formsService.updateSelectedRadio(this.chosenTag, 2, this.activeFeatureId, this.activeGroup, this.form['label']);}
 }
