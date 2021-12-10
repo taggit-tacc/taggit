@@ -79,7 +79,7 @@
 	<ng-template #addGroupModal>
 	  <mat-form-field>
 		<mat-label>Group Name</mat-label>
-		<input matInput placeholder="Group Name" #groupInput>
+		<input matInput placeholder="Group Name" (keyup.enter)="addToGroupService(groupInput.value)" #groupInput>
 	  </mat-form-field>
 	  <br/>
 	  <br/>

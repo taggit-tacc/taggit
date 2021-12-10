@@ -295,8 +295,9 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 	this.groupList.forEach(e => {
 	  if (e.name == this.activeGroup) {
 		e.name = name;
-		this.tempGroup = e.features;	
+		this.tempGroup = e.features;
 	  }
+	this.dialog.closeAll()
 	});
 
 	// console.log(this.tempGroup)
