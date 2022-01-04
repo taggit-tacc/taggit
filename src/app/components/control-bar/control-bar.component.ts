@@ -266,6 +266,7 @@ export class ControlBarComponent implements OnInit {
   }
 
   //Creates a feature with a long/lat value of 0,0 and no associated image.
+  //I think if we want a placeholder image, we can add it here.
   createBlankFeature() {
 	let blankFeature:Feature = {
 		"type": "Feature",

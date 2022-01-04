@@ -8,7 +8,8 @@ import { GeoDataService } from '../../../services/geo-data.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { templateJitUrl } from '@angular/compiler';
-import { Feature } from '@turf/turf';
+import { Feature, tag } from '@turf/turf';
+import { group } from '@angular/animations';
 
 @Component({
   selector: 'app-select-group',
@@ -100,18 +101,6 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 							"unicode": "&#xf494; warehouse"},
 							{"id":"fa-bolt",
 							"unicode": "&#xf0e7; bolt"},
-							// {"id":"fa-tree",
-							// "unicode": "&#xf1bb; tree"},
-							// {"id":"fa-tree",
-							// "unicode": "&#xf1bb; tree"},
-							// {"id":"fa-tree",
-							// "unicode": "&#xf1bb; tree"},
-							// {"id":"fa-tree",
-							// "unicode": "&#xf1bb; tree"},
-							// {"id":"fa-tree",
-							// "unicode": "&#xf1bb; tree"},
-						
-						
 						];
 
   constructor(private formsService: FormsService,
@@ -121,32 +110,17 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 			  private dialog: MatDialog) { }
 
   ngOnInit() {
-
-	// this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
-	//   if (fc) {
-	// 	this.featureList = fc.features;
-	//   }
-	// });
 	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
 		this.features = fc;
   
 		if (this.features != undefined) {
 		  this.featureList = this.features.features;
-		//   this.groupsService.setActiveProject(this.featureList[0]);
-  
-		  // TODO This should activate persistence by looping through all features and creating new groups and
-		  //
-		//   this.groupsService.setGroupProperties(this.featureList);
-  
-		  // console.log(this.featureList[this.activeFeatureNum].assets[0].path);
-		  // this.activeFeature = this.featureList[this.activeFeatureNum];
 		}
 	  });
 
 	  this.groupsService.tempGroup.subscribe((next) => {
 		this.tempGroup = next;
 	  });
-	//   console.log(this.tempGroup)
 
 	this.projectsService.activeProject.subscribe(next => {
 	  this.selectedProject = next;
@@ -155,8 +129,6 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 	this.groups$ = this.groupsService.groups.subscribe((next) => {
 	  this.groupList = next;
 	});
-
-	// console.log(this.groupList)
 
 	this.activeGroup$ = this.groupsService.activeGroup.subscribe((next) => {
 	  this.activeGroup = next;
@@ -182,8 +154,6 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
   }
 
   deleteGroup(name: string) {
-
-	
 	this.groupList.forEach(group => {
 		if (group.name == name){
 			this.tempGroup = group.features;
@@ -220,7 +190,6 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
   openIconSelection(template: TemplateRef<any>, name:string){
 	this.selectedGroup =  name;
 	this.dialog.open(template);
-
   }
 
   saveIcon(icon: string){
@@ -235,50 +204,10 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 	let index = 0
 	for (let feat of this.tempGroup) {
 		let featProp = feat.properties;
-		 console.log(feat.id)/*
-		// console.log(this.selectedGroup)
-		index = this.groupList.findIndex(item => item.features[index].id == feat.id);
-		featProp.group = featProp.group.filter(e => e.name != this.selectedGroup);
-		// console.log(index)
-		if (featProp.group) {
-			console.log("nope");
-			featProp.group.push({
-			  name: this.groupList[index].name,
-			  color: this.groupList[index].color,
-			  icon: icon
-			});
-		  }
-		this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), featProp );*/
-		
+		 console.log(feat.id)		
 	this.groupsService.setActiveGroup(this.activeGroup);
 		this.formsService.saveStyles("default", Number(feat.id))
 	}
-
-
-	//   this.currentIcon = icon;
-	//   this.groupList.forEach(e => {
-	// 	if (e.name == this.selectedGroup) {
-	// 	  e.icon = icon;
-	// 	}
-	//   });
-	//   this.groupsService.addGroup(this.groupList);
-	//   for (let feat of this.featureList) {
-	// 	let featProp = feat.properties;
-	// 	let groupProp = this.tempGroup
-	// 	console.log(featProp)
-	// 	featProp.group = featProp.group.filter(e => e.name != this.activeGroup);
-	// 	if (featProp.group) {
-	// 		console.log("nope");
-	// 		featProp.group.push({
-	// 		  name: featProp.name,
-	// 		  color: featProp.color,
-	// 		  icon: icon
-	// 		});
-	// 	  }
-	// 	this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), featProp );
-	// 	this.groupsService.setActiveGroup(this.selectedGroup);
-	// }
-
   }
 
   isChecked(name: string) {
@@ -291,7 +220,6 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 
 
   renameGroup(name: string) {
-	console.log(this.activeGroup)
 	this.groupList.forEach(e => {
 	  if (e.name == this.activeGroup) {
 		e.name = name;
@@ -299,56 +227,29 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 	  }
 	this.dialog.closeAll()
 	});
-
-	// console.log(this.tempGroup)
-	//  console.log(this.groupList)
+	
 	this.groupsService.addGroup(this.groupList);
 
-	
-
-	// for (let feat of this.tempGroup){
-	// 	console.log(feat)
-	// 	let featProp = feat.properties;
-	// 	console.log(featProp)
-	// 	if (featProp.group) {
-	// 		console.log("nope");
-	// 		featProp.group.push({
-	// 		  name: name,
-	// 		//   color: ,
-	// 		//   icon: "fa-house-damage"
-	// 		});
-	// 	  }#23E99E #473FB4
+	//Loops through every feature in tempGroup, trying to match them to the features in the group list
 	for (let feat of this.tempGroup) {
 		let featProp = feat.properties;
-		// console.log(feat.id)
-		// console.log(this.selectedGroup)
-		const index = this.groupList.findIndex(item => item.features[0].id == feat.id);
-		featProp.group = featProp.group.filter(e => e.name != this.selectedGroup);
-		// console.log(index)
-		if (featProp.group) {
-			console.log("nope");
-			featProp.group.push({
-			  name: name,
-			  color: this.groupList[index].color,
-			  icon: this.groupList[index].icon
-			});
-		  }
+		featProp.group.forEach(group => {
+			if ( group.name == this.selectedGroup ) {
+				group.name = name
+			}
+		});
+
+		//Finds every tag with the old group name and changes it to the new name
+		featProp.tag.forEach(tag => {
+			if( tag.groupName == this.selectedGroup ) {
+				tag.groupName = name
+			}
+		});
+
 		this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), featProp );
 		
 	this.groupsService.setActiveGroup(name);
 	}
-	// console.log(this.selectedProject.id)
-	// console.log(this.tempGroup[0])
-
-
-
-	// let activeGroup = this.groupList.filter(what => what.name == this.activeGroup[0].name);
-
-	// if (activeGroup[0].features.length == 0) {
-	//   this.groupsService.setFeatureImagesExist(false);
-	// } else {
-	//   this.groupsService.setFeatureImagesExist(true);
-	// }
   }
 
   expandPanel() {

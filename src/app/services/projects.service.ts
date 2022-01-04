@@ -64,7 +64,7 @@ export class ProjectsService {
       // p.description = 'test';
       // Spread operator, just pushes the new project into the array
       this._projects.next([...this._projects.value, proj]);
-      // Set the active project to the one just created?
+      // Set the active project to the one just created? //This comment fills me with no confidence.
       this.setActiveProject(proj);
     });
     console.log(this._activeProject)

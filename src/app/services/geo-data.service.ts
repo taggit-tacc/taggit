@@ -161,7 +161,7 @@ export class GeoDataService {
   //An alternate function for importing images with no GPS data. A feature is created elsewhere, and the image is added to the feature
   //Inputs:
   //projectId: Id number of current project
-  //features: A pre-created features with user-defined or zeroed out gps data
+  //features: A pre-created feature with user-defined or zeroed out gps data
   //file: A Tapis Remote File containing the image to be imported
   importImage(projectId: number, feature: Feature, path: string): void {
 	let featureId = feature.id

@@ -15,6 +15,7 @@ export class ModalShareProjectComponent implements OnInit {
   projShareForm: FormGroup;
   activeProj: Project;
   projectUsers;
+  onlyOne:boolean; //if only one user is present == TRUE 
 
   constructor(public dialogRef: MatDialogRef<ModalShareProjectComponent>,
               private dialog: MatDialog,
@@ -34,6 +35,8 @@ export class ModalShareProjectComponent implements OnInit {
     //retrieves all users currently registered to the active project
     this.projectsService.getProjectUsers(this.activeProj).subscribe((next) =>{
       this.projectUsers = next;
+      this.onlyOne = (this.projectUsers.length == 1)
+      console.log(this.onlyOne)
     });
   }
 
