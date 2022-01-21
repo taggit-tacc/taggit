@@ -53,7 +53,12 @@ export class ImageBoxComponent implements OnInit {
 
   ngOnInit() {
 	this.environment = environment;
-	let featureSource = this.environment.apiUrl + '/assets/' + this.feature.assets[0].path;
+	let featureSource
+	if( this.feature.assets[0].path != "../../images/Image-not-found.png") {
+		featureSource = this.environment.apiUrl + '/assets/' + this.feature.assets[0].path;
+	} else {
+		featureSource = this.feature.assets[0].path
+	}
 	featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
 	this.featureSource = featureSource;
 	this.coordinates = this.feature.geometry['coordinates'];

@@ -83,7 +83,13 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
 			  try{
 				return feature.assets[0].asset_type === "image";
 		  	  } catch (error) {
+				//If a feature has no asset, it ends up in this catch
 			  	console.error(error)
+				//After outputting the error, add an "image not found" placeholder,
+				//Allowing users to still select their errored import
+				feature.assets.push({
+					"path": "../../images/Image-not-found.png"
+				})
 				return false
 		  	  }
 			});

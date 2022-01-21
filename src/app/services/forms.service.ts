@@ -184,7 +184,6 @@ export class FormsService {
 		}
 	});
 
-	console.log(payload)
 	//Finally, sends the payload and projectID to GeoAPI to update the feature
 	this.geoDataService.updateFeatureProperty(this.selectedProject.id, currentID ,payload)
   }
@@ -981,6 +980,7 @@ updateNotes(change, componentID: number, feature: number, group:string, label:st
 }
 
 getNotes(): any[]{ return this.notebook }
+
 }
 
 
