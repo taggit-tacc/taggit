@@ -154,6 +154,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
   }
 
   deleteGroup(name: string) {
+
 	this.groupList.forEach(group => {
 		if (group.name == name){
 			this.tempGroup = group.features;
