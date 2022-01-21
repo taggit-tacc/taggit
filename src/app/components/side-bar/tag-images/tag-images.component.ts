@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { GeoDataService } from 'src/app/services/geo-data.service';
 import { FeatureCollection } from 'geojson';
+import { tag } from '@turf/turf';
 
 @Component({
   selector: 'app-tag-images',
@@ -80,6 +81,42 @@ export class TagImagesComponent implements OnInit {
   openRenameOptionModal(template: TemplateRef<any>) {
 	this.dialog.open(template);
   }
+
+  //submits a tag's name change to geoAPI
+  /*TODO: Right now, if you try to rename a tag while the only tags that exist should get their names changed, it
+  	breaks and instead deletes all tags. I suspect this has to do with the various filter steps where I attempt to 
+	replace the relevant tags with renamed versions.*/
+	renameTag(tagLabel) {
+		let activeTag = this.tagList.find(tag => tag.label === tagLabel)
+		let activeFeature = this.featureList.find(feature => feature.id === +activeTag.feature)
+
+		//Remove any tags not in the active group from the working tag list
+		let oldTags = this.tagList.filter(item =>  item.groupName == this.activeGroup )
+
+		//Removes any tag that is present in the tag list and the active feature's tag list
+		//after this, all that should be left is a list of tags that need their names changed
+		let activeFeatureList = activeFeature.properties.tag
+		oldTags = oldTags.filter(item => activeFeatureList.includes(item))
+
+		//Removes the active feature's tag, as that one already had it's name changed
+		oldTags = oldTags.filter(item => item.label != tagLabel )
+		
+		//Creates a list that lacks the tags of the group we want to change
+		let untouchedTags = this.tagList.filter(item => oldTags.includes(item))
+
+		//Loops through every tag in the list, updating it's name.
+		oldTags.forEach(tag => tag.label = tagLabel)
+
+		//recombines the taglist, this time with updated names for relevant tags
+		let fullTagList = untouchedTags.concat(oldTags)
+
+		this.featureList.forEach(feature =>{
+			feature.properties.tag = fullTagList
+			this.geoDataService.updateFeatureProperty(activeFeature.project_id, feature.id, feature.properties)
+		})
+
+		this.dialog.closeAll() //Ensures the window closes when using enter-submission
+  	}
 
   openOptionToggle(label: string) {
 	if (this.openOption[label]) {
