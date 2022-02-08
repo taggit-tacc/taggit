@@ -189,13 +189,13 @@ export class TagGeneratorComponent implements OnInit {
 		});
 
 
-		console.log(this.groupList)
+		// console.log(this.groupList)
 
 
-		console.log(this.tempGroup)
+		// console.log(this.tempGroup)
 		for (let feat of this.tempGroup) {
 
-			console.log(this.groupList)
+			// console.log(this.groupList)
 
 			if(feat.properties.tag != undefined || feat.properties.tag != []){
 				// feat.properties.tag.forEach(tag => {
@@ -212,7 +212,7 @@ export class TagGeneratorComponent implements OnInit {
 								icon: group.icon
 							}
 						payload.group.push(tempGroup)
-						console.log(this.groupList)
+						// console.log(this.groupList)
 
 					}
 						
@@ -267,7 +267,7 @@ export class TagGeneratorComponent implements OnInit {
 			// 	payload.group.push(groupList)
 			// });
 
-			console.log(this.groupList)
+			// console.log(this.groupList)
 
 			//   console.log(payload)
 			//   console.log(feat.id)
@@ -284,7 +284,7 @@ export class TagGeneratorComponent implements OnInit {
 			// console.log(typeof(payload.tag))
 			// console.log(payload)
 
-			console.log(this.groupList)
+			// console.log(this.groupList)
 
 			this.formItemList.push(formItem);
 			// this.formsService.addForm(this.activeGroup, formItem);
@@ -292,7 +292,7 @@ export class TagGeneratorComponent implements OnInit {
 			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
 			// Clear out the tag section
 			
-			console.log(this.groupList)
+			// console.log(this.groupList)
 			
 			payload.tag = []
 			this.newGroup = []
@@ -303,7 +303,7 @@ export class TagGeneratorComponent implements OnInit {
 	  this.labelFilter = '';
 	  this.changed = true;
 	  
-	  console.log(this.featureList)
+	//   console.log(this.featureList)
 	  
 	  this.groupsService.setActivePane("tagger");
 	  this.router.navigateByUrl('/tagger', {skipLocationChange: true});
