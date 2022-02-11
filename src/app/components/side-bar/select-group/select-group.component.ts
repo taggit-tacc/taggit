@@ -182,8 +182,16 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
   }
 
   deleteGroup(name: string) {
-
-	this.formsService.deleteGroupTags(name);
+	let data = this.formsService.getTags();
+	while(true){
+		const index = data.findIndex(item => item.groupName === name);
+		// delete this.exampleNote[index];
+		if (index > -1) {
+		data.splice(index, 1);
+		}else{
+			break;
+		}
+	}
 	
 	this.groupList.forEach(group => {
 		if (group.name == name){
@@ -197,6 +205,8 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 		let featProp = feat.properties;
 
 		featProp.group = featProp.group.filter(e => e.name != name);
+
+		featProp.tag = data
 	
 			this.geoDataService.updateFeatureProperty(this.selectedProject.id,
 													Number(feat.id),
