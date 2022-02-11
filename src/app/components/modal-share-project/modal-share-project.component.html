@@ -21,7 +21,7 @@
             {{user.username}}
         </span>
         <span class="card-buttons">
-            <button mat-raised-button color="warn" class="button small warning" type="button" (click)="delete(user.username)">
+            <button mat-raised-button color="warn" class="button small warning" type="button" [disabled]="onlyOne" (click)="delete(user.username)">
                 <i class="fas fa-trash"></i>
             </button>
         </span>

@@ -100,28 +100,16 @@ export class GeoDataService {
   }
 
   updateFeatureProperty(projectId: number, featureId: number, groupData: any): void {
-	// const payload = {
-	//   description: title,
-	//   conversion_parameters: conversionParams
-	// };
 	this.http.post(environment.apiUrl + `projects/${projectId}/features/${featureId}/properties/`, groupData)
 	  .subscribe( (resp) => {
-		// this.getFeatures(projectId);
 	  }, error => {
-	// TODO: notification
 	  });
   }
 
   updateFeatureStyle(projectId: number, featureId: number, groupData: any): void {
-	// const payload = {
-	//   description: title,
-	//   conversion_parameters: conversionParams
-	// };
 	this.http.post(environment.apiUrl + `/projects/${projectId}/features/${featureId}/styles/`, groupData)
 	  .subscribe( (resp) => {
-		// this.getFeatures(projectId);
 	  }, error => {
-	// TODO: notification
 	  });
   }
 
@@ -154,14 +142,14 @@ export class GeoDataService {
 	  .subscribe( (resp) => {
 		this.notificationsService.showSuccessToast('Import started!');
 	  }, error => {
-		this.notificationsService.showErrorToast('Import failed! Try again?');
+		this.notificationsService.showImportErrorToast('Import failed! Try again?');
 	  });
   }
 
   //An alternate function for importing images with no GPS data. A feature is created elsewhere, and the image is added to the feature
   //Inputs:
   //projectId: Id number of current project
-  //features: A pre-created features with user-defined or zeroed out gps data
+  //features: A pre-created feature with user-defined or zeroed out gps data
   //file: A Tapis Remote File containing the image to be imported
   importImage(projectId: number, feature: Feature, path: string): void {
 	let featureId = feature.id

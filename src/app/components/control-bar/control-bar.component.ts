@@ -77,6 +77,7 @@ export class ControlBarComponent implements OnInit {
 
 	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
 	  this.features = fc;
+	  console.log(this.features)
 
 	  if (this.features != undefined) {
 		this.featureList = this.features.features;
@@ -144,7 +145,7 @@ export class ControlBarComponent implements OnInit {
 
 		//If lastProj is null, then there is no project saved, or can be found, default to the first project in the list
 		if(lastProj == "none" || lastProj == null) {
-			lastProj = this.projects[0]
+			lastProj = this.projects[0];
 		}
 
 		this.projectsService.setActiveProject(lastProj);
@@ -265,6 +266,7 @@ export class ControlBarComponent implements OnInit {
   }
 
   //Creates a feature with a long/lat value of 0,0 and no associated image.
+  //I think if we want a placeholder image, we can add it here.
   createBlankFeature() {
 	let blankFeature:Feature = {
 		"type": "Feature",
@@ -422,6 +424,7 @@ export class ControlBarComponent implements OnInit {
 	this.groupsService.addTempGroup(this.tempGroup);
 	this.groupsService.setUnselectAll(true);
 	this.groupsService.setShowGroup(false);
+	this.dialog.closeAll()
   }
 
   openAddGroupModal(template: TemplateRef<any>) {
@@ -522,9 +525,13 @@ export class ControlBarComponent implements OnInit {
 
   //saves project as a CSV file by first organizing a JSON or a CSV and converting it. Saves to either MyData or local
   saveFile(isJSON:Boolean, forExport:Boolean = false, systemID = "", path = "", fileName) {
-	  let CSVHolder = "longitude,latitude,src,groupName,groupColor\r\n"
-	  let JSONHolder: Array<object> = []
+	  let CSVHolder = "FeatureID,longitude,latitude,src"
+	  //let JSONHolder: Array<object> = []
+	  let JSONHolder:String = ""
 	  let projID = ""
+	  let tagsPresent = true
+	  let headerComplete = false //If true, then the full csv header info has been compiled
+	  let headerTagOptions = 0 //Controls how many tagOption columns are in the final CSV
 
 	  this.featureList.forEach(element => {
 			//Retrieves project ID for building a filename
@@ -541,33 +548,113 @@ export class ControlBarComponent implements OnInit {
 			//Group data can be accessed from the feature, through the properties element
 			//If the image doesn't have a group, a placeholder is given
 			//NOTE: future group properties can be accessed in the same way
-			let groupName:String = ""
-			let groupColor:String = ""
+			let group, styles, tag
 			try {
-				groupName = element.properties['group'][0].name
-				groupColor = element.properties['group'][0].color	
-			} catch (error) {
-				groupName = "N/A"
-				groupColor = "#000000"
-			}
+				try {
+					group = element.properties['group']
+				} catch {
+					group = [{
+						"color": "#000000",
+						"name": "N/A",
+						"icon": "fa-house-damage"
+					}]
+				}
+
+				try{
+					styles = element.properties['style']
+				} catch{
+					styles = []
+				}
+
+				try{
+					tag = element.properties['tag']
+				} catch{
+					tag = []
+				}
+
+				//If groups are present on the data, if so add header data
+				if( group.length > 0 && !headerComplete){
+					CSVHolder += ",groupName,groupColor,groupIcon,Icon,Color"
+				}
+
+				//Check if the tag var has any data, if so, add new lines to the header
+				if ( tag != undefined && tagsPresent) {
+					//Add a few more lines to the holder to accomodate tags
+					CSVHolder += ",tagType,tagSelection"
+					tag.forEach(tag => {
+						let tempTagOptionNum = 0
+						tag.options.forEach(option => {
+							tempTagOptionNum++
+							if (tempTagOptionNum > headerTagOptions) {
+								CSVHolder += ",tagOption"
+								headerTagOptions = tempTagOptionNum
+							}
+						});
+					});
+					if (!headerComplete) {
+						CSVHolder += "\r\n"
+						tagsPresent = false
+						headerComplete = true
+					}
+				} else {
+					//If not, indent the last line.
+					CSVHolder +="\r\n"
+					headerComplete = true
+				}
+
+			} catch (error) {}
 
 			if (isJSON) {
-				//Alternately compiles it into a JSON
-				let transferJSON = {
-					"longitude": coordinates[0],
-					"latitude": coordinates[1],
-					"src": featureSource,
-					"groupName": groupName,
-					"groupColor": groupColor
-				}
-				//And adds it to a growing list of JSON objects
-				JSONHolder.push(transferJSON)
-			
+				//Compile the data it into a JSON
+				JSONHolder += this.compileJSON(coordinates, element.id, featureSource, group, tag, styles) + ", \n"
 			} else {
 				//Compiles the attributes into a CSV format
-				let tempCSV = coordinates[0] + "," + coordinates[1] + "," + featureSource + "," + groupName + "," + groupColor + "\r\n"
-				//And adds it to a growing full CSV file
-				CSVHolder += tempCSV
+				//try{
+				console.log(group)
+				console.log(tag)
+				
+				//If there is no groups for the feature, output without group info
+				if( !group.length ){
+					//Indents CSV header.
+					//TODO: Figure out why this isn't being updated above
+					CSVHolder +="\r\n"
+					//Compiles data to a line of a CSV
+					let tempCSV = element.id + "," + coordinates[0] + "," + coordinates[1] + "," + featureSource + "\r\n"//","
+					//+ group.name+ "," + group.color + "," + group.icon + "\r\n"
+					//And adds it to a growing full CSV file
+					CSVHolder += tempCSV
+				} else {
+					group.forEach(group => {
+						//If tags exist, try to add each tag to the CSV
+						if ( tag != undefined) {
+							try{
+							tag.forEach(tag => {
+								//If the tag is in the group, compile a row
+								if(tag.groupName === group.name) {
+									console.log(tag);
+									let tempCSV = element.id + "," + coordinates[0] + "," + coordinates[1] + "," + featureSource + ","
+									+ group.name+ "," + group.color + "," + group.icon + "," + styles.faIcon + "," + styles.color + "," 
+									+ tag.type + "," + tag.extra[0].option
+									tag.options.forEach(option => {
+										//Save each option in the tag to the CSV
+										//Adds just the label to the CSV, we can reconstruct the key from that.
+										tempCSV += "," + option.label
+									});
+									tempCSV += "\r\n"
+									//And adds it to a growing full CSV file
+									CSVHolder += tempCSV
+								}
+							});
+							} catch{}
+						} else {
+							//Compiles data to a line of a CSV
+							let tempCSV = element.id + "," + coordinates[0] + "," + coordinates[1] + "," + featureSource + ","
+							+ group.name+ "," + group.color + "," + group.icon + "\r\n"
+							//And adds it to a growing full CSV file
+							CSVHolder += tempCSV
+						}
+					});
+				}
 			}
 	  });
 	  let content
@@ -590,6 +677,72 @@ export class ControlBarComponent implements OnInit {
 		}
 
   }
+
+  	compileJSON(coordinates, featureID, featureSource:string, groups = [], tags = [], style){
+		let compiledJSON = ''
+	    let transferJSON
+
+		//if there are no groups, compile a smaller JSON and return it
+		console.log( groups )
+		if( groups.length == 0 ){
+			transferJSON = {
+				"longitude": coordinates[0],
+				"latitude": coordinates[1],
+				"src": featureSource
+			}
+			compiledJSON += JSON.stringify(transferJSON)
+
+		} else {
+			groups.forEach(group => {
+				//Groups always fire only once for every feature in the project
+				//If tags are set to a default value, there are none present, compile without tag information
+				if( tags.length == 0 ){
+					transferJSON = {
+						"longitude": coordinates[0],
+						"latitude": coordinates[1],
+						"src": featureSource,
+						"groupName": group.name,
+						"groupColor": group.color
+					}
+					compiledJSON += JSON.stringify(transferJSON)
+				} else { //Compile a JSON with full tag information
+					tags.forEach( tag => {
+						if ( tag.feature == featureID ) {
+							try{
+								transferJSON = {
+									"longitude": coordinates[0],
+									"latitude": coordinates[1],
+									"src": featureSource,
+									"groupName": group.name,
+									"groupColor": group.color,
+									"icon": style.faIcon,
+									"icon color": style.color,
+									"tag name": tag.label,
+									"tag type": tag.type,
+									"tag selection": tag.extra[0].option,
+								}
+								compiledJSON += JSON.stringify(transferJSON)
+							} catch {
+								transferJSON = {
+									"longitude": coordinates[0],
+									"latitude": coordinates[1],
+									"src": featureSource,
+									"groupName": group.name,
+									"groupColor": group.color,
+									"icon": style.faIcon,
+									"icon color": style.color,
+									"tag name": tag.label,
+									"tag type": tag.type,
+								}
+								compiledJSON += JSON.stringify(transferJSON)
+							}
+						}
+					});
+				}
+			});
+		}
+		return compiledJSON
+	}
 	
 	download(content, extension, projID){
 	  //Creates a download link in typescript through a blob

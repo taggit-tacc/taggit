@@ -44,13 +44,13 @@
 						</i>
 					  </div> <!-- delete button -->
 					
-					<!-- <div (click)="openRenameOptionModal(renameFormItemModal)">
+					<div (click)="openRenameOptionModal(renameFormItemModal)">
 						<i class="fas fa-edit"
 						   matTooltip="Rename"
 						   matTooltipPosition="above"
 						   style="cursor: pointer">
 						</i>
-					</div> rename button -->
+					</div>
 
 					<!-- <div *ngIf="tag.type != 'text'">
 
@@ -67,13 +67,14 @@
 					<ng-template #renameFormItemModal>
 						<input matInput #formItemRename
 							[(ngModel)]="tag.label"
-							placeholder="Rename Form Item">
+							placeholder="Rename Form Item"
+							(keyup.enter)="renameTag(tag.label)">
 						<br/>
 						<br/>
 						<div class="button-group">
 						  <button matDialogClose
 								  mat-raised-button
-								  color="primary"
+								  color="primary" (click)="renameTag(tag.label)"
 								  >Rename</button>
 								  <!-- (click)="formsService.saveTag(activeGroup, tag, tag.label)" -->
 						  <button matDialogClose

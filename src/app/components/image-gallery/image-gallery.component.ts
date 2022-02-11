@@ -61,7 +61,6 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit() {
-	//console.log("GOT HERE- PLS")
 	this.environment = environment;
 
 
@@ -70,10 +69,8 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
 	// this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
 
 	this.geoDataService.loaded.subscribe(e => {
-		//console.log("loading should work?")
 	  this.loaded = e;
 	}, error => {
-		//console.log("GOT HERE- NO PROJ FOUND")
 		this.projectsExist = false;
 	  });
 
@@ -82,17 +79,22 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
 	  if (fc) {
 		if (fc.features.length > 0) {
 		  this.imagesExist = true;
-		  try {
 			this.featureList = fc.features.filter(feature => {
-				return feature.assets[0].asset_type == "image";
-			  });
-		  } catch (error) {
-			  console.log(error)
-		  }
-
+			  try{
+				return feature.assets[0].asset_type === "image";
+		  	  } catch (error) {
+				//If a feature has no asset, it ends up in this catch
+			  	console.error(error)
+				//After outputting the error, add an "image not found" placeholder,
+				//Allowing users to still select their errored import
+				feature.assets.push({
+					"path": "../../images/Image-not-found.png"
+				})
+				return false
+		  	  }
+			});
 			this.featureListScroll = this.featureList.slice(0, this.scrollSum);
 		} else {
-			//console.log("This didn't work")
 		  this.imagesExist = false;
 		}
 	  }
