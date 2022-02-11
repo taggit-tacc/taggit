@@ -344,35 +344,22 @@ export class FormsService {
 	const index = this.tempData.findIndex(item => item.groupName === gName  && item.label === tLabel && item.feature === tag.feature);
 
 	if (index > -1) {
-		// console.log("IT WORKED")
 		this.tempData[index].label = tag.label;
-		// this.tagData[index].options = tag.options;
 	}
 	else {
 		tag.groupName = gName;
 		this.tempData.push(tag);
-		// console.log("IT WORKED")
-		// this.geoDataService.updateFeatureProperty()
-		// console.log("Tag data:")
-		// console.log(this.tagData)
 	}
 }
 
 tempData = [];
 getTags(): tags[]{
-	// this.geoDataService.getFeatures(this.selectedProject.id, true)
-
-	
-	
-
 	this.tempData = [];
 	let count = 0
-	// console.log(this.tagData)
-	// console.log(this.tempData)
+
 	this.tempData = this.tagData
 	while(true){
 		const index = this.tempData.findIndex(item => item.groupName === "building" );
-		
 		// delete this.exampleNote[index];
 		if (index > -1) {
 		this.tempData.splice(index, 1);
@@ -380,43 +367,24 @@ getTags(): tags[]{
 			break;
 		}
 	}
-	// console.log(this.tempData)
-	// console.log(this.tagData)
+
 	for (let feat of this.featureList){
-		//   console.log(typeof(feat.properties.tag))
 		  if(feat.properties.tag != undefined){
 			  feat.properties.tag.forEach(tag => {
-				//   console.log(tag)
-				//   console.log(this.tempData)
 				const index = this.tempData.findIndex(item => item.groupName === tag.groupName  && item.label === tag.label && item.feature === tag.feature);
-				// console.log(index)
-
 				if(index == -1){
-					// count += 1
 					this.tempData.push(tag)
 				}
 			  });
 		  }
 	  }
-	// console.log(this.tagData)
-	console.log(this.tempData)
 
-		
-	console.log(count)
 	return this.tempData;
 }
 
 newTag: object[] = [];
 deleteTag(gName: string, tag: tags): void{
-    // for (let tag in this.tagData){
-	// 	const index = this.tagData.findIndex(item => item.groupName === gName && item.label === tLabel);
-	// 	// if(tag['groupName'] === gName && tag['label'] === tLabel)
-	// 	console.log(tag)
-	// 	if (index > -1) {
-	// 	// delete this.exampleNote[index];
-	// 	this.tagData.splice(index, 1);
-	// 	}
-	// }
+
 	let data = this.tempData;
 	while(true){
 		const index = data.findIndex(item => item.groupName === gName && item.label === tag.label && item.type === tag.type);
@@ -427,102 +395,10 @@ deleteTag(gName: string, tag: tags): void{
 			break;
 		}
 	}
-
 	this.tempData = data;
 	console.log(this.tempData)
 }
 
-deleteGroupTags(gName:string): void {
-
-	let data = this.tempData;
-	while(true){
-		const index = data.findIndex(item => item.groupName === this.activeGroup);
-		// delete this.exampleNote[index];
-		if (index > -1) {
-		data.splice(index, 1);
-		}else{
-			break;
-		}
-	}
-	this.tempData = data;
-
-	let icon:string
-	let payload
-	this.groupList.forEach(group => {
-		if (group.name == this.activeGroup) {
-			this.tempGroup = group.features;
-				icon = group.icon
-	
-				//Creates a temporary group with a copy of the current groups info
-				let tempGroup = [{
-					name: group.name,
-					color: group.color,
-					icon: group.icon
-				}]
-				
-				//And adds the temp group to a payload along with the necessary style infromation
-				payload = {
-					group: tempGroup,
-					style: {
-						faIcon: icon,
-						color: '#00C8FF'
-					},
-					tag: []
-				}
-				// console.log(payload.tag)
-			
-		}
-		});
-
-
-	console.log(this.tempGroup)
-	for (let feat of this.tempGroup){
-
-		if(feat.properties.tag != undefined || feat.properties.tag != []){
-			// feat.properties.tag.forEach(tag => {
-			//   this.newTag.push(tag)
-			// });
-			// console.log(feat.properties)
-			// console.log(this.activeGroup)
-			feat.properties.group.forEach(group => {
-				if(group.name != this.activeGroup){
-					let tempGroup = {
-						name: group.name,
-						color: group.color,
-						icon: group.icon
-					}
-				payload.group.push(tempGroup)}
-			});
-		} 
-		
-		console.log(data)
-		payload.tag = data;
-		// console.log(payload.tag)
-
-		//   console.log(typeof(feat.properties.tag))
-		// if(feat.properties.tag != undefined){
-		// 	feat.properties.tag.forEach(tTag => {
-		// 		console.log(tTag)
-		// 		console.log(tag)
-		// 		// console.log(tTag != tag)
-		// 		console.log((tTag.groupName === tag.groupName &&  tTag.label === tag.label &&  tag.type === tag.type))
-		// 		if((tTag.groupName === tag.groupName && tTag.label === tag.label &&  tag.type === tag.type)){
-		// 		// this.newTag.push(tTag)
-		// 		}
-		// 		else{
-		// 			payload.tag.push(tTag)
-		// 		}
-		// 	});
-
-		// 	// payload.tag.push(this.newTag)
-			
-		// 	// console.log(payload)
-		// 	// this.newTag = []
-		// }
-		this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
-		payload.tag = []
-	}
-}
 
 optData = []
 deleteOpt(gName:string, opt:object, tag: tags): void {
