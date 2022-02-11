@@ -67,12 +67,28 @@ export interface Project {
   description: string;
   id?: number;
   name: string;
+  ds_id?: string;
+  title?: string;
   uuid?: string;
+  public?: boolean;
+  system_file?: string;
   system_id?: string;
   system_path?: string;
+  deleting?: boolean;
+  deletingFailed?: boolean;
 }
 
 export class Project implements Project {
+
+}
+
+export interface ProjectRequest {
+  project: Project;
+  observable?: boolean;
+  watch_content?: boolean;
+}
+
+export class ProjectRequest implements ProjectRequest {
 
 }
 

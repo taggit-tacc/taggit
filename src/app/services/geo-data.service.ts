@@ -100,28 +100,16 @@ export class GeoDataService {
   }
 
   updateFeatureProperty(projectId: number, featureId: number, groupData: any): void {
-	// const payload = {
-	//   description: title,
-	//   conversion_parameters: conversionParams
-	// };
 	this.http.post(environment.apiUrl + `projects/${projectId}/features/${featureId}/properties/`, groupData)
 	  .subscribe( (resp) => {
-		// this.getFeatures(projectId);
 	  }, error => {
-	// TODO: notification
 	  });
   }
 
   updateFeatureStyle(projectId: number, featureId: number, groupData: any): void {
-	// const payload = {
-	//   description: title,
-	//   conversion_parameters: conversionParams
-	// };
 	this.http.post(environment.apiUrl + `/projects/${projectId}/features/${featureId}/styles/`, groupData)
 	  .subscribe( (resp) => {
-		// this.getFeatures(projectId);
 	  }, error => {
-	// TODO: notification
 	  });
   }
 
