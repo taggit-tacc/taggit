@@ -360,10 +360,26 @@ export class FormsService {
 
 tempData = [];
 getTags(): tags[]{
+	// this.geoDataService.getFeatures(this.selectedProject.id, true)
+
+	
+	
+
 	this.tempData = [];
 	let count = 0
+	// console.log(this.tagData)
 	// console.log(this.tempData)
 	this.tempData = this.tagData
+	while(true){
+		const index = this.tempData.findIndex(item => item.groupName === "building" );
+		
+		// delete this.exampleNote[index];
+		if (index > -1) {
+		this.tempData.splice(index, 1);
+		}else{
+			break;
+		}
+	}
 	// console.log(this.tempData)
 	// console.log(this.tagData)
 	for (let feat of this.featureList){
@@ -383,8 +399,10 @@ getTags(): tags[]{
 		  }
 	  }
 	// console.log(this.tagData)
-	// console.log(this.tempData)
-	// console.log(count)
+	console.log(this.tempData)
+
+		
+	console.log(count)
 	return this.tempData;
 }
 
@@ -411,83 +429,7 @@ deleteTag(gName: string, tag: tags): void{
 	}
 
 	this.tempData = data;
-
-	let icon:string
-	let payload
-	this.groupList.forEach(group => {
-		if (group.name == this.activeGroup) {
-			this.tempGroup = group.features;
-				icon = group.icon
-	
-				//Creates a temporary group with a copy of the current groups info
-				let tempGroup = [{
-					name: group.name,
-					color: group.color,
-					icon: group.icon
-				}]
-				
-				//And adds the temp group to a payload along with the necessary style infromation
-				payload = {
-					group: tempGroup,
-					style: {
-						faIcon: icon,
-						color: '#00C8FF'
-					},
-					tag: []
-				}
-				// console.log(payload.tag)
-			
-		}
-		});
-
-		// console.log(this.tempGroup)
-		for (let feat of this.tempGroup){
-
-			if(feat.properties.tag != undefined || feat.properties.tag != []){
-				// feat.properties.tag.forEach(tag => {
-				//   this.newTag.push(tag)
-				// });
-				// console.log(feat.properties)
-				// console.log(this.activeGroup)
-				feat.properties.group.forEach(group => {
-					if(group.name != this.activeGroup){
-						let tempGroup = {
-							name: group.name,
-							color: group.color,
-							icon: group.icon
-						}
-					payload.group.push(tempGroup)}
-				});
-			} 
-			
-			// console.log(data)
-			payload.tag = data;
-			// console.log(payload.tag)
-
-			//   console.log(typeof(feat.properties.tag))
-			// if(feat.properties.tag != undefined){
-			// 	feat.properties.tag.forEach(tTag => {
-			// 		console.log(tTag)
-			// 		console.log(tag)
-			// 		// console.log(tTag != tag)
-			// 		console.log((tTag.groupName === tag.groupName &&  tTag.label === tag.label &&  tag.type === tag.type))
-			// 		if((tTag.groupName === tag.groupName && tTag.label === tag.label &&  tag.type === tag.type)){
-			// 		// this.newTag.push(tTag)
-			// 		}
-			// 		else{
-			// 			payload.tag.push(tTag)
-			// 		}
-			// 	});
-
-			// 	// payload.tag.push(this.newTag)
-				
-			// 	// console.log(payload)
-			// 	// this.newTag = []
-			// }
-			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
-			payload.tag = []
-		}
-	// this.newTag = []
+	console.log(this.tempData)
 }
 
 deleteGroupTags(gName:string): void {

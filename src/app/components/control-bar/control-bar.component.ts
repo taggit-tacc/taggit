@@ -445,12 +445,14 @@ export class ControlBarComponent implements OnInit {
 
 	let activeGroup = this.groupList.filter(group => group.name == this.activeGroup);
 
+
 	if (activeGroup[0].features.length == 0) {
 	  this.groupsService.setFeatureImagesExist(false);
 	} else {
 	  this.groupsService.setFeatureImagesExist(true);
 	}
-
+	
+	this.reloadFeatures();
 	this.groupsService.setActiveFeatureNum(0);
 	this.groupsService.setShowSidebar(showSidebar);
 	this.groupsService.setShowGroup(showGroup);

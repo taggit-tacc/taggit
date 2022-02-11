@@ -36,7 +36,7 @@
 				<div class="name-group"> {{tag.label}} ({{tag.type}})</div>
 				
 				<div class="button-group">
-					<div (click)="formsService.deleteTag(activeGroup, tag)">
+					<div (click)="deleteTag(activeGroup, tag)">
 						<i class="fas fa-minus"
 						   matTooltip="Delete"
 						   matTooltipPosition="above"
