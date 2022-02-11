@@ -8,7 +8,6 @@ import { Subscription } from 'rxjs';
 import { GeoDataService } from 'src/app/services/geo-data.service';
 import { Feature, FeatureCollection } from 'geojson';
 import { ProjectsService } from 'src/app/services/projects.service';
-import { FeatureCollection } from 'geojson';
 import { tag } from '@turf/turf';
 
 @Component({
@@ -174,6 +173,7 @@ export class TagImagesComponent implements OnInit {
 			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
 			payload.tag = []
 		}
+   }
 
   //submits a tag's name change to geoAPI
   /*TODO: Right now, if you try to rename a tag while the only tags that exist should get their names changed, it
