@@ -136,6 +136,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
   }
 
   selectGroupForm(group: string) {
+	this.geoDataService.getFeatures(this.selectedProject.id);
 	this.groupsService.setActiveGroup(group);
 
 	let activeGroup = this.groupList.filter(what => what.name == this.activeGroup);

@@ -51,7 +51,7 @@ export class GeoDataService {
 
   getFeatures(projectId: number, query: AssetFilters = new AssetFilters(), restoreScroll = false): void {
 	const qstring: string = querystring.stringify(query.toJson());
-	this._loaded.next(false);
+	// this._loaded.next(false);
 	this.http.get<FeatureCollection>(environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring)
 	  .subscribe( (fc: FeatureCollection) => {
 		fc.features = fc.features.map( (feat: Feature) => new Feature(feat));

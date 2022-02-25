@@ -69,6 +69,7 @@ export class SelectImageComponent implements OnInit, OnDestroy {
 		index = e.features.indexOf(asset)
 	  }
 	});
+	this.geoDataService.getFeatures(this.selectedProject.id);
 	this.groupsService.setActiveFeatureNum(index);
   }
 
