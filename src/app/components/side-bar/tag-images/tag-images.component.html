@@ -64,9 +64,13 @@
 	  
 					  </div> three dots -->
 
+					<!-- Removing the ngModel here keeps the tag from auto-updating, now how to get the old tag in.
+					Note: The NGModel declaration was [(ngModel)]="tag.label", it was right above value, and value
+					is the new param -->
 					<ng-template #renameFormItemModal>
 						<input matInput #formItemRename
-							[(ngModel)]="tag.label"
+							[(ngModel)]="newTagValue"
+							value={{tag.label}}
 							placeholder="Rename Form Item"
 							(keyup.enter)="renameTag(tag.label)">
 						<br/>
