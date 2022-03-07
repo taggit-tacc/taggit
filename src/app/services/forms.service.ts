@@ -143,7 +143,7 @@ export class FormsService {
   checkDefault(selectedColor:string){
 	if(selectedColor === "default") {
 		try {
-			selectedColor = this.selectedFeature.properties.style.color
+			selectedColor = this.selectedFeature.styles.color
 		} catch (error) {
 			selectedColor = "#00C8FF"
 		}
@@ -157,6 +157,7 @@ export class FormsService {
   saveStyles(selectedColor:string, currentID:number){
 	let icon:string
 	let payload
+	let style
 
 	//A check to see if the color isn't supposed to be changed
 	selectedColor = this.checkDefault(selectedColor)
@@ -181,11 +182,17 @@ export class FormsService {
 					color: selectedColor
 				}
 			}
+
+			style = {
+				faIcon: icon,
+				color: selectedColor
+			}
 		}
 	});
 
 	//Finally, sends the payload and projectID to GeoAPI to update the feature
-	this.geoDataService.updateFeatureProperty(this.selectedProject.id, currentID ,payload)
+	this.geoDataService.updateFeatureProperty(this.selectedProject.id, currentID, payload)
+	this.geoDataService.updateFeatureStyle(this.selectedProject.id, currentID, style)
   }
 
   addGroup(groupName: string) {
@@ -437,7 +444,7 @@ addCheckedOpt(opt:object, id: number, group: string, label:string): void {
 					group: tempGroup,
 					style: {
 						faIcon: icon,
-						color: '#00C8FF'
+						color: this.checkDefault("default")
 					},
 					tag:[]
 				}
@@ -512,7 +519,7 @@ deleteCheckedOpt(opt:object, id:number, group: string, label: string): void{
 					group: tempGroup,
 					style: {
 						faIcon: icon,
-						color: '#00C8FF'
+						color: this.checkDefault("default")
 					},
 					tag:[]
 				}
@@ -594,11 +601,7 @@ updateSelectedRadio(selection:string, componentId: number, feature: number, grou
 
 	let icon:string
 	let payload
-	// let formValueFilter = this.activeFormList.filter(e => e.label == this.formLabel);
-	// if (formValueFilter.length == 0 && this.formLabel.length != 0) {
 	this.groupList.forEach(tGroup => {
-		// console.log(tGroup)
-		// console.log(group)
 		if (tGroup.name == group) {
 			this.tempGroup = tGroup.features;
 				icon = tGroup.icon
@@ -615,7 +618,7 @@ updateSelectedRadio(selection:string, componentId: number, feature: number, grou
 					group: tempGroup,
 					style: {
 						faIcon: icon,
-						color: '#00C8FF'
+						color: this.checkDefault("default")
 					},
 					tag:[]
 				}
@@ -728,7 +731,7 @@ updateNotes(change, componentID: number, feature: number, group:string, label:st
 					group: tempGroup,
 					style: {
 						faIcon: icon,
-						color: '#00C8FF'
+						color: this.checkDefault("default")
 					},
 					tag:[]
 				}
