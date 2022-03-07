@@ -36,14 +36,11 @@ export class FormColorComponent implements OnInit {
 
     let index
     this.formsService.getSelectedRadio().forEach(opt=> {
-      // console.log(opt)
       if(opt != undefined){
         index = opt.findIndex(item => item.id === this.activeFeatureId && item.compId === 1 && item.groupName === this.activeGroup && item.label === this.form['label']);
-      // console.log(index)
-      if (index > -1){
-        // console.log(opt[index].option)
-        this.chosenTag = opt[index].option
-      }
+        if (index > -1){
+          this.chosenTag = opt[index].option
+        }
       }
       
       this.chosenColor = this.color 
