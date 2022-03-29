@@ -13,6 +13,7 @@ export class FormColorComponent implements OnInit {
   @Input() field:any = {};
   @Input() form:FormGroup;
   @Input() color:string;
+  @Input() label:String;
 
   public chosenTag: string;
   public chosenColor = "#ffffff";

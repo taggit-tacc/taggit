@@ -256,16 +256,18 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 		});
 
 		//Finds every tag with the old group name and changes it to the new name
-		featProp.tag.forEach(tag => {
-			if( tag.groupName == this.selectedGroup ) {
-				tag.groupName = name
-			}
-		});
+		try{
+			featProp.tag.forEach(tag => {
+				if( tag.groupName == this.selectedGroup ) {
+					tag.groupName = name
+				}
+			});
+		} catch {}
+
 
 		this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), featProp );
-		
+	}	
 	this.groupsService.setActiveGroup(name);
-	}
   }
 
   expandPanel() {

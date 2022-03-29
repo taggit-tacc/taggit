@@ -11,6 +11,7 @@ import { GroupsService } from 'src/app/services/groups.service';
 export class FormRadioComponent {
   @Input() field:any = {};
   @Input() form:FormGroup;
+  @Input() label:String;
   public chosenTag: string;
   private activeFeatureId$: Subscription;
   activeFeatureId: number;
@@ -30,17 +31,11 @@ export class FormRadioComponent {
       this.activeGroup = next;
     });
 
-
-    // console.log(this.formsService.getSelectedRadio() )
-
     let index
     this.formsService.getSelectedRadio().forEach(opt=> {
-      // console.log(opt)
       if(opt != undefined){
         index = opt.findIndex(item => item.id === this.activeFeatureId && item.compId === 0 && item.groupName === this.activeGroup && item.label === this.form['label']);
-        // console.log(index)
         if (index > -1){
-          // console.log(opt[index].option)
           this.chosenTag = opt[index].option
         }}
       

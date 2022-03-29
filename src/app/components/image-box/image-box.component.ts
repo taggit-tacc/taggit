@@ -217,12 +217,14 @@ export class ImageBoxComponent implements OnInit {
 
   selectGroupForm (name: string, feat: Feature) {
 	let color = "";
+	let icon = ""
 	this.groupsService.setActiveFeatureNum(0);
 	this.groupList.forEach(e => {
 	  if (e.name == name) {
 		//   console.log(this.feature)
 		e.features.push(this.feature);
 		color = e.color;
+		icon = e.icon
 	  }
 	});
 
@@ -236,6 +238,7 @@ export class ImageBoxComponent implements OnInit {
 		featProp.group.push({
 		  name: name,
 		  color: color,
+		  icon: icon,
 		});
 	  }
 	} else {
@@ -243,6 +246,7 @@ export class ImageBoxComponent implements OnInit {
 	  featProp.group.push({
 		name: name,
 		color: color,
+		icon: icon,
 	  });
 	}
 
@@ -251,7 +255,6 @@ export class ImageBoxComponent implements OnInit {
 			this.tempGroup = e.features;	
 		}
 		});
-	// console.log(this.tagList)
 	
 	for (let tag of this.tagList){
 		if (tag.feature === this.tempGroup[0].id && tag.groupName === name){
@@ -269,9 +272,6 @@ export class ImageBoxComponent implements OnInit {
 		}
 	}
 
-	// console.log(name)
-	// console.log(featProp)
-	// console.log(this.tempGroup[0].id)
 	this.geoDataService.updateFeatureProperty(this.selectedProject.id,
 											  Number(feat.id),
 											  featProp);

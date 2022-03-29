@@ -73,17 +73,12 @@ export class TagImagesComponent implements OnInit {
 
 	  // this is to get the list of tags so far
 	  for (let feat of this.featureList){
-		//   console.log(typeof(feat.properties.tag))
 		  if(feat.properties.tag != undefined){
 			  feat.properties.tag.forEach(tag => {
-				//   console.log(tag)
 				this.newTag.push(tag)
 			  });
 		  }
 	  }
-
-	//   console.log(this.newTag)
-	//   console.log(this.tagList)
   }
 
   openRenameModal(template: TemplateRef<any>, name: string) {
@@ -106,17 +101,6 @@ export class TagImagesComponent implements OnInit {
 			break;
 		}
 	}
-	// deletes all the tags that doesn't have group names
-	// while(true){
-	// 	const index = data.findIndex(item => item.groupName === "");
-	// 	// delete this.exampleNote[index];
-	// 	if (index > -1) {
-	// 	data.splice(index, 1);
-	// 	}else{
-	// 		break;
-	// 	}
-	// }
-
 
 	this.tagList = data;
 
@@ -143,20 +127,12 @@ export class TagImagesComponent implements OnInit {
 					},
 					tag: []
 				}
-				// console.log(payload.tag)
-			
-		}
+			}
 		});
 
-		// console.log(this.tempGroup)
 		for (let feat of this.tempGroup){
 
 			if(feat.properties.tag != undefined || feat.properties.tag != []){
-				// feat.properties.tag.forEach(tag => {
-				//   this.newTag.push(tag)
-				// });
-				// console.log(feat.properties)
-				// console.log(this.activeGroup)
 				feat.properties.group.forEach(group => {
 					if(group.name != this.activeGroup){
 						let tempGroup = {
@@ -177,10 +153,6 @@ export class TagImagesComponent implements OnInit {
    }
 
   //submits a tag's name change to geoAPI
-  /*TODO: Right now, if you try to rename a tag while the only tags that exist should get their names changed, it
-  	breaks and instead deletes all tags. I suspect this has to do with the various filter steps where I attempt to 
-	replace the relevant tags with renamed versions.*/
-	//Tag label is the old value for what the tag was, 
 	renameTag(tagLabel) {
 		let activeTag = this.tagList.find(tag => tag.label === tagLabel)
 		let activeFeature = this.featureList.find(feature => feature.id === +activeTag.feature)
@@ -223,10 +195,6 @@ export class TagImagesComponent implements OnInit {
 
   onSubmit() {
 	this.payload = this.form.getRawValue();
-	// console.log(this.payload);
-	// this.groupsService.setTagFeatureGroup(this.activeGroup, this.activeFeatureId, this.payload);
-	// console.log(this.form)
-	// this.formsService.saveTag(this.activeGroup, this.form.value, this.payload)
 	console.log(this.tagList)
   }
 

@@ -84,18 +84,6 @@ export class FormsService {
 					}
 				  });
 			  }
-
-  // getProjects(): void {
-  //  this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe( resp => {
-  //    this._projects.next(resp);
-  //  });
-  // }
-
-  // addForm(formList: Array<any>): void {
-  //	this._forms.formList.next(formList);
-  // }
-
-  // addForm(formObj: Group[]): void {
   // TODO This should be stored in projects api later on (or not)
   // addForm(groupName: string, formGroup: Group, formList: Array<any>): void {
   // addForm(formObj: Array<Group>): void {
@@ -295,7 +283,6 @@ export class FormsService {
 		}
 		return groupObj.formList;
 	  }))).subscribe(current => {this._activeFormList.next(current.find(e => e != undefined))});
-	  // }))).subscribe(current => {console.log(current.find(e => e != undefined))});
 
 	this.changeGroupForm(groupName);
   }
@@ -422,11 +409,8 @@ deleteOpt(gName:string, opt:object, tag: tags): void {
 addCheckedOpt(opt:object, id: number, group: string, label:string): void {
 	let option = { key: opt['key'], label: opt['label'], choice: opt['key'], id: id , group: group, title: label}
 	this.checkedOptions.push(option)
-	// console.log(this.checkedOptions)
 	let icon:string
 	let payload
-	// let formValueFilter = this.activeFormList.filter(e => e.label == this.formLabel);
-	// if (formValueFilter.length == 0 && this.formLabel.length != 0) {
 	this.groupList.forEach(tGroup => {
 		if (tGroup.name == group) {
 			this.tempGroup = tGroup.features;
@@ -448,21 +432,11 @@ addCheckedOpt(opt:object, id: number, group: string, label:string): void {
 					},
 					tag:[]
 				}
-				// console.log(payload)
-			
-		}
+			}
 		});
-
-
-		// console.log(this.tempGroup)
 		for (let feat of this.tempGroup) {
 
 			if(feat.properties.tag != undefined || feat.properties.tag != []){
-				// feat.properties.tag.forEach(tag => {
-				//   this.newTag.push(tag)
-				// });
-				// console.log(feat.properties)
-				// console.log(this.activeGroup)
 				feat.properties.group.forEach(group => {
 					if(group.name != this.activeGroup){
 						let tempGroup = {
@@ -473,8 +447,7 @@ addCheckedOpt(opt:object, id: number, group: string, label:string): void {
 					payload.group.push(tempGroup)}
 				});
 			}
-			  
-
+			
 			  // code from here is a mess
 			  if(feat.properties.tag != undefined){
 				this.tempData.forEach(tag => {
@@ -484,9 +457,6 @@ addCheckedOpt(opt:object, id: number, group: string, label:string): void {
 				  payload.tag.push(tag)
 				});
 			}
-
-			// console.log(payload)
-			// console.log(typeof(payload.tag))
 			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
 			// Clear out the tag section
 			payload.tag = []
@@ -496,12 +466,9 @@ addCheckedOpt(opt:object, id: number, group: string, label:string): void {
 deleteCheckedOpt(opt:object, id:number, group: string, label: string): void{
 	const index = this.checkedOptions.findIndex(item => item.label === opt['label'] && item.id === id && item.group === group && item.title === label)
 	this.checkedOptions.splice(index,1)
-	// console.log(this.checkedOptions)
 
 	let icon:string
 	let payload
-	// let formValueFilter = this.activeFormList.filter(e => e.label == this.formLabel);
-	// if (formValueFilter.length == 0 && this.formLabel.length != 0) {
 	this.groupList.forEach(tGroup => {
 		if (tGroup.name == group) {
 			this.tempGroup = tGroup.features;
@@ -523,21 +490,11 @@ deleteCheckedOpt(opt:object, id:number, group: string, label: string): void{
 					},
 					tag:[]
 				}
-				// console.log(payload)
-			
 		}
 		});
-
-
-		// console.log(this.tempGroup)
 		for (let feat of this.tempGroup) {
 
 			if(feat.properties.tag != undefined || feat.properties.tag != []){
-				// feat.properties.tag.forEach(tag => {
-				//   this.newTag.push(tag)
-				// });
-				// console.log(feat.properties)
-				// console.log(this.activeGroup)
 				feat.properties.group.forEach(group => {
 					if(group.name != this.activeGroup){
 						let tempGroup = {
@@ -560,9 +517,6 @@ deleteCheckedOpt(opt:object, id:number, group: string, label: string): void{
 				  payload.tag.push(tag)
 				});
 			}
-
-			// console.log(payload)
-			// console.log(typeof(payload.tag))
 			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
 			// Clear out the tag section
 			payload.tag = []
@@ -573,29 +527,15 @@ newOpt: object[] = [];
 getCheckedOpt(): any[]{
 	this.newOpt = []
 	for (let feat of this.featureList){
-		//   console.log(typeof(feat.properties.tag))
 		  if(feat.properties.tag != undefined){
 			  feat.properties.tag.forEach(tag => {
-				//   console.log(tag)
 				this.newOpt.push(tag.extra)
 			  });
 		  }
 	  }
-	//   console.log(this.newOpt)
 	return this.newOpt;
 }
-// renameTagOpt(gName:string, opt:object, tag: tags): void {
-// 	const index = this.tagData.findIndex(item => item.groupName === gName  && item.label === tag.label);
-// 	if(index >-1) {
-// 		const ind = this.tagData[index].options.findIndex(item => item === opt)
-// 		if (ind > -1){
-// 			console.log(opt)
-// 			console.log(this.tagData[index].options[ind]);
-// 		}
-// 	}
-// }
 
-radioOptions = []
 //Functions for radio buttons componentId=0 is for the radio component, componentId=1 is for color
 updateSelectedRadio(selection:string, componentId: number, feature: number, group: string, label: string){ 
 
@@ -605,7 +545,7 @@ updateSelectedRadio(selection:string, componentId: number, feature: number, grou
 		if (tGroup.name == group) {
 			this.tempGroup = tGroup.features;
 				icon = tGroup.icon
-	
+
 				//Creates a temporary group with a copy of the current groups info
 				let tempGroup = [{
 					name: tGroup.name,
@@ -622,21 +562,11 @@ updateSelectedRadio(selection:string, componentId: number, feature: number, grou
 					},
 					tag:[]
 				}
-				// console.log(payload)
-			
-		}
+			}
 		});
-
-
-		// console.log(this.tempGroup)
 		for (let feat of this.tempGroup) {
 
 			if(feat.properties.tag != undefined || feat.properties.tag != []){
-				// feat.properties.tag.forEach(tag => {
-				//   this.newTag.push(tag)
-				// });
-				// console.log(feat.properties)
-				// console.log(this.activeGroup)
 				feat.properties.group.forEach(group => {
 					if(group.name != this.activeGroup){
 						let tempGroup = {
@@ -648,21 +578,18 @@ updateSelectedRadio(selection:string, componentId: number, feature: number, grou
 				});
 			}
 			  
-
 			  // code from here is a mess
+			  //Which means my problem is probably somewhere in here
 			  if(feat.properties.tag != undefined){
 				this.tagData.forEach(tag => {
 					if(tag.feature === feature && tag.groupName === group){
 						const index = tag.extra.findIndex(item => item['id'] === feature && item['compId'] === componentId && item['groupName'] === group && item['label'] === label);
-						// const index = tag.extra.findIndex(item => item.label === opt['label'] && item.id === id && item.group === group)
 
 						if(index > -1){
 							tag.extra[index]['option'] = selection
-							// console.log(tag.extra)
 						}
 						else{
 							let rOption = {option: selection, id: feature, compId: componentId, groupName: group, label: label}
-							// console.log(rOption)
 							tag.extra.push(rOption)
 						}
 					}
@@ -670,51 +597,30 @@ updateSelectedRadio(selection:string, componentId: number, feature: number, grou
 				});
 			}
 
-			// console.log(typeof(payload.tag))
 			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
 			// Clear out the tag section
 			payload.tag = []
 	}
-
-	// if (index > -1) {
-	// 	// console.log("IT WORKED")
-	// 	this.radioOptions[index]['option'] = selection;
-	// 	// this.tagData[index].options = tag.options;
-	// }
-	// else {
-	// 	let rOption = {option: selection, id: feature, compId: componentId} 
-	// 	this.radioOptions.push(rOption);
-	// 	// console.log("Tag data:")
-	// 	// console.log(this.tagData)
-	// }
-	// this.chosenTag[componentId] = {option: selection, id:id}; 
 }
 
-getSelectedRadio(): any[] { 
+//TODO: Rename this function, it's called getSelectedRadio, but it's used as the getter for every tag type
+getSelectedRadio(): any[] {
 	this.newOpt = []
 	for (let feat of this.featureList){
-		//   console.log(typeof(feat.properties.tag))
 		  if(feat.properties.tag != undefined){
 			  feat.properties.tag.forEach(tag => {
-				//   console.log(tag)
 				this.newOpt.push(tag.extra)
 			  });
 		  }
 	  }
-	//   console.log(this.newOpt)
 	return this.newOpt;
  }
 
 //Notes tag functions
 updateNotes(change, componentID: number, feature: number, group:string, label:string){
-	// const index = this.radioOptions.findIndex(item => item['id'] === feature);
 	let icon:string
 	let payload
-	// let formValueFilter = this.activeFormList.filter(e => e.label == this.formLabel);
-	// if (formValueFilter.length == 0 && this.formLabel.length != 0) {
 	this.groupList.forEach(tGroup => {
-		// console.log(tGroup)
-		// console.log(group)
 		if (tGroup.name == group) {
 			this.tempGroup = tGroup.features;
 				icon = tGroup.icon
@@ -735,21 +641,12 @@ updateNotes(change, componentID: number, feature: number, group:string, label:st
 					},
 					tag:[]
 				}
-				// console.log(payload)
-			
 		}
 		});
 
-
-		// console.log(this.tempGroup)
 		for (let feat of this.tempGroup) {
 
 			if(feat.properties.tag != undefined || feat.properties.tag != []){
-				// feat.properties.tag.forEach(tag => {
-				//   this.newTag.push(tag)
-				// });
-				// console.log(feat.properties)
-				// console.log(this.activeGroup)
 				feat.properties.group.forEach(group => {
 					if(group.name != this.activeGroup){
 						let tempGroup = {

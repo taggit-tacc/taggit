@@ -26,16 +26,12 @@
 				 matTooltipPosition="below">
 			  </i>
 			</div>
-			<!-- <div *ngFor = "let icon of groupIcon">  -->
-				<!-- <div *ngIf = "icon.groupName == activeGroup"> -->
-					<div (click)="openIconSelection(iconModal, group.name)">
-						<span class="fa {{group.icon}}"
-						matTooltip="icons"
-						matTooltipPosition="below"></span>
-					</div>
-				<!-- </div> -->
-			<!-- </div> -->
-		  </div>
+				<div (click)="openIconSelection(iconModal, group.name)">
+					<span class="fa {{group.icon}}"
+					matTooltip="icons"
+					matTooltipPosition="below"></span>
+				</div>
+		  	</div>
 		</label>
 	  </div>
 	</form>
