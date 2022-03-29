@@ -19,6 +19,7 @@ export class GeoDataService {
 
 
   // TODO: clean this up and put the observables up here. Also look into Replay/Behavior
+  //TODO: Go over this and remove all unused functions, a lot of this was copy/pasted over from Hazmapper without a second thought
   private _features: BehaviorSubject<FeatureCollection>;
   private features$: Observable<FeatureCollection>;
   private _activeFeature: BehaviorSubject<any>;

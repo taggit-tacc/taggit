@@ -19,7 +19,7 @@
 
 	<ng-container *ngSwitchCase="'radio'">
 	  <div *ngFor="let opt of field.options" [id]="field.label" class="input-group">	
-	  	<app-form-radio [field]="opt" [form]="field"></app-form-radio>
+	  	<app-form-radio [field]="opt" [form]="field" label={{field.label}}></app-form-radio>
 	  </div>
 	</ng-container>
 
@@ -31,7 +31,7 @@
 
 	<ng-container *ngSwitchCase="'color'">
 		<div *ngFor="let opt of field.options" [id]="field.label" class="input-group">
-			<app-form-color [field]="opt" [form]="field" [color]="colorArray[field.options.indexOf(opt)]"></app-form-color>
+			<app-form-color [field]="opt" [form]="field" label={{field.label}} [color]="colorArray[field.options.indexOf(opt)]"></app-form-color>
 		</div>
 	</ng-container>
 

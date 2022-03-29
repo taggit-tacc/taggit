@@ -1,6 +1,7 @@
 :host {
   overflow-y: scroll;
   .select-group {
+	overflow: hidden;
 	max-height: 20%;
 	// height: 20%;
   }

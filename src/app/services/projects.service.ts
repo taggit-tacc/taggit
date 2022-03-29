@@ -76,13 +76,14 @@ export class ProjectsService {
     const prom = this.http.post<Project>(environment.apiUrl + `/projects/`, data);
     prom.subscribe(proj => {
       // Spread operator, just pushes the new project into the array
-      console.log(data)
+      //console.log(data)
       this._projects.next([...this._projects.value, proj]);
-      // Set the active project to the one just created. Despite what previous punctuation would have you belive, 
-      //That is what this next line does
+      
+      //Awkward as hell, but this ensures we actually transition to the newly created project
+	    //Without this, the screen flickers briefly to the new project, but ends up stuck on the old project
+      this.setActiveProject(proj);
       this.setActiveProject(proj);
     });
-    //console.log(this._activeProject)
     return prom;
   }
 

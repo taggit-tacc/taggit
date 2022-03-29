@@ -5,24 +5,11 @@
 	</span>
 	<span>
 	  <span style="cursor: pointer"
-			matTooltip="Export Tags"
-			style="cursor: pointer; margin-right: 10px"
-			matTooltipPosition="above">
-		<i class="fas fa-file-download"></i>
-	  </span>
-
-	  <span style="cursor: pointer"
 			(click)="createNewTag()"
 			matTooltip="Add New Tag"
 			style="cursor: pointer; margin-right: 10px"
 			matTooltipPosition="above">
 		<i class="fas fa-plus"></i>
-	  </span>
-
-	  <span style="cursor: pointer; margin-right: 20px"
-			matTooltip="Save Tags"
-			matTooltipPosition="above">
-		<i class="fas fa-save"></i>
 	  </span>
 	</span>
   </div> <!-- subitem-title -->
@@ -64,9 +51,6 @@
 	  
 					  </div> three dots -->
 
-					<!-- Removing the ngModel here keeps the tag from auto-updating, now how to get the old tag in.
-					Note: The NGModel declaration was [(ngModel)]="tag.label", it was right above value, and value
-					is the new param -->
 					<ng-template #renameFormItemModal>
 						<input matInput #formItemRename
 							[(ngModel)]="newTagValue"
@@ -80,7 +64,6 @@
 								  mat-raised-button
 								  color="primary" (click)="renameTag(tag.label)"
 								  >Rename</button>
-								  <!-- (click)="formsService.saveTag(activeGroup, tag, tag.label)" -->
 						  <button matDialogClose
 								  mat-button>Cancel</button>
 						</div> 
