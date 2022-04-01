@@ -79,6 +79,8 @@ export class TagImagesComponent implements OnInit {
 			  });
 		  }
 	  }
+	  console.log(this.tagList)
+	  console.log(this.newTag)
   }
 
   openRenameModal(template: TemplateRef<any>, name: string) {
@@ -134,14 +136,26 @@ export class TagImagesComponent implements OnInit {
 
 			if(feat.properties.tag != undefined || feat.properties.tag != []){
 				feat.properties.group.forEach(group => {
-					if(group.name != this.activeGroup){
-						let tempGroup = {
-							name: group.name,
-							color: group.color,
-							icon: group.icon
-						}
-					payload.group.push(tempGroup)}
-				});
+					if(feat.properties.group.length > 1){
+						if(group.name != this.activeGroup){
+							let tempGroup = {
+								name: group.name,
+								color: group.color,
+								icon: group.icon
+							}
+						payload.group.push(tempGroup)}
+					}
+					else {
+						payload.group = []
+						if(group.name == this.activeGroup){
+							let tempGroup = {
+								name: group.name,
+								color: group.color,
+								icon: group.icon
+							}
+						payload.group.push(tempGroup)}
+					}
+			});
 			} 
 			
 			console.log(data)

@@ -189,10 +189,10 @@ export class TagGeneratorComponent implements OnInit {
 		});
 
 
-		// console.log(this.groupList)
+		console.log(this.groupList)
 
 
-		// console.log(this.tempGroup)
+		console.log(this.tempGroup)
 		for (let feat of this.tempGroup) {
 
 			// console.log(this.groupList)
@@ -201,8 +201,8 @@ export class TagGeneratorComponent implements OnInit {
 				// feat.properties.tag.forEach(tag => {
 				//   this.newTag.push(tag)
 				// });
-				// console.log(feat.properties)
-				// console.log(this.activeGroup)
+				console.log(feat.properties)
+				console.log(this.activeGroup)
 				if(feat.properties.group.length > 1){
 					feat.properties.group.forEach(group => {
 						if(group.name != this.activeGroup){
@@ -211,6 +211,7 @@ export class TagGeneratorComponent implements OnInit {
 								color: group.color,
 								icon: group.icon
 							}
+						console.log(tempGroup)
 						payload.group.push(tempGroup)
 						// console.log(this.groupList)
 
@@ -219,7 +220,23 @@ export class TagGeneratorComponent implements OnInit {
 					});
 				}
 				else {
+					payload.group = []
+					feat.properties.group.forEach(group => {
+						if(group.name == this.activeGroup){
+							let tempGroup = {
+								name: group.name,
+								color: group.color,
+								icon: group.icon
+							}
+						console.log(tempGroup)
+						payload.group.push(tempGroup)
+						// console.log(this.groupList)
+
+					}
+						
+					});
 					console.log("duck")
+					console.log(payload.group)
 				}
 			}
 			// console.log(this.newGroup)
@@ -282,7 +299,7 @@ export class TagGeneratorComponent implements OnInit {
 			// 	else {payload.tag.push(formItem)}
 			// }
 			// console.log(typeof(payload.tag))
-			// console.log(payload)
+			console.log(payload)
 
 			// console.log(this.groupList)
 
