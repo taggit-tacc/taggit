@@ -2,7 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { BsModalService, BsModalRef } from 'ngx-foundation';
 import { FormGroup, FormControl } from '@angular/forms';
 import { ProjectsService } from '../../services/projects.service';
-import { Project } from '../../models/models';
+import { Project, ProjectRequest } from '../../models/models';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -46,12 +46,35 @@ export class ModalCurrentProjectComponent implements OnInit
   }
   
   update() {
+    //The project is being properly assembled, but the problem is that the returned project isn't updating.
+    //Do I need more data in my projects?
+    /*
+      export interface Project {
+      description: string;
+      id?: number;
+      name: string;
+      ds_id?: string;
+      title?: string;
+      uuid?: string;
+      public?: boolean;
+      system_file?: string;
+      system_id?: string;
+      system_path?: string;
+      deleting?: boolean;
+      deletingFailed?: boolean;
+    }
+     */
     const p = new Project();
+    const projRqst = new ProjectRequest();
+
     p.description = this.projCreateForm.get('description').value;
     p.name = this.projCreateForm.get('name').value;
     p.id = this.activeProject.id;
     p.uuid = this.activeProject.uuid;
-    this.projectsService.update(p);
+    
+    projRqst.project = p
+
+    this.projectsService.update(projRqst);
     this.dialogRef.close();
   }
 
