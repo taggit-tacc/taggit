@@ -300,6 +300,12 @@ export class ControlBarComponent implements OnInit {
 	  height: '400px',
 	  width: '600px',
 	});
+	this.dialog.afterAllClosed.subscribe((resp) =>{
+		//Close the sidebar and return to the gallery screen if the sidebar's open
+		if(this.showSidebar){
+			this.openSidebar()
+		}
+	})
 
 	// modal.afterClosed().subscribe( (files: Array<RemoteFile>) => {
 	//   this.geoDataService.importFileFromTapis(this.selectedProject.id, files);
@@ -498,6 +504,7 @@ export class ControlBarComponent implements OnInit {
   }
 
   // TODO
+  //This is unused
   goToRoute() {
 	if (this.activePane == "preset") {
 	  this.groupsService.setActivePane("tagger");

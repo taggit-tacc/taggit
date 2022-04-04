@@ -98,9 +98,8 @@ export class ProjectsService {
   }
 
   
-  update(data: Project): void{
-    // console.log(data) 
-    this.http.put<Project>(environment.apiUrl + `/projects/${data.id}/`, data).subscribe(
+  update(data: ProjectRequest): void{
+    this.http.put<Project>(environment.apiUrl + `/projects/${data.project.id}/`, data).subscribe(
       (resp) => {
         this._activeProject.next(resp);
       }
