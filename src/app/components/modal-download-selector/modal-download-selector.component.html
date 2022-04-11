@@ -5,7 +5,7 @@
 	<option [ngValue]="myDataSystem"> My Data </option>
 	<option [ngValue]="communityDataSystem"> Community Data</option>
 	<option [ngValue]="publishedDataSystem"> Published Data</option>
-	<optgroup label="My Projects">
+	<optgroup label="My Galleries">
 		<option *ngFor="let project of projects" [ngValue]="project">{{project.description}}</option>
 	</optgroup>
 </select>
@@ -30,7 +30,7 @@
 
 <form [formGroup]="downloadSelectForm" (ngSubmit)="update()" id="current-project-form">
     <div>
-        <small><em> If no filename is specified, it will default to the project ID number. </em></small>
+        <small><em> If no filename is specified, it will default to the Gallery ID number. </em></small>
     </div>
 
     <mat-form-field>
