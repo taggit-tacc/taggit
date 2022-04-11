@@ -9,11 +9,11 @@
 
   <mat-menu #project="matMenu">
 	<span mat-menu-item *ngIf="selectedProject" (click)="openProjectModal(selectedProject)">
-	  Current Project : {{selectedProject.name}}
+	  Current Gallery : {{selectedProject.name}}
 	</span>
-	<button mat-menu-item (click)="openCreateProjectModal()">Create Project</button>
-	<button mat-menu-item [matMenuTriggerFor]="projectList">Select Project</button>
-	<button mat-menu-item (click)="openShareProjectModal()">Share Project</button>
+	<button mat-menu-item (click)="openCreateProjectModal()">Create Gallery</button>
+	<button mat-menu-item [matMenuTriggerFor]="projectList">Select Gallery</button>
+	<button mat-menu-item (click)="openShareProjectModal()">Share Gallery</button>
 	<button mat-menu-item (click)="openFilePicker(test)">File Browser</button>
 	<button mat-menu-item [matMenuTriggerFor]="saveOptions">Save as</button>
   </mat-menu>
@@ -69,7 +69,7 @@
 	<button mat-raised-button class="button-spacing" [disabled]="!itemsSelected" (click)="clearAll()">Clear Selected</button>
 
 	<!-- A link that looks like a button, links to Hazmapper-->
-	<a class="button-spacing" mat-raised-button href={{hazMapperLink}} title="Open your project in HazMapper" target="_blank">
+	<a class="button-spacing" mat-raised-button href={{hazMapperLink}} title="Open your gallery in HazMapper" target="_blank">
 		<img src="assets/hazmapper-header-logo.png" width="100PX">
 	</a>
 

@@ -196,7 +196,6 @@ export class ControlBarComponent implements OnInit {
 	  this.groupsService.itemsSelected.subscribe((next) => {
 		this.itemsSelected = next;
 	  })
-	  //this.setLiveRefresh(true)
 	});
 
 	this.projectsService.activeProject.subscribe(next => {
@@ -209,9 +208,6 @@ export class ControlBarComponent implements OnInit {
 	this.geoDataService.mapMouseLocation.pipe(skip(1)).subscribe( (next) => {
 	  this.mapMouseLocation = next;
 	});
-	// this.timerSubscription = this.timer.subscribe( () => {
-	//   this.reloadFeatures();
-	// });
 
 	// FIXME Maybe redundant
 	this.groupsService.setActiveFeatureNum(0);
@@ -252,18 +248,8 @@ export class ControlBarComponent implements OnInit {
 	const modal = this.dialog.open(ModalFileBrowserComponent);
 	modal.afterClosed().subscribe( (files: Array<RemoteFile>) => {
 		if (files != null) {this.geoDataService.importFileFromTapis(this.selectedProject.id, files);}
-		/*if (files != null) {
-			files.forEach( (file) => {
-				this.geoDataService.uploadNewFeature(this.selectedProject.id, this.createBlankFeature(), file)
-			})};*/
-		}
-	);
-
-	// const modal: BsModalRef = this.bsModalService.show(ModalFileBrowserComponent);
-	// modal.content.onClose.subscribe( (files: Array<RemoteFile>) => {
-	//   this.geoDataService.importFileFromTapis(this.selectedProject.id, files);
-	// });
-  }
+	});
+}
 
   //Creates a feature with a long/lat value of 0,0 and no associated image.
   //I think if we want a placeholder image, we can add it here.
@@ -290,11 +276,6 @@ export class ControlBarComponent implements OnInit {
 	});
   }
 
-  // nameGroup(event: any) {
-  //	this.groupName = event;
-  //	this.groupsService.setActiveGroup(event.toLowerCase());
-  // }
-
   openCreateProjectModal() {
 	this.dialog.open(ModalCreateProjectComponent, {
 	  height: '400px',
@@ -306,10 +287,6 @@ export class ControlBarComponent implements OnInit {
 			this.openSidebar()
 		}
 	})
-
-	// modal.afterClosed().subscribe( (files: Array<RemoteFile>) => {
-	//   this.geoDataService.importFileFromTapis(this.selectedProject.id, files);
-	// });
   }
 
   openShareProjectModal(){

@@ -205,6 +205,12 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 
   openIconSelection(template: TemplateRef<any>, name:string){
 	this.selectedGroup =  name;
+	//Set the default icon to be the group's icon
+	this.groupList.forEach(e => {
+		if (e.name == this.activeGroup) {
+		  this.choice = e.icon;
+		}
+	  });
 	this.dialog.open(template);
   }
 
