@@ -77,7 +77,7 @@ export class ControlBarComponent implements OnInit {
 
 	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
 	  this.features = fc;
-	  console.log(this.features)
+	//   console.log(this.features)
 
 	  if (this.features != undefined) {
 		this.featureList = this.features.features;

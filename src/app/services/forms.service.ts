@@ -352,15 +352,15 @@ getTags(): tags[]{
 	let count = 0
 
 	this.tempData = this.tagData
-	while(true){
-		const index = this.tempData.findIndex(item => item.groupName === "building" );
-		// delete this.exampleNote[index];
-		if (index > -1) {
-		this.tempData.splice(index, 1);
-		}else{
-			break;
-		}
-	}
+	// while(true){
+	// 	const index = this.tempData.findIndex(item => item.groupName === "building" );
+	// 	// delete this.exampleNote[index];
+	// 	if (index > -1) {
+	// 	this.tempData.splice(index, 1);
+	// 	}else{
+	// 		break;
+	// 	}
+	// }
 
 	for (let feat of this.featureList){
 		  if(feat.properties.tag != undefined){
