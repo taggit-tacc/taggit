@@ -75,12 +75,15 @@ export class TagImagesComponent implements OnInit {
 	  for (let feat of this.featureList){
 		  if(feat.properties.tag != undefined){
 			  feat.properties.tag.forEach(tag => {
-				this.newTag.push(tag)
+				  const index = this.newTag.findIndex(item => item.groupName === tag.groupName  && item.label === tag.label && item.feature === tag.feature);
+					if(index == -1){
+						this.newTag.push(tag)
+					}
 			  });
 		  }
 	  }
-	  console.log(this.tagList)
-	  console.log(this.newTag)
+	//   console.log(this.tagList)
+	//   console.log(this.newTag)
   }
 
   openRenameModal(template: TemplateRef<any>, name: string) {
@@ -158,10 +161,10 @@ export class TagImagesComponent implements OnInit {
 			});
 			} 
 			
-			console.log(data)
 			payload.tag = data;
 
 			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
+			this.geoDataService.getFeatures(this.selectedProject.id)
 			payload.tag = []
 		}
    }

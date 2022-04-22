@@ -129,7 +129,9 @@ export class SelectImageComponent implements OnInit, OnDestroy {
 	for (let feat of this.tempGroup){
 
 	let featProp = feat.properties;
-	featProp.group = featProp.group.filter(e => e.name != this.activeGroup);
+	if (feat.id == assetId){
+		featProp.group = featProp.group.filter(e => e.name != this.activeGroup);
+	}
 
 	this.geoDataService.updateFeatureProperty(this.selectedProject.id,
 											  Number(feat.id),

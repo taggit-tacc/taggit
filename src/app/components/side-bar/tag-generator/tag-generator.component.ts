@@ -160,8 +160,6 @@ export class TagGeneratorComponent implements OnInit {
   addFormItem() {
 	let icon:string
 	let payload
-	// let formValueFilter = this.activeFormList.filter(e => e.label == this.formLabel);
-	// if (formValueFilter.length == 0 && this.formLabel.length != 0) {
 	this.groupList.forEach(group => {
 		if (group.name == this.activeGroup) {
 			this.tempGroup = group.features;
@@ -183,26 +181,15 @@ export class TagGeneratorComponent implements OnInit {
 					},
 					tag:[]
 				}
-				// console.log(payload)
-			
+
 		}
 		});
 
 
-		console.log(this.groupList)
-
-
-		console.log(this.tempGroup)
 		for (let feat of this.tempGroup) {
 
-			// console.log(this.groupList)
-
 			if(feat.properties.tag != undefined || feat.properties.tag != []){
-				// feat.properties.tag.forEach(tag => {
-				//   this.newTag.push(tag)
-				// });
-				console.log(feat.properties)
-				console.log(this.activeGroup)
+
 				if(feat.properties.group.length > 1){
 					feat.properties.group.forEach(group => {
 						if(group.name != this.activeGroup){
@@ -211,9 +198,8 @@ export class TagGeneratorComponent implements OnInit {
 								color: group.color,
 								icon: group.icon
 							}
-						console.log(tempGroup)
 						payload.group.push(tempGroup)
-						// console.log(this.groupList)
+
 
 					}
 						
@@ -228,19 +214,14 @@ export class TagGeneratorComponent implements OnInit {
 								color: group.color,
 								icon: group.icon
 							}
-						console.log(tempGroup)
 						payload.group.push(tempGroup)
-						// console.log(this.groupList)
-
 					}
 						
 					});
-					console.log("duck")
-					console.log(payload.group)
+
 				}
 			}
-			// console.log(this.newGroup)
-			// console.log(this.newTag)
+
 			  
 			let formItem: tags = {
 				type: this.formType,
@@ -269,47 +250,12 @@ export class TagGeneratorComponent implements OnInit {
 
 			  payload.tag = this.formsService.getTags();
 
-			  // code from here is a mess
-			//   if(feat.properties.tag != undefined){
-			// 	feat.properties.tag.forEach(tag => {
-			// 		const index = payload.tag.findIndex(item => item.groupName === tag.groupName  && item.label === tag.label && item.feature === tag.feature);
-			// 	  	if(index == -1) {payload.tag.push(tag)}
-
-			// 	});
-			// }
-
-			// payload.group.push(this.groupList)
-
-			// feat.properties.group.forEach(groupList => {
-			// 	payload.group.push(groupList)
-			// });
-
-			// console.log(this.groupList)
-
-			//   console.log(payload)
-			//   console.log(feat.id)
-			// console.log(typeof(formItem))
-			// payload.tag.push(this.newTag)
-			// console.log(payload.tag[0])
-			// console.log(!payload.tag[0].hasOwnProperty("groupName"))
-			// if(payload.tag[0] == undefined ){
-			// 	payload.tag[0] = formItem
-			// }else{
-			// 	if(!payload.tag[0].hasOwnProperty("groupName")){payload.tag[0] = formItem}
-			// 	else {payload.tag.push(formItem)}
-			// }
-			// console.log(typeof(payload.tag))
-			console.log(payload)
-
-			// console.log(this.groupList)
 
 			this.formItemList.push(formItem);
 			// this.formsService.addForm(this.activeGroup, formItem);
 			  this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
 			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
 			// Clear out the tag section
-			
-			// console.log(this.groupList)
 			
 			payload.tag = []
 			this.newGroup = []
