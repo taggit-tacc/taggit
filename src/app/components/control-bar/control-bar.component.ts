@@ -25,6 +25,7 @@ import { element } from 'protractor';
 import { consoleTestResultHandler } from 'tslint/lib/test';
 import { ScrollService } from 'src/app/services/scroll.service';
 import { NotificationsService } from 'src/app/services/notifications.service';
+import { FeatureService } from 'src/app/services/feature.service';
 
 @Component({
   selector: 'app-control-bar',
@@ -70,7 +71,8 @@ export class ControlBarComponent implements OnInit {
 			  private router: Router,
 			  private dialog: MatDialog,
 			  private scrollService: ScrollService,
-			  private notificationsService: NotificationsService) {}
+			  private notificationsService: NotificationsService,
+			  private featureService: FeatureService) {}
 
   ngOnInit() {
 	  this.filesService.getState()
@@ -86,11 +88,10 @@ export class ControlBarComponent implements OnInit {
 		// TODO This should activate persistence by looping through all features and creating new groups and
 		//
 		this.groupsService.setGroupProperties(this.featureList);
-
-		// console.log(this.featureList[this.activeFeatureNum].assets[0].path);
-		// this.activeFeature = this.featureList[this.activeFeatureNum];
 	  }
 	});
+
+	this.featureService.getFeatureCollection()
 
 	this.groupsService.activeGroup.subscribe((next) => {
 	  this.activeGroup = next;
