@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Feature, FeatureCollection} from '../models/models';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { GeoDataService } from './geo-data.service';
+import { tag } from '@turf/turf';
 
 @Injectable({
   providedIn: 'root'
@@ -39,15 +40,20 @@ export class FeatureService {
   //This has to manage all features, tags, and maybe groups as well. While I think that groups service has all the methodology,
   //the input for all that is features done by the local lists 
 
-  //Getter method, returns the feature collection
-  getFeatureCollection(): FeatureCollection {
-    return this.features
-  }
-
   //Takes the ID of the feature to be deleted, and filters it out of the feature list
   deleteFeature(featID:Number): void {
     this.features.features = this.features.features.filter(feat => feat.id == featID)
     this._features.next(this.features)  //Update the observable
+    this.saveFeatures(this.features) //Save features to backend
+  }
+
+  //Takes a list of features, and deletes them from the observable in a more efficient manner
+  bulkFeatureDelete(delFeats:Array<Feature>): void {
+    delFeats.forEach(feat => {
+      //Filter out every feature in delFeats from the master list
+      this.features.features = this.features.features.filter(featListFeature => featListFeature.id == feat.id)
+    })
+    this._features.next(this.features)  //Update the observable with the filtered list
     this.saveFeatures(this.features) //Save features to backend
   }
 
@@ -67,7 +73,8 @@ export class FeatureService {
   }
 
   //Takes a feature, and optionally an updated property section
-  //If featprop is null, 
+  //If featprop is null, it assumes the passed in feature was already updated with the new properties
+  
   updateFeatureProperties(feature:Feature, featProp=null): void {
     //If featprop has a value, update the feature's properties to the new section
     if( featProp != null) {
@@ -107,6 +114,15 @@ export class FeatureService {
   deleteTag(tag): void {
     this.tagList = this.tagList.filter(listTag => listTag == tag)
     this._tags.next(this.tagList) //Update the observable
+    this.saveTags(this.tagList) //saves tags to backend
+  }
+
+  bulkTagDelete(tagList: Array<any>): void {
+    tagList.forEach( delTag => {
+      //Filter out each tag from the tag list
+      this.tagList = this.tagList.filter(listTag => listTag == delTag)
+    })
+    this._tags.next(this.tagList) //Update the observable with the filtered list
     this.saveTags(this.tagList) //saves tags to backend
   }
 }

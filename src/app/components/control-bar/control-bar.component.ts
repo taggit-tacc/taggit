@@ -79,7 +79,6 @@ export class ControlBarComponent implements OnInit {
 
 	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
 	  this.features = fc;
-	//   console.log(this.features)
 
 	  if (this.features != undefined) {
 		this.featureList = this.features.features;
@@ -90,8 +89,6 @@ export class ControlBarComponent implements OnInit {
 		this.groupsService.setGroupProperties(this.featureList);
 	  }
 	});
-
-	this.featureService.getFeatureCollection()
 
 	this.groupsService.activeGroup.subscribe((next) => {
 	  this.activeGroup = next;
