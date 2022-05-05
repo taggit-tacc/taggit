@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 import { templateJitUrl } from '@angular/compiler';
 import { Feature, tag } from '@turf/turf';
 import { group } from '@angular/animations';
+import { FeatureService } from 'src/app/services/feature.service';
 
 @Component({
   selector: 'app-select-group',
@@ -17,9 +18,6 @@ import { group } from '@angular/animations';
   styleUrls: ['./select-group.component.scss']
 })
 export class SelectGroupComponent implements OnInit, OnDestroy {
-
-  featureList: Array<any> = [];
-  features: FeatureCollection;
 
   groups$: Subscription;
   activeGroup$: Subscription;
@@ -107,17 +105,10 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 			  private groupsService: GroupsService,
 			  private geoDataService: GeoDataService,
 			  private projectsService: ProjectsService,
-			  private dialog: MatDialog) { }
+			  private dialog: MatDialog,
+			  private featureService: FeatureService) { }
 
   ngOnInit() {
-	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
-		this.features = fc;
-  
-		if (this.features != undefined) {
-		  this.featureList = this.features.features;
-		}
-	  });
-
 	  this.groupsService.tempGroup.subscribe((next) => {
 		this.tempGroup = next;
 	  });

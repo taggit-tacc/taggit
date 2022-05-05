@@ -19,7 +19,6 @@ export class SelectImageComponent implements OnInit, OnDestroy {
   activeFeatureNum$: Subscription;
   activeGroup$: Subscription;
 
-  featureList: Array<any> = [];
   public selectedProject: Project;
   groupList: Array<any> = [];
   activeGroup: string;
@@ -34,12 +33,6 @@ export class SelectImageComponent implements OnInit, OnDestroy {
 			  private projectsService: ProjectsService) {}
 
   ngOnInit() {
-	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
-	  if (fc) {
-		this.featureList = fc.features;
-	  }
-	});
-
 	this.projectsService.activeProject.subscribe(next => {
 	  this.selectedProject = next;
 	});
@@ -113,6 +106,8 @@ export class SelectImageComponent implements OnInit, OnDestroy {
 	}
   }
 
+  //Might move the guts of this method to either featureService or groupService and have it update the observable
+  //Delete asset removes the feature from the active group
   deleteAsset(assetId: any) {
 	this.groupList.forEach(group => {
 	  if (group.name === this.activeGroup) {
@@ -121,7 +116,6 @@ export class SelectImageComponent implements OnInit, OnDestroy {
 		  this.deleteGroup(group.name);
 		} else {
 		  group.features = group.features.filter(asset => asset.id != assetId);
-
 		}
 	  }
 	});

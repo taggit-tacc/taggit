@@ -77,9 +77,20 @@ export class ControlBarComponent implements OnInit {
   ngOnInit() {
 	  this.filesService.getState()
 
+	this.featureService.features$.subscribe( (fc: FeatureCollection) => {
+		this.features = fc
+		
+		if (this.features != undefined) {
+			this.featureList = this.features.features;
+			this.groupsService.setActiveProject(this.featureList[0]);
+	
+			// TODO This should activate persistence by looping through all features and creating new groups and
+			//
+			this.groupsService.setGroupProperties(this.featureList);
+		}
+	})
 	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
-	  this.features = fc;
-	//   console.log(this.features)
+	  /*this.features = fc;
 
 	  if (this.features != undefined) {
 		this.featureList = this.features.features;
@@ -88,10 +99,9 @@ export class ControlBarComponent implements OnInit {
 		// TODO This should activate persistence by looping through all features and creating new groups and
 		//
 		this.groupsService.setGroupProperties(this.featureList);
-	  }
+	  }*/
 	});
 
-	this.featureService.getFeatureCollection()
 
 	this.groupsService.activeGroup.subscribe((next) => {
 	  this.activeGroup = next;

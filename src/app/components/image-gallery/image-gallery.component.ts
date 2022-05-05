@@ -1,7 +1,6 @@
 import {AfterViewChecked, Component, OnInit, Renderer2} from '@angular/core';
-import {FeatureCollection} from 'geojson';
 import {GeoDataService} from '../../services/geo-data.service';
-import {FeatureAsset, Feature, Project} from '../../models/models';
+import {FeatureAsset, Feature, Project, FeatureCollection} from '../../models/models';
 import {AppEnvironment, environment} from '../../../environments/environment';
 import {ProjectsService} from "../../services/projects.service";
 import { ScrollService } from 'src/app/services/scroll.service';
@@ -10,6 +9,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import {startWith} from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalCreateProjectComponent } from '../modal-create-project/modal-create-project.component';
+import { FeatureService } from 'src/app/services/feature.service';
 
 @Component({
   selector: 'app-image-gallery',
@@ -50,7 +50,8 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
 			  private renderer: Renderer2,
 			  private spinner: NgxSpinnerService,
 			  private dialog: MatDialog,
-			  private scrollService: ScrollService) { }
+			  private scrollService: ScrollService,
+			  private featureService: FeatureService) { }
 
   
 
@@ -73,7 +74,32 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
 	}, error => {
 		this.projectsExist = false;
 	  });
+	
+	this.featureService.features$.subscribe( (fc:any) => {
+		if (fc) {
+			if (fc.features.length > 0) {
+			  this.imagesExist = true;
+				this.featureList = fc.features.filter(feature => {
+				  try{
+					return feature.assets[0].asset_type === "image";
+					} catch (error) {
+					//If a feature has no asset, it ends up in this catch
+					  console.error(error)
+					//After outputting the error, add an "image not found" placeholder,
+					//Allowing users to still select their errored import
+					//Note that this doesn't really work!
+					feature.assets.push({ "path":"../../images/Image-not-found.png" })
+					return false
+					}
+				});
+				this.featureListScroll = this.featureList.slice(0, this.scrollSum);
+			} else {
+			  this.imagesExist = false;
+			}
+		}
+	});
 
+	/*
 	//I think doing a more natural refresh in here will cause a dynamic reload
 	this.geoDataService.features.subscribe( (fc: any) => {
 	  if (fc) {
@@ -98,7 +124,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
 		  this.imagesExist = false;
 		}
 	  }
-	});
+	});*/
 
 	this.projectsService.projects.subscribe((projects) => {
 	  this.projects = projects;
