@@ -5,10 +5,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Feature, Project } from 'src/app/models/models';
-import { feature } from '@turf/turf';
 import { GeoDataService } from 'src/app/services/geo-data.service';
 import { ProjectsService } from 'src/app/services/projects.service';
-import { FeatureCollection } from 'geojson';
 
 
 @Component({
@@ -38,8 +36,6 @@ export class TagGeneratorComponent implements OnInit {
   groups$: Subscription;
   tempGroup: Array<Feature>;
   private selectedProject;
-  featureList: Array<any> = [];
-  features: FeatureCollection;
   newTag: object[] = [];
   newGroup:object[] = [];
 
@@ -69,22 +65,6 @@ export class TagGeneratorComponent implements OnInit {
 		//retrieves uuid for project, formats result into a link to that Hazmapper map
 		// this.hazMapperLink = "https://hazmapper.tacc.utexas.edu/hazmapper/project/" + next.uuid
 	});
-
-	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
-		this.features = fc;
-  
-		if (this.features != undefined) {
-		  this.featureList = this.features.features;
-		//   this.groupsService.setActiveProject(this.featureList[0]);
-  
-		  // TODO This should activate persistence by looping through all features and creating new groups and
-		  //
-		//   this.groupsService.setGroupProperties(this.featureList);
-  
-		  // console.log(this.featureList[this.activeFeatureNum].assets[0].path);
-		  // this.activeFeature = this.featureList[this.activeFeatureNum];
-		}
-	  });
 
 
 	this.formOptions = [];
@@ -265,8 +245,6 @@ export class TagGeneratorComponent implements OnInit {
 	  this.formOptions = [];
 	  this.labelFilter = '';
 	  this.changed = true;
-	  
-	//   console.log(this.featureList)
 	  
 	  this.groupsService.setActivePane("tagger");
 	  this.router.navigateByUrl('/tagger', {skipLocationChange: true});

@@ -2,35 +2,34 @@ import { Injectable } from '@angular/core';
 import { Feature, FeatureCollection} from '../models/models';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { GeoDataService } from './geo-data.service';
-import { tag } from '@turf/turf';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FeatureService {
-  private features: FeatureCollection;
+  private featureCollection: FeatureCollection;
   private _features: BehaviorSubject<FeatureCollection>;
-  private features$: Observable<FeatureCollection>;
+  public features$: Observable<FeatureCollection>;
   private _tags: BehaviorSubject<Array<Object>>;
-  private tags$: Observable<Array<Object>>;
+  public tags$: Observable<Array<Object>>;
   private tagList: Array<Object> = [];
 
   constructor(private geoDataService: GeoDataService) {
     this._features = new BehaviorSubject<FeatureCollection>({type: 'FeatureCollection', features: []});
-    this.features$ = this._features.asObservable();
+    this.features$ = this._features.asObservable(); 
 
     this._tags = new BehaviorSubject<Array<Object>>( [] );
     this.tags$ = this._tags.asObservable();
 
     this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
       this._features.next(fc)
-      this.features = fc
-      console.log(this.features)
+      this.featureCollection = fc
+      console.log(this.featureCollection)
 
       //Update the tag list alongside the features
       try {
         if( this.tagList == [] ) { //Only update if tagList is empty, after retrieval, the only way to edit tags will be to edit this list
-            this.tagList = this.features.features[0].properties.tag
+            this.tagList = this.featureCollection.features[0].properties.tag
             this._tags.next( this.tagList )
         }
       } catch (error) {}
@@ -40,21 +39,23 @@ export class FeatureService {
   //This has to manage all features, tags, and maybe groups as well. While I think that groups service has all the methodology,
   //the input for all that is features done by the local lists 
 
-  //Takes the ID of the feature to be deleted, and filters it out of the feature list
-  deleteFeature(featID:Number): void {
-    this.features.features = this.features.features.filter(feat => feat.id == featID)
-    this._features.next(this.features)  //Update the observable
-    this.saveFeatures(this.features) //Save features to backend
+  //Takes the feature to be deleted, and filters it out of the feature list
+  deleteFeature(feat:Feature): void {
+    this.featureCollection.features = this.featureCollection.features.filter(featListfeat => featListfeat.id != feat.id)
+    this._features.next(this.featureCollection)  //Update the observable
+    //this.saveFeatures(this.featureCollection) //Save features to backend
+    this.geoDataService.deleteFeature(feat)
   }
 
   //Takes a list of features, and deletes them from the observable in a more efficient manner
   bulkFeatureDelete(delFeats:Array<Feature>): void {
     delFeats.forEach(feat => {
       //Filter out every feature in delFeats from the master list
-      this.features.features = this.features.features.filter(featListFeature => featListFeature.id == feat.id)
+      this.featureCollection.features = this.featureCollection.features.filter(featListFeature => featListFeature.id != feat.id)
+      this.geoDataService.deleteFeature(feat)
     })
-    this._features.next(this.features)  //Update the observable with the filtered list
-    this.saveFeatures(this.features) //Save features to backend
+    this._features.next(this.featureCollection)  //Update the observable with the filtered list
+    //this.saveFeatures(this.featureCollection) //Save features to backend
   }
 
   //saveFeatures takes a feature list and passes it to GeoAPI to save
@@ -74,14 +75,14 @@ export class FeatureService {
 
   //Takes a feature, and optionally an updated property section
   //If featprop is null, it assumes the passed in feature was already updated with the new properties
-  
+
   updateFeatureProperties(feature:Feature, featProp=null): void {
     //If featprop has a value, update the feature's properties to the new section
     if( featProp != null) {
       feature.properties = featProp
     }
     //Update and save the list
-    this.features.features.forEach(feat => {
+    this.featureCollection.features.forEach(feat => {
       if(feat.id == feature.id){
         feat = feature
       }
@@ -92,7 +93,7 @@ export class FeatureService {
   //Update Styles takes an object defining new style options and the feature they should be connected with
   updateStyle(feature:Feature, style): void {
     //Update and save the list
-    this.features.features.forEach(feat => {
+    this.featureCollection.features.forEach(feat => {
       if(feat.id == feature.id){
         feat.styles = style
       }
@@ -104,15 +105,15 @@ export class FeatureService {
   saveTags(tagList): void {
     this._tags.next(this.tagList) //Update the observable
     //Update each feature's tag list
-    this.features.features.forEach(feat => {
+    this.featureCollection.features.forEach(feat => {
       feat.properties.tag = tagList
     });
-    this.saveFeatures(this.features) //Save updated features to backend
+    this.saveFeatures(this.featureCollection) //Save updated features to backend
   }
 
   //Takes the entire tag that should be deleted and filters the list from it
   deleteTag(tag): void {
-    this.tagList = this.tagList.filter(listTag => listTag == tag)
+    this.tagList = this.tagList.filter(listTag => listTag != tag)
     this._tags.next(this.tagList) //Update the observable
     this.saveTags(this.tagList) //saves tags to backend
   }
@@ -120,7 +121,7 @@ export class FeatureService {
   bulkTagDelete(tagList: Array<any>): void {
     tagList.forEach( delTag => {
       //Filter out each tag from the tag list
-      this.tagList = this.tagList.filter(listTag => listTag == delTag)
+      this.tagList = this.tagList.filter(listTag => listTag != delTag)
     })
     this._tags.next(this.tagList) //Update the observable with the filtered list
     this.saveTags(this.tagList) //saves tags to backend

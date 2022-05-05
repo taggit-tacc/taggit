@@ -9,6 +9,7 @@ import { GeoDataService } from 'src/app/services/geo-data.service';
 import { Feature, FeatureCollection } from 'geojson';
 import { ProjectsService } from 'src/app/services/projects.service';
 import { tag } from '@turf/turf';
+import { FeatureService } from 'src/app/services/feature.service';
 
 @Component({
   selector: 'app-tag-images',
@@ -32,7 +33,6 @@ export class TagImagesComponent implements OnInit {
   newTag: tags[] = [];
   newTagValue = ""
   featureList: Array<any> = [];
-  features: FeatureCollection;
   tempGroup: Array<Feature>;
 
   constructor(
@@ -41,7 +41,8 @@ export class TagImagesComponent implements OnInit {
 	private dialog: MatDialog,
 	private router: Router,
 	private projectsService: ProjectsService,
-	private geoDataService: GeoDataService,) { }
+	private geoDataService: GeoDataService,
+	private featureService: FeatureService) { }
 
   ngOnInit() {
 	this.activeGroup$ = this.activeGroup$ = this.groupsService.activeGroup.subscribe((next) => {
@@ -63,12 +64,8 @@ export class TagImagesComponent implements OnInit {
 		this.selectedProject = next;
 	});
 
-	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
-		this.features = fc;
-  
-		if (this.features != undefined) {
-		  this.featureList = this.features.features;
-		}
+	this.featureService.features$.subscribe( (fc: FeatureCollection) => {
+		this.featureList = fc.features;
 	  });
 
 	  // this is to get the list of tags so far

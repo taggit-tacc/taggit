@@ -132,6 +132,7 @@ export class GeoDataService {
 	  });
   }
 
+  //This function updates the underlying observable, so changes naturally flow to feature service
   importFileFromTapis(projectId: number, files: Array<RemoteFile>): void {
 
 	const tmp = files.map( f => ({system: f.system, path: f.path}));

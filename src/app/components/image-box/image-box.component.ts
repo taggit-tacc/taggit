@@ -9,6 +9,7 @@ import { BsModalRef } from 'ngx-foundation/modal/bs-modal-ref.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsService, tags } from 'src/app/services/forms.service';
 import { ScrollService } from 'src/app/services/scroll.service';
+import { FeatureService } from 'src/app/services/feature.service';
 
 @Component({
   selector: 'app-image-box',
@@ -48,7 +49,8 @@ export class ImageBoxComponent implements OnInit {
 			   private modalService: BsModalService,
 			   private formsService: FormsService,
 			   private dialog: MatDialog,
-			   private scrollService: ScrollService
+			   private scrollService: ScrollService,
+			   private featureService: FeatureService
 			 ){ }
 
   ngOnInit() {
@@ -164,9 +166,10 @@ export class ImageBoxComponent implements OnInit {
   }
 
   imageDelete() {
-	const geoData = this.geoDataService;
+	//TODO: Change this to interface with feature service instead
+	const featureService = this.featureService
 	this.tempGroup.forEach(function (value) {
-		geoData.deleteFeature(value);
+		featureService.deleteFeature(value)
 	})
 	//Resets contents of temp group
 	this.groupsService.addTempGroup([])
