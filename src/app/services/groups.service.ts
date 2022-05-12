@@ -46,7 +46,7 @@ export class GroupsService {
   private _itemsSelected: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public itemsSelected: Observable<boolean> = this._itemsSelected.asObservable();
 
-  constructor(private projectsService: ProjectsService) {
+  constructor() {
   }
 
   // Loop through projects to get a list of Groups

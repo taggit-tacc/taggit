@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Feature, FeatureCollection} from '../models/models';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { GeoDataService } from './geo-data.service';
+import { FormsService, tags } from './forms.service';
+import { feature } from '@turf/turf';
 
 @Injectable({
   providedIn: 'root'
@@ -10,15 +12,16 @@ export class FeatureService {
   private featureCollection: FeatureCollection;
   private _features: BehaviorSubject<FeatureCollection>;
   public features$: Observable<FeatureCollection>;
-  private _tags: BehaviorSubject<Array<Object>>;
-  public tags$: Observable<Array<Object>>;
-  private tagList: Array<Object> = [];
+  private _tags: BehaviorSubject<tags[]>;
+  public tags$: Observable<tags[]>;
+  private tagList: tags[];
 
-  constructor(private geoDataService: GeoDataService) {
+  constructor(private geoDataService: GeoDataService,
+              private formsService: FormsService) {
     this._features = new BehaviorSubject<FeatureCollection>({type: 'FeatureCollection', features: []});
     this.features$ = this._features.asObservable(); 
 
-    this._tags = new BehaviorSubject<Array<Object>>( [] );
+    this._tags = new BehaviorSubject<tags[]>( [] );
     this.tags$ = this._tags.asObservable();
 
     this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
@@ -28,8 +31,8 @@ export class FeatureService {
 
       //Update the tag list alongside the features
       try {
-        if( this.tagList == [] ) { //Only update if tagList is empty, after retrieval, the only way to edit tags will be to edit this list
-            this.tagList = this.featureCollection.features[0].properties.tag
+        if( this.tagList == undefined ) { //Only update if tagList is empty, after retrieval, the only way to edit tags will be to edit this list
+            this.tagList = this.formsService.getTags()
             this._tags.next( this.tagList )
         }
       } catch (error) {}
@@ -65,6 +68,7 @@ export class FeatureService {
     features.features.forEach(feat => {
       this.geoDataService.updateFeatureProperty(feat.project_id, Number(feat.id), feat.properties)
     })
+    this.geoDataService.getFeatures(features.features[0].project_id)
   }
 
   //This might be a little short to consider a function, but it saves me from writing it every time...
@@ -112,10 +116,60 @@ export class FeatureService {
   }
 
   //Takes the entire tag that should be deleted and filters the list from it
-  deleteTag(tag): void {
-    this.tagList = this.tagList.filter(listTag => listTag != tag)
+  //NOTE: This does sucessfully delete multiple tags at a time, just not if you delete multiple and immediately reload...
+  deleteTag(tag:tags): void {
+    //this.tagList = this.tagList.filter(listTag => listTag != tag)
+    //If groupname and label of the passed in tag match, remove from list
+    let tempTags = []
+    this.tagList.forEach( (listTag) => {
+      if( !((listTag.groupName == tag.groupName) && (listTag.label == tag.label)) ){
+        tempTags.push(listTag)
+      }
+    })
+    this.tagList = tempTags
     this._tags.next(this.tagList) //Update the observable
     this.saveTags(this.tagList) //saves tags to backend
+  }
+
+  renameTag(tag:tags, newName:string): void {
+    console.log(newName)
+    console.log(tag)
+    console.log(this.tagList)
+    let oldName = tag.label //The passed in tag has the old tag's name
+
+    this.tagList.forEach( listTag => {
+      if( listTag.label == oldName ) {
+        listTag.label = newName
+      }
+    })
+
+    this._tags.next(this.tagList) //Update the observable
+    this.saveTags(this.tagList) //saves tags to backend
+  }
+
+  createTag(newTag:tags, activeGroup:string): void {
+
+    this.featureCollection.features.forEach( listFeature => { //Loop through every feature in the project
+      if(listFeature.properties.group) {
+        listFeature.properties.group.forEach( group => { //Loop through every group attached to the feature
+          //There's something going on here, according to the console, each feature that should get a tag gets a tag,
+          //But somehow, only the last feature in the group is getting the tag
+          if( group.name == activeGroup ) {
+            let tag:tags = {
+              extra:newTag.extra,
+              feature: listFeature.id,
+              groupName: newTag.groupName,
+              label: newTag.label,
+              options: newTag.options,
+              type: newTag.type
+            }
+            this.tagList.push(tag)
+          }
+        }) 
+      }
+    })
+
+    this.saveTags(this.tagList)
   }
 
   bulkTagDelete(tagList: Array<any>): void {
