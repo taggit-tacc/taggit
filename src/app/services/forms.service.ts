@@ -702,7 +702,7 @@ getNotes(): any[]{ return this.notebook }
 }
 
 
-
+//Todo: put this in models so we can reference it like we do the Features type
 export interface tags {
 	type: string,
 	groupName: string,

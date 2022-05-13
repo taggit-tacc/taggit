@@ -23,7 +23,7 @@
 				<div class="name-group"> {{tag.label}} ({{tag.type}})</div>
 				
 				<div class="button-group">
-					<div (click)="deleteTag(activeGroup, tag)">
+					<div (click)="deleteTag(tag)">
 						<i class="fas fa-minus"
 						   matTooltip="Delete"
 						   matTooltipPosition="above"
@@ -56,7 +56,7 @@
 							[(ngModel)]="newTagValue"
 							value={{tag.label}}
 							placeholder="Rename Form Item"
-							(keyup.enter)="renameTag(tag.label)">
+							(keyup.enter)="renameTag(tag)">
 						<br/>
 						<br/>
 						<div class="button-group">

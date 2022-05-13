@@ -166,7 +166,6 @@ export class ImageBoxComponent implements OnInit {
   }
 
   imageDelete() {
-	//TODO: Change this to interface with feature service instead
 	const featureService = this.featureService
 	this.tempGroup.forEach(function (value) {
 		featureService.deleteFeature(value)
