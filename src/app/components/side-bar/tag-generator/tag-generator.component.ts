@@ -150,7 +150,7 @@ export class TagGeneratorComponent implements OnInit {
 			extra: []
 		}
 		this.openOption[this.formLabel] = false;
-
+		//Adds the options for drop down, checklist, and radio buttons
 		if (this.formType !== "text" && this.formOptions.length != 0) {
 			let myOpts = [];
 			for (const opt of this.formOptions) {

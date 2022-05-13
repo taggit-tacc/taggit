@@ -122,28 +122,23 @@ export class FeatureService {
     //If groupname and label of the passed in tag match, remove from list
     let tempTags = []
     this.tagList.forEach( (listTag) => {
-      if( !((listTag.groupName == tag.groupName) && (listTag.label == tag.label)) ){
+      if( !((listTag.groupName == tag.groupName) && (listTag.label == tag.label) && (listTag.type == tag.type) ) ){
         tempTags.push(listTag)
       }
     })
     this.tagList = tempTags
-    this._tags.next(this.tagList) //Update the observable
     this.saveTags(this.tagList) //saves tags to backend
   }
 
   renameTag(tag:tags, newName:string): void {
-    console.log(newName)
-    console.log(tag)
-    console.log(this.tagList)
     let oldName = tag.label //The passed in tag has the old tag's name
 
     this.tagList.forEach( listTag => {
-      if( listTag.label == oldName ) {
+      if( (listTag.label == oldName) && (listTag.type == tag.type) ) {
         listTag.label = newName
       }
     })
 
-    this._tags.next(this.tagList) //Update the observable
     this.saveTags(this.tagList) //saves tags to backend
   }
 
@@ -177,7 +172,6 @@ export class FeatureService {
       //Filter out each tag from the tag list
       this.tagList = this.tagList.filter(listTag => listTag != delTag)
     })
-    this._tags.next(this.tagList) //Update the observable with the filtered list
     this.saveTags(this.tagList) //saves tags to backend
   }
 }
