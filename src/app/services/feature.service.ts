@@ -39,14 +39,10 @@ export class FeatureService {
       });
   }
 
-  //This has to manage all features, tags, and maybe groups as well. While I think that groups service has all the methodology,
-  //the input for all that is features done by the local lists 
-
   //Takes the feature to be deleted, and filters it out of the feature list
   deleteFeature(feat:Feature): void {
     this.featureCollection.features = this.featureCollection.features.filter(featListfeat => featListfeat.id != feat.id)
     this._features.next(this.featureCollection)  //Update the observable
-    //this.saveFeatures(this.featureCollection) //Save features to backend
     this.geoDataService.deleteFeature(feat)
   }
 
@@ -58,7 +54,6 @@ export class FeatureService {
       this.geoDataService.deleteFeature(feat)
     })
     this._features.next(this.featureCollection)  //Update the observable with the filtered list
-    //this.saveFeatures(this.featureCollection) //Save features to backend
   }
 
   //saveFeatures takes a feature list and passes it to GeoAPI to save
@@ -79,7 +74,6 @@ export class FeatureService {
 
   //Takes a feature, and optionally an updated property section
   //If featprop is null, it assumes the passed in feature was already updated with the new properties
-
   updateFeatureProperties(feature:Feature, featProp=null): void {
     //If featprop has a value, update the feature's properties to the new section
     if( featProp != null) {
@@ -107,7 +101,7 @@ export class FeatureService {
 
   //Save tags has 2 purposes, first it updates every feature's tag list to reflect the change, then it sends the features to GeoAPI to be saved
   saveTags(tagList): void {
-    this._tags.next(this.tagList) //Update the observable
+    this._tags.next(tagList) //Update the observable
     //Update each feature's tag list
     this.featureCollection.features.forEach(feat => {
       feat.properties.tag = tagList
@@ -118,7 +112,6 @@ export class FeatureService {
   //Takes the entire tag that should be deleted and filters the list from it
   //NOTE: This does sucessfully delete multiple tags at a time, just not if you delete multiple and immediately reload...
   deleteTag(tag:tags): void {
-    //this.tagList = this.tagList.filter(listTag => listTag != tag)
     //If groupname and label of the passed in tag match, remove from list
     let tempTags = []
     this.tagList.forEach( (listTag) => {
@@ -147,8 +140,7 @@ export class FeatureService {
     this.featureCollection.features.forEach( listFeature => { //Loop through every feature in the project
       if(listFeature.properties.group) {
         listFeature.properties.group.forEach( group => { //Loop through every group attached to the feature
-          //There's something going on here, according to the console, each feature that should get a tag gets a tag,
-          //But somehow, only the last feature in the group is getting the tag
+          //NOTE: While it is tempting to just edit the passed in tag, this causes a strange glitch
           if( group.name == activeGroup ) {
             let tag:tags = {
               extra:newTag.extra,

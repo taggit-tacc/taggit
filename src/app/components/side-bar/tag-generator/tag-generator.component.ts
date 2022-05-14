@@ -64,8 +64,6 @@ export class TagGeneratorComponent implements OnInit {
 
 	this.projectsService.activeProject.subscribe(next => {
 		this.selectedProject = next;
-		//retrieves uuid for project, formats result into a link to that Hazmapper map
-		// this.hazMapperLink = "https://hazmapper.tacc.utexas.edu/hazmapper/project/" + next.uuid
 	});
 
 
@@ -80,7 +78,6 @@ export class TagGeneratorComponent implements OnInit {
   }
 
   inputFormLabel (event: any) {
-	// this.formLabel = event.target.value.toLowerCase();
 	this.formLabel = event.target.value;
   }
 

@@ -40,7 +40,7 @@ export class ControlBarComponent implements OnInit {
   activeFeatureNum: number;
 
   public currentUser: AuthenticatedUser;
-  private REFRESHTIME = 6; // 60 secs per reload default, right now it's an hour (6000 sec)
+  private REFRESHTIME = 6; // 60 secs per reload default, right now it's an hour (6000 sec) //This is in seconds, and somehow got set to 6
   public projects: Project[];
   public selectedProject: Project;
   public mapMouseLocation: LatLng = new LatLng(0, 0);
@@ -85,23 +85,10 @@ export class ControlBarComponent implements OnInit {
 			this.groupsService.setActiveProject(this.featureList[0]);
 	
 			// TODO This should activate persistence by looping through all features and creating new groups and
-			//
+			//Not sure about the above note, if anything needs to be done here, it seems like we have achieved persistance
 			this.groupsService.setGroupProperties(this.featureList);
 		}
 	})
-	this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
-	  /*this.features = fc;
-
-	  if (this.features != undefined) {
-		this.featureList = this.features.features;
-		this.groupsService.setActiveProject(this.featureList[0]);
-
-		// TODO This should activate persistence by looping through all features and creating new groups and
-		//
-		this.groupsService.setGroupProperties(this.featureList);
-	  }*/
-	});
-
 
 	this.groupsService.activeGroup.subscribe((next) => {
 	  this.activeGroup = next;
@@ -220,7 +207,7 @@ export class ControlBarComponent implements OnInit {
 	  this.mapMouseLocation = next;
 	});
 
-	// FIXME Maybe redundant
+	// FIXME Maybe redundant //My advice, F*** around and find out -Ben
 	this.groupsService.setActiveFeatureNum(0);
   }
 
@@ -262,7 +249,7 @@ export class ControlBarComponent implements OnInit {
 	});
 }
 
-  //Creates a feature with a long/lat value of 0,0 and no associated image.
+  //Creates a feature with a long/lat value of 0,0 and no associated image. Used in alternate image inport
   //I think if we want a placeholder image, we can add it here.
   createBlankFeature() {
 	let blankFeature:Feature = {
@@ -308,7 +295,6 @@ export class ControlBarComponent implements OnInit {
   }
 
   openProjectModal(project) {
-	// console.log(project);
 	let modal = this.dialog.open(ModalCurrentProjectComponent, {
 	  height: '400px',
 	  width: '600px',
@@ -325,29 +311,10 @@ export class ControlBarComponent implements OnInit {
 	});
 }
 
-  // TODO This should add color
+  //Old function, aside from rewriting it for quality, most concerns here have been addressed. Also, it's not exactly broken... -Ben
   addToGroupService(name: string) {
-	// TODO: add group data (name) to Individual Feature property
-	// for (this.featureIds) {
-	//   for this.projectsService.features {
-	//	if project feature id = this.fatureids {
-	//	  project feature.properties[groupName] = this.groupName;
-	//	}
-	//   }
-	// }
-
 	this.groupName = name;
-	// this.groupsService.setActiveGroup(name.toLowerCase());
 	this.groupsService.setActiveGroup(name);
-
-
-	// let activeGroup = this.groupList.filter(group => group.name == name);
-
-	// if (activeGroup[0].features.length == 0) {
-	//   this.groupsService.setFeatureImagesExist(false);
-	// } else {
-	//   this.groupsService.setFeatureImagesExist(true);
-	// }
 
 	if (this.groupList.length != 1000) {
 	  // TODO Make this better
@@ -362,7 +329,6 @@ export class ControlBarComponent implements OnInit {
 		  features: this.tempGroup,
 		  color: myRandColor,
 		  icon: "fa-house-damage"
-		  // featureIds: Object.keys(this.tempGroup),
 		});
 		this.groupsService.addGroup(this.groupList);
 		this.formsService.addGroup(this.groupName);
@@ -370,13 +336,8 @@ export class ControlBarComponent implements OnInit {
 		console.log(this.groupList)
 		console.log(this.tempGroup)
 
-		// TODO make this work for persistence
+		// TODO make this work for persistence //We do currently have persistance, so make of this what you will -Ben
 		for (let feat of this.tempGroup) {
-		  // this should be a shared group of
-		  // all the currently created objects of a particular feature
-
-		  // let featProp = {group: []};
-
 		  let featProp = feat.properties;
 		  console.log(feat.properties)
 
@@ -405,15 +366,10 @@ export class ControlBarComponent implements OnInit {
 		  console.log("featProp: what gets sent to server");
 		  console.log(featProp);
 		  console.log("groupList: internal listing");
-		  // console.log(this.groupList);
 		}
-		// TODO Also should create parser that loops through all features and generates groups in an object
 	  }
 	}
 
-	// TODO Clear input value
-	// this.filterName = '';
-	// Also clear selection
 	this.tempGroup = [];
 	this.groupsService.addTempGroup(this.tempGroup);
 	this.groupsService.setUnselectAll(true);
@@ -423,7 +379,6 @@ export class ControlBarComponent implements OnInit {
 
   openAddGroupModal(template: TemplateRef<any>) {
 	this.dialog.open(template);
-	// this.modalRef = this.bsModalService.show(template, {class: 'tiny'});
   }
 
   openSidebar() {
@@ -434,7 +389,6 @@ export class ControlBarComponent implements OnInit {
 	}
 	let showSidebar = !this.showSidebar;
 	let showGroup = false;
-	// let showGroupButton = !this.showGroupButton;
 	this.groupsService.setActiveGroup(this.groupList[0].name);
 
 	let activeGroup = this.groupList.filter(group => group.name == this.activeGroup);
@@ -459,27 +413,21 @@ export class ControlBarComponent implements OnInit {
   }
 
   // TODO Make it prettier
-  otherPath(dir: boolean) {
+  otherPath(dir: boolean) {	//Don't even ask, I don't know what we use this for... -Ben
 	let activeGroupObj = this.groupList.filter(realGroup => realGroup.name === this.activeGroup);
 
 	// right
 	if (dir) {
 	  this.activeFeatureNum += 1;
 	  this.activeFeatureNum = this.activeFeatureNum % activeGroupObj[0].features.length;
-	  // this.activeFeature = this.tempGroup[this.activeFeatureNum];
 	} else {
 	  if (this.activeFeatureNum == 0) {
 		this.activeFeatureNum = activeGroupObj[0].features.length;
 	  }
 	  this.activeFeatureNum -= 1;
-	  // this.activeFeature = this.tempGroup[this.activeFeatureNum];
 	}
 
-	// console.log(this.activeFeatureNum);
-	// console.log(this.activeFeature.assets[0].path);
-
 	this.groupsService.setActiveFeatureNum(this.activeFeatureNum);
-	// console.log(this.activeGroup);
   }
 
   getRandomColor() {
@@ -492,7 +440,8 @@ export class ControlBarComponent implements OnInit {
   }
 
   // TODO
-  //This is unused
+  //This is unused, but the paths are valid routes, mostly seen in the sidebar components.
+  //Tagger is the basic sidebar that appears when you oppen the taggit screen, Preset is for tag generation
   goToRoute() {
 	if (this.activePane == "preset") {
 	  this.groupsService.setActivePane("tagger");
@@ -502,15 +451,6 @@ export class ControlBarComponent implements OnInit {
 	  this.router.navigateByUrl('/preset', {skipLocationChange: true});
 	}
 	this.groupsService.setActiveGroup(this.activeGroup);
-
-	// let activeGroup = this.groupList.filter(what => what.name == this.activeGroup);
-
-	// if (activeGroup[0].features.length == 0) {
-	//   this.groupsService.setFeatureImagesExist(false);
-	// } else {
-	//   this.groupsService.setFeatureImagesExist(true);
-	// }
-
   }
 
   // TODO
@@ -520,6 +460,8 @@ export class ControlBarComponent implements OnInit {
   }
 
   //saves project as a CSV file by first organizing a JSON or a CSV and converting it. Saves to either MyData or local
+  //I apologize in advance for this mess of a function -Ben
+  //This really needs to be split into something like 3 separate functions
   saveFile(isJSON:Boolean, forExport:Boolean = false, systemID = "", path = "", fileName) {
 	  let CSVHolder = "FeatureID,longitude,latitude,src"
 	  let JSONHolder:String = ""

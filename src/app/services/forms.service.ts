@@ -14,21 +14,6 @@ import { Feature, FeatureCollection } from 'geojson';
   providedIn: 'root'
 })
 export class FormsService {
-  // private _forms: BehaviorSubject<any[]> = new BehaviorSubject([]);
-  // public forms: Observable<any[]> = this._forms.asObservable();
-
-  // private _forms: BehaviorSubject<Group[]> = new BehaviorSubject([]);
-  // public forms: Observable<Group[]> = this._forms.asObservable();
-
-  // private _forms: BehaviorSubject<Group[]> = new BehaviorSubject([]);
-  // public forms: Observable<Group[]> = this._forms.asObservable();
-
-  // private _forms: BehaviorSubject<Group> = new BehaviorSubject([]);
-  // private _forms: BehaviorSubject<Group> = new BehaviorSubject<Group>({Type});
-  // this._features = new BehaviorSubject<FeatureCollection>({type: 'FeatureCollection', features: []});
-
-  // this._features = new BehaviorSubject<FeatureCollection>({type: 'FeatureCollection', features: []});
-
   private _forms: BehaviorSubject<Group[]> = new BehaviorSubject([]);
   public forms: Observable<Group[]> = this._forms.asObservable();
 
@@ -48,10 +33,6 @@ export class FormsService {
   private selectedFeatureID
   private selectedFeature
   tempGroup: Array<Feature>;
-  // THIS TODO
-  // private _forms: BehaviorSubject<Group> = new BehaviorSubject<Group>({type: 'Group', formList: [], groupName: []});
-  // public forms: Observable<Group> = this._forms.asObservable();
-
 
   constructor(private groupsService: GroupsService,
 			  private projectsService: ProjectsService,
@@ -84,9 +65,7 @@ export class FormsService {
 					}
 				  });
 			  }
-  // TODO This should be stored in projects api later on (or not)
-  // addForm(groupName: string, formGroup: Group, formList: Array<any>): void {
-  // addForm(formObj: Array<Group>): void {
+  // TODO This should be stored in projects api later on (or not)	//I think it's good here, but this might be good to fully pull out later -Ben
   addForm(groupName: string, formItem: any): void {
 	this.forms.pipe(
 	  first(),
@@ -97,7 +76,7 @@ export class FormsService {
 		  }
 		  return groupObj;
 		});
-	  })).subscribe(current => {this._forms.next(current);/*console.log("AYA"); console.log(this._forms); console.log(current)*/});
+	  })).subscribe(current => {this._forms.next(current);});
 
 
 	this.changeGroupForm(groupName);
@@ -279,7 +258,6 @@ export class FormsService {
 			  });
 			}
 		  });
-		// return groupList;
 		}
 		return groupObj.formList;
 	  }))).subscribe(current => {this._activeFormList.next(current.find(e => e != undefined))});
@@ -349,18 +327,7 @@ export class FormsService {
 tempData = [];
 getTags(): tags[]{
 	this.tempData = [];
-	let count = 0
-
 	this.tempData = this.tagData
-	// while(true){
-	// 	const index = this.tempData.findIndex(item => item.groupName === "building" );
-	// 	// delete this.exampleNote[index];
-	// 	if (index > -1) {
-	// 	this.tempData.splice(index, 1);
-	// 	}else{
-	// 		break;
-	// 	}
-	// }
 
 	for (let feat of this.featureList){
 		  if(feat.properties.tag != undefined){

@@ -82,8 +82,6 @@ export class TagImagesComponent implements OnInit {
 			  });
 		  }
 	  }
-	//   console.log(this.tagList)
-	//   console.log(this.newTag)
   }
 
   openRenameModal(template: TemplateRef<any>, name: string) {
