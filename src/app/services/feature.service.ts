@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Feature, FeatureCollection} from '../models/models';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { GeoDataService } from './geo-data.service';
+import { FormsService, tags } from './forms.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,8 @@ export class FeatureService {
   public tags$: Observable<Array<Object>>;
   private tagList: Array<Object> = [];
 
-  constructor(private geoDataService: GeoDataService) {
+  constructor(private geoDataService: GeoDataService,
+              private formsService: FormsService,) {
     this._features = new BehaviorSubject<FeatureCollection>({type: 'FeatureCollection', features: []});
     this.features$ = this._features.asObservable(); 
 
@@ -126,4 +128,144 @@ export class FeatureService {
     this._tags.next(this.tagList) //Update the observable with the filtered list
     this.saveTags(this.tagList) //saves tags to backend
   }
+
+  createTag(groupList: Array<any>, activeGroup: string, newTag: tags): void {
+    let payload
+    let groupFeature
+    groupList.forEach(group => {
+
+      if (group.name == activeGroup){
+          
+        groupFeature = group.features
+        
+        //Create a temporary group with a copy of the current groups information
+        let tempGroup = [{
+          name: group.name,
+          color: group.name,
+          icon: group.icon
+        }]
+
+        payload = {
+          group: tempGroup,
+          style: {
+            faIcon: group.icon,
+            color: "#00C8FF"
+          },
+          tag:[]
+        }}
+    }) // end of groupList.forEach 
+
+    for (let feat of groupFeature){
+      if(feat.properties.tag != undefined || feat.properties.tag != []){
+
+				if(feat.properties.group.length > 1){
+					feat.properties.group.forEach(group => {
+						if(group.name != activeGroup){
+							let tempGroup = {
+								name: group.name,
+								color: group.color,
+								icon: group.icon
+							}
+						payload.group.push(tempGroup)
+
+
+					}
+						
+					});
+				} // end of if length statement
+				else {
+					payload.group = []
+					feat.properties.group.forEach(group => {
+						if(group.name == activeGroup){
+							let tempGroup = {
+								name: group.name,
+								color: group.color,
+								icon: group.icon
+							}
+						payload.group.push(tempGroup)
+					}});
+				}
+
+        newTag.feature = feat.id
+        // payload.tag = this.tagList
+        payload.tag = this.formsService.getTags();
+        this.formsService.saveTag(activeGroup, newTag, newTag.label)
+        this.geoDataService.updateFeatureProperty(feat.project_id, Number(feat.id), payload)
+        // this.saveFeature(feat)
+
+        payload.tag = []
+			} // end of if undefined statement
+    } // end of for loop
+  } // end of createTag
+
+  removeTag(oldTag: tags[], groupName: string, tag: tags, groupList: Array<any>, activeGroup: string): tags[]{
+    while(true){
+      const index = oldTag.findIndex(item => item.groupName === groupName && item.label === tag.label && item.type === tag.type);
+      // delete this.exampleNote[index];
+      if (index > -1) {
+      oldTag.splice(index, 1);
+      }else{
+        break;
+      }
+    } // end of while loop
+
+    let payload
+    let groupFeature
+    groupList.forEach(group => {
+      if (group.name == activeGroup) {
+        groupFeature = group.features;
+    
+        //Creates a temporary group with a copy of the current groups info
+        let tempGroup = [{
+            name: group.name,
+            color: group.color,
+            icon: group.icon
+          }]
+          
+          //And adds the temp group to a payload along with the necessary style infromation
+        payload = {
+          group: tempGroup,
+          style: {
+            faIcon: group.icon,
+            color: '#00C8FF'
+          },
+          tag: []
+        }// end of payload
+      } // end of if activeGroup statement
+    }); // end of groupList.forEach
+    
+    for (let feat of groupFeature){
+
+			if(feat.properties.tag != undefined || feat.properties.tag != []){
+				feat.properties.group.forEach(group => {
+					if(feat.properties.group.length > 1){
+						if(group.name != activeGroup){
+							let tempGroup = {
+								name: group.name,
+								color: group.color,
+								icon: group.icon
+							}
+						payload.group.push(tempGroup)}
+					}
+					else {
+						payload.group = []
+						if(group.name == activeGroup){
+							let tempGroup = {
+								name: group.name,
+								color: group.color,
+								icon: group.icon
+							}
+						payload.group.push(tempGroup)}
+					}
+			});
+			} 
+			
+			payload.tag = oldTag;
+
+			this.geoDataService.updateFeatureProperty(feat.project_id, Number(feat.id), payload)
+			this.geoDataService.getFeatures(feat.project_id)
+			payload.tag = []
+		}
+    return oldTag
+  } // end of removeTag
 }

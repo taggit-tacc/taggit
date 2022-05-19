@@ -361,7 +361,7 @@ getTags(): tags[]{
 	// 		break;
 	// 	}
 	// }
-
+	console.log(this.tempData)
 	for (let feat of this.featureList){
 		  if(feat.properties.tag != undefined){
 			  feat.properties.tag.forEach(tag => {
@@ -372,6 +372,7 @@ getTags(): tags[]{
 			  });
 		  }
 	  }
+	  console.log(this.tempData)
 
 	return this.tempData;
 }
@@ -661,8 +662,8 @@ updateNotes(change, componentID: number, feature: number, group:string, label:st
 
 			  // code from here is a mess
 			  if(feat.properties.tag != undefined){
-				this.tagData.forEach(tag => {
-					if(tag.feature === feature && tag.groupName === group){
+				this.tagData.forEach(tag => {		
+					if(tag.feature == feature && tag.groupName == group){
 						const index = tag.extra.findIndex(item => item['id'] === feature && item['compID'] === componentID && item['groupName'] === group  && item['label'] === label);
 						// const index = tag.extra.findIndex(item => item.label === opt['label'] && item.id === id && item.group === group)
 
@@ -677,7 +678,8 @@ updateNotes(change, componentID: number, feature: number, group:string, label:st
 							tag.extra.push(rOption);
 						}
 					}
-				  payload.tag.push(tag)
+			
+					if(tag.feature == feature){payload.tag.push(tag)}
 				});
 			}
 

@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { Feature, Project } from 'src/app/models/models';
 import { GeoDataService } from 'src/app/services/geo-data.service';
 import { ProjectsService } from 'src/app/services/projects.service';
+import { FeatureService } from 'src/app/services/feature.service';
 
 
 @Component({
@@ -45,7 +46,8 @@ export class TagGeneratorComponent implements OnInit {
 	private dialog: MatDialog,
 	private router: Router,
 	private geoDataService: GeoDataService,
-	private projectsService: ProjectsService,) { }
+	private projectsService: ProjectsService,
+	private featureService: FeatureService) { }
 
   ngOnInit() {
 	this.groupsService.activeGroup.subscribe((next) => {
@@ -138,108 +140,36 @@ export class TagGeneratorComponent implements OnInit {
   }
 
   addFormItem() {
-	let icon:string
-	let payload
-	this.groupList.forEach(group => {
-		if (group.name == this.activeGroup) {
-			this.tempGroup = group.features;
-				icon = group.icon
-	
-				//Creates a temporary group with a copy of the current groups info
-				let tempGroup = [{
-					name: group.name,
-					color: group.color,
-					icon: group.icon
-				}]
-				
-				//And adds the temp group to a payload along with the necessary style infromation
-				payload = {
-					group: tempGroup,
-					style: {
-						faIcon: icon,
-						color: '#00C8FF'
-					},
-					tag:[]
-				}
 
-		}
-		});
-
-
-		for (let feat of this.tempGroup) {
-
-			if(feat.properties.tag != undefined || feat.properties.tag != []){
-
-				if(feat.properties.group.length > 1){
-					feat.properties.group.forEach(group => {
-						if(group.name != this.activeGroup){
-							let tempGroup = {
-								name: group.name,
-								color: group.color,
-								icon: group.icon
-							}
-						payload.group.push(tempGroup)
-
-
-					}
-						
-					});
-				}
-				else {
-					payload.group = []
-					feat.properties.group.forEach(group => {
-						if(group.name == this.activeGroup){
-							let tempGroup = {
-								name: group.name,
-								color: group.color,
-								icon: group.icon
-							}
-						payload.group.push(tempGroup)
-					}
-						
-					});
-
-				}
-			}
-
-			  
-			let formItem: tags = {
-				type: this.formType,
-				groupName: this.formName,
-				label: this.formLabel,
-				// value: this.formValue,
-				// required: this.formRequired,
-				options: [],
-				feature: feat.id,
-				extra: []
-			}
-			this.openOption[this.formLabel] = false;
-
-			if (this.formType !== "text" && this.formOptions.length != 0) {
-				let myOpts = [];
-				for (const opt of this.formOptions) {
-				  myOpts.push({
-					key: opt[0],
-					label: opt,
-					// image:
-				  })
-				}
-		
-				formItem.options = this.formOptions;
-			  }
-
-			  payload.tag = this.formsService.getTags();
-
-
-			this.formItemList.push(formItem);
-			// this.formsService.addForm(this.activeGroup, formItem);
-			  this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
-			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
-			// Clear out the tag section
-			
-			payload.tag = []
-			this.newGroup = []
+	// Set up the new tag information
+	let formItem: tags = {
+		type: this.formType,
+		groupName: this.formName,
+		label: this.formLabel,
+		// value: this.formValue,
+		// required: this.formRequired,
+		options: [],
+		feature: 0,
+		extra: []
 	}
+	this.openOption[this.formLabel] = false;
+
+	// If the tag has options, fill that in the tag
+	if (this.formType !== "text" && this.formOptions.length != 0) {
+		let myOpts = [];
+		for (const opt of this.formOptions) {
+		  myOpts.push({
+			key: opt[0],
+			label: opt,
+			// image:
+		  })
+		}
+
+		formItem.options = this.formOptions;
+	  }
+
+	  // Update the feature list with the new tag
+	  this.featureService.createTag(this.groupList, this.activeGroup, formItem)
 
 	  this.formLabel = '';
 	  this.formOptions = [];

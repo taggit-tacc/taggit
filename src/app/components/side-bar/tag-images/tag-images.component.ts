@@ -79,7 +79,7 @@ export class TagImagesComponent implements OnInit {
 			  });
 		  }
 	  }
-	//   console.log(this.tagList)
+	  console.log(this.tagList)
 	//   console.log(this.newTag)
   }
 
@@ -93,77 +93,7 @@ export class TagImagesComponent implements OnInit {
   }
   
   deleteTag(gName: string, tag: tags){
-	let data = this.tagList;
-	while(true){
-		const index = data.findIndex(item => item.groupName === gName && item.label === tag.label && item.type === tag.type);
-		// delete this.exampleNote[index];
-		if (index > -1) {
-		data.splice(index, 1);
-		}else{
-			break;
-		}
-	}
-
-	this.tagList = data;
-
-	let icon:string
-	let payload
-	this.groupList.forEach(group => {
-		if (group.name == this.activeGroup) {
-			this.tempGroup = group.features;
-				icon = group.icon
-	
-				//Creates a temporary group with a copy of the current groups info
-				let tempGroup = [{
-					name: group.name,
-					color: group.color,
-					icon: group.icon
-				}]
-				
-				//And adds the temp group to a payload along with the necessary style infromation
-				payload = {
-					group: tempGroup,
-					style: {
-						faIcon: icon,
-						color: '#00C8FF'
-					},
-					tag: []
-				}
-			}
-		});
-
-		for (let feat of this.tempGroup){
-
-			if(feat.properties.tag != undefined || feat.properties.tag != []){
-				feat.properties.group.forEach(group => {
-					if(feat.properties.group.length > 1){
-						if(group.name != this.activeGroup){
-							let tempGroup = {
-								name: group.name,
-								color: group.color,
-								icon: group.icon
-							}
-						payload.group.push(tempGroup)}
-					}
-					else {
-						payload.group = []
-						if(group.name == this.activeGroup){
-							let tempGroup = {
-								name: group.name,
-								color: group.color,
-								icon: group.icon
-							}
-						payload.group.push(tempGroup)}
-					}
-			});
-			} 
-			
-			payload.tag = data;
-
-			this.geoDataService.updateFeatureProperty(this.selectedProject.id, Number(feat.id), payload)
-			this.geoDataService.getFeatures(this.selectedProject.id)
-			payload.tag = []
-		}
+	this.tagList = this.featureService.removeTag(this.tagList, gName, tag, this.groupList, this.activeGroup)
    }
 
   //submits a tag's name change to geoAPI
