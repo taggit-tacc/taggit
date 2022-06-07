@@ -159,8 +159,8 @@ export class TagGeneratorComponent implements OnInit {
 			formItem.options = this.formOptions;
 		  }
 	//Pass it to feature and form service to propogate to all features in a group
-	this.featureService.createTag(formItem, this.activeGroup)
-	this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
+	this.featureService.createTag(formItem, this.activeGroup, this.groupList)
+	// this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
 
 	//Reset user-defined fields to blank options
 	this.formLabel = '';

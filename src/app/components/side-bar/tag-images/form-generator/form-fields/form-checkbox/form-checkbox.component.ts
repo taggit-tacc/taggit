@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { FeatureService } from 'src/app/services/feature.service';
 import { FormsService } from 'src/app/services/forms.service';
 import { GroupsService } from 'src/app/services/groups.service';
 
@@ -20,7 +21,8 @@ export class FormCheckBoxComponent {
   // get isDirty() { return this.form.controls[this.field.name].dirty; }
 
   constructor(private formsService: FormsService,
-    private groupsService: GroupsService) { }
+    private groupsService: GroupsService,
+    private featureService: FeatureService) { }
 
   checkedOpt: any [] = this.formsService.getCheckedOpt()
 
@@ -41,7 +43,8 @@ export class FormCheckBoxComponent {
       let index 
       this.checkedOpt.forEach(opt => {      
 
-        if(opt != undefined){index = opt.findIndex(item => item.id === this.activeFeatureId && item.label === this.field.label && item.group === this.activeGroup && item.title === this.form['label']);
+        if(opt != undefined){
+          index = opt.findIndex(item => item.id === this.activeFeatureId && item.option === this.field.label && item.group === this.activeGroup && item.label === this.form['label']);
 
           if (index > -1){
             this.isChecked = true
@@ -60,11 +63,11 @@ export class FormCheckBoxComponent {
   selected(e:any, option:object){
     if(e.target.checked){
       console.log("Checked")
-      this.formsService.addCheckedOpt(option, this.activeFeatureId, this.activeGroup, this.form['label']);
+      this.featureService.updateChecked(option, this.activeFeatureId, this.activeGroup, this.form['label'], "create");
 
     }else{
       console.log("Unchecked")
-      this.formsService.deleteCheckedOpt(option, this.activeFeatureId, this.activeGroup, this.form['label']);
+      this.featureService.updateChecked(option, this.activeFeatureId, this.activeGroup, this.form['label'], "delete");
     }
   }
 }

@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { FeatureService } from 'src/app/services/feature.service';
 import { FormsService } from 'src/app/services/forms.service';
 import { GroupsService } from 'src/app/services/groups.service';
 
@@ -24,7 +25,8 @@ export class FormTextBoxComponent {
   get isDirty() { return this.form.controls[this.field.name].dirty; }
 
   constructor(private formsService: FormsService,
-    private groupsService: GroupsService) { }
+    private groupsService: GroupsService,
+    private featureService: FeatureService) { }
 
   ngOnInit() {
     this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe((next) => {
@@ -59,5 +61,5 @@ export class FormTextBoxComponent {
   updateNotes(){ 
     // console.log(this.form['label'])
     // console.log(this.form.name)
-    this.formsService.updateNotes(this.note, 3, this.activeFeatureId, this.activeGroup, this.form['label']); }
+    this.featureService.updateExtra(this.note, 3, this.activeFeatureId, this.activeGroup, this.form['label'], "text"); }
 }

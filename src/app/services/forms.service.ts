@@ -312,6 +312,7 @@ export class FormsService {
   chosenTag = [{option:"", id: 0},"",""]; //chosen option of both Radio Buttons and Color tags. Radio info is stored at [0], Color at [1]
   notebook = []; //Var for storing note tags
 
+
   saveTag(gName: string, tag: tags, tLabel: string): void{
 	const index = this.tempData.findIndex(item => item.groupName === gName  && item.label === tLabel && item.feature === tag.feature);
 
@@ -629,7 +630,7 @@ updateNotes(change, componentID: number, feature: number, group:string, label:st
 			  // code from here is a mess
 			  if(feat.properties.tag != undefined){
 				this.tagData.forEach(tag => {
-					if(tag.feature === feature && tag.groupName === group){
+					if(tag.feature === feature && tag.groupName === group && tag.type === "text"){
 						const index = tag.extra.findIndex(item => item['id'] === feature && item['compID'] === componentID && item['groupName'] === group  && item['label'] === label);
 						// const index = tag.extra.findIndex(item => item.label === opt['label'] && item.id === id && item.group === group)
 
@@ -644,7 +645,7 @@ updateNotes(change, componentID: number, feature: number, group:string, label:st
 							tag.extra.push(rOption);
 						}
 					}
-				  payload.tag.push(tag)
+				  if(tag.feature == feature){payload.tag.push(tag)}
 				});
 			}
 

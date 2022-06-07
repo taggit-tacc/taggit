@@ -28,7 +28,7 @@ export class TagImagesComponent implements OnInit {
   private selectedProject
   form: FormGroup;
   showSubitem: boolean = true;
-  tagList: tags[] = this.formsService.getTags();
+  tagList: tags[] = [];
   newTag: tags[] = [];
   newTagValue = ""
   featureList: Array<any> = [];

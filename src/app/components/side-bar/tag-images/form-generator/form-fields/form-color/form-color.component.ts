@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { FeatureService } from 'src/app/services/feature.service';
 import { FormsService } from 'src/app/services/forms.service';
 import { GroupsService } from 'src/app/services/groups.service';
 
@@ -24,7 +25,8 @@ export class FormColorComponent implements OnInit {
   private activeGroup$: Subscription;
 
   constructor(private formsService: FormsService,
-    private groupsService: GroupsService) { }
+    private groupsService: GroupsService,
+    private featureService: FeatureService) { }
 
   ngOnInit() {
     this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe((next) => {
@@ -38,7 +40,7 @@ export class FormColorComponent implements OnInit {
     let index
     this.formsService.getSelectedRadio().forEach(opt=> {
       if(opt != undefined){
-        index = opt.findIndex(item => item.id === this.activeFeatureId && item.compId === 1 && item.groupName === this.activeGroup && item.label === this.form['label']);
+        index = opt.findIndex(item => item.id === this.activeFeatureId && item.compID === 1 && item.groupName === this.activeGroup && item.label === this.form['label']);
         if (index > -1){
           this.chosenTag = opt[index].option
         }
@@ -51,6 +53,6 @@ export class FormColorComponent implements OnInit {
 
   updateCheckedTag(){ 
     this.formsService.saveStyles(this.chosenColor, this.activeFeatureId)
-    this.formsService.updateSelectedRadio(this.chosenTag, 1, this.activeFeatureId, this.activeGroup, this.form['label']); }
+    this.featureService.updateExtra(this.chosenTag, 1, this.activeFeatureId, this.activeGroup, this.form['label'], "color"); }
 
 }
