@@ -108,7 +108,6 @@ export class ProjectsService {
 
   //Note: This will delete the project for everyone, if the project is shared.
   delete(data: Project):void{
-    window.localStorage.setItem("lastProj", JSON.stringify("none"))
     console.log("We are in the function...")
     this._deletingProjects.next([...this._deletingProjects.value, {...data, deleting: true}]);
     this.updateProjectsList();
@@ -142,7 +141,7 @@ export class ProjectsService {
 
         this.notificationsService.showErrorToast('Could not delete project!');
         console.error(error);
-      });
+      }); // end of error
   }
 
   getProjectUsers(proj: Project): Observable<Array<IProjectUser>> {
