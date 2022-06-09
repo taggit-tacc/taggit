@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { GeoDataService } from './geo-data.service';
 import { FormsService, tags } from './forms.service';
 import { feature } from '@turf/turf';
+import { AbstractEmitterVisitor } from '@angular/compiler/src/output/abstract_emitter';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,7 @@ export class FeatureService {
     this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
       this._features.next(fc)
       this.featureCollection = fc
-      console.log(this.featureCollection)
+      // console.log(this.featureCollection)
 
       //Update the tag list alongside the features
       try {
@@ -102,9 +103,17 @@ export class FeatureService {
   //Save tags has 2 purposes, first it updates every feature's tag list to reflect the change, then it sends the features to GeoAPI to be saved
   saveTags(tagList): void {
     this._tags.next(tagList) //Update the observable
+    let customList = []
     //Update each feature's tag list
     this.featureCollection.features.forEach(feat => {
-      feat.properties.tag = tagList
+      
+      tagList.forEach(tag => {
+        if (feat.id == tag.feature){
+          customList.push(tag)
+        }}) //end of for each tag
+
+      feat.properties.tag = customList
+      customList = []
     });
     this.saveFeatures(this.featureCollection) //Save updated features to backend
   }
@@ -135,7 +144,7 @@ export class FeatureService {
     this.saveTags(this.tagList) //saves tags to backend
   }
 
-  createTag(newTag:tags, activeGroup:string): void {
+  createTag(newTag:tags, activeGroup:string, groupList: Array<any>): void {
 
     this.featureCollection.features.forEach( listFeature => { //Loop through every feature in the project
       if(listFeature.properties.group) {
@@ -151,13 +160,13 @@ export class FeatureService {
               type: newTag.type
             }
             this.tagList.push(tag)
-          }
-        }) 
-      }
-    })
+          } // end of if statement
+        }) // end of for each group 
+      } // end of if prop group
+    }) // end of for each listFeature
 
     this.saveTags(this.tagList)
-  }
+  } // end of creatTag function
 
   bulkTagDelete(tagList: Array<any>): void {
     tagList.forEach( delTag => {
@@ -166,4 +175,54 @@ export class FeatureService {
     })
     this.saveTags(this.tagList) //saves tags to backend
   }
+
+  updateExtra(change:any, componentID: number, feature: number, groupName:string, label:string, type:string): void{
+    let nOption
+    this.tagList.forEach( tag => {
+      // updating notes
+      if(tag.feature === feature && tag.groupName === groupName && tag.type === type){
+        const index = tag.extra.findIndex(item => item['id'] === feature && item['compID'] === componentID && item['groupName'] === groupName  && item['label'] === label);
+						// const index = tag.extra.findIndex(item => item.label === opt['label'] && item.id === id && item.group === group)
+
+						if(index > -1){
+							// console.log(tag.extra)
+							// console.log(tag.extra[index])
+							tag.extra[index]['option'] = change
+						}
+						else{
+              
+							nOption = {option: change, id: feature, groupName: groupName, compID: componentID, label:label} 
+							// console.log(rOption)
+							tag.extra.push(nOption);
+						}
+      } // end of updating notes
+
+
+
+    }) // end of for each tag
+    this.saveTags(this.tagList)
+  } // end of updateExtra function
+
+  updateChecked(opt:object, id: number, group: string, label:string, check:string): void{
+    let nOption 
+    this.tagList.forEach( tag => {
+      if(check == "create"){
+        if(tag != undefined){
+            if(tag.feature === id && tag.groupName === group){
+              nOption = { option: opt['key'], id: id , group: group, label: label}
+              console.log(nOption)
+              tag.extra.push(nOption)
+            }
+        }
+      } // end of create
+      else{
+        if(tag.feature === id && tag.groupName === group){
+          const index = tag.extra.findIndex(item => item['option'] === opt['key'] && item['id'] === id &&  item['group'] === group && item['label'] === label)
+          // item.label === opt['label'] && item.id === id && item.group === group && item.title === label
+          tag.extra.splice(index,1)
+        }
+      } // end of else
+    }) // end of for each tag
+    this.saveTags(this.tagList)
+  } // end of updateChecked function
 }
