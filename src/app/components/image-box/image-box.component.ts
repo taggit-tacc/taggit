@@ -160,6 +160,19 @@ export class ImageBoxComponent implements OnInit {
 
   }
 
+  imageSelectTrue(){
+	this.status = true
+	this.groupsService.setItemsSelected(this.status)
+	if (this.tempGroup.filter(v => v.assets[0].id == this.feature.assets[0].id).length > 0) {
+		this.tempGroup = this.tempGroup.filter(v => v.assets[0].id != this.feature.assets[0].id);
+	} else {
+		this.tempGroup.push(this.feature);
+	}
+  
+	this.groupsService.addTempGroup(this.tempGroup);
+	this.groupsService.setShowGroup(true);
+  }
+
   imageZoom(template: TemplateRef<any>) {
 	// this.modalRef = this.modalService.show(template, {class: 'full'});
 	this.dialog.open(template);
@@ -181,6 +194,7 @@ export class ImageBoxComponent implements OnInit {
   }
 
   openImageDeleteModal(template: TemplateRef<any>) {
+	this.imageSelectTrue()
 	this.scrollService.setScrollPosition()
 	// this.modalRef = this.modalService.show(template, {class: 'tiny'});
 	this.dialog.open(template);
@@ -212,6 +226,7 @@ export class ImageBoxComponent implements OnInit {
   }
 
   openImageAddModal(template: TemplateRef<any>) {
+	this.imageSelectTrue()
 	this.scrollService.setScrollPosition()
 	// this.modalRef = this.modalService.show(template, {class: 'tiny'});
 	this.dialog.open(template);
