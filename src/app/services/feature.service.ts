@@ -72,11 +72,12 @@ export class FeatureService {
   saveFeatures(features: FeatureCollection): void {
     this._features.next(features); //Update the observable
     features.features.forEach((feat) => {
-      this.geoDataService.updateFeatureProperty(
-        feat.project_id,
-        Number(feat.id),
-        feat.properties
-      );
+      console.log(feat.id);
+      // this.geoDataService.updateFeatureProperty(
+      //   feat.project_id,
+      //   Number(feat.id),
+      //   feat.properties
+      // );
     });
     this.geoDataService.getFeatures(features.features[0].project_id);
   }
@@ -127,6 +128,8 @@ export class FeatureService {
     this._tags.next(tagList); //Update the observable
     let customList = [];
     //Update each feature's tag list
+    console.log(tagList);
+
     this.featureCollection.features.forEach((feat) => {
       tagList.forEach((tag) => {
         if (feat.id == tag.feature) {
@@ -137,7 +140,7 @@ export class FeatureService {
       feat.properties.tag = customList;
       customList = [];
     });
-    this.saveFeatures(this.featureCollection); //Save updated features to backend
+    // this.saveFeatures(this.featureCollection); //Save updated features to backend
   }
 
   //Takes the entire tag that should be deleted and filters the list from it

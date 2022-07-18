@@ -1,8 +1,9 @@
-import {Feature as GeoJSONFeature,
+import {
+  Feature as GeoJSONFeature,
   GeoJsonProperties,
   Geometry,
-  FeatureCollection as IFeatureCollection } from 'geojson';
-
+  FeatureCollection as IFeatureCollection,
+} from 'geojson';
 
 // TODO: break these out into their own files
 
@@ -34,34 +35,61 @@ export interface Group {
   // type: any;
 }
 
-export class Group implements Group {
+export class Group implements Group {}
 
+export interface NewGroup {
+  name: string;
+  id?: number;
+  featureId?: number;
+  color?: string;
+  icon?: string;
+  tags?: Array<Tag>;
 }
 
+export class NewGroup implements NewGroup {}
+
+export interface Tag {
+  id: number;
+  groupId?: number;
+  label?: string;
+  type?: string;
+  options?: Array<any>;
+}
+
+export class Tag implements Tag {}
+
+// NOTE: For geojson/tag
+export interface TagValue {
+  id: number;
+  tagId?: number;
+  groupId?: string;
+  value?: Array<any> | string | number;
+}
+
+export class TagValue implements TagValue {}
 
 export class AssetFilters {
-
   // bbox has the following format: [sw_lng, sw_lat, ne_lng, ne_lat], the same as leaflet
   bbox: Array<number> = [];
   assetType: Set<string> = new Set<string>();
 
   updateAssetTypes(assetType: string) {
-	this.assetType.has(assetType) ? this.assetType.delete(assetType) : this.assetType.add(assetType);
+    this.assetType.has(assetType)
+      ? this.assetType.delete(assetType)
+      : this.assetType.add(assetType);
   }
 
   updateBBox(bbox: Array<number>): void {
-	this.bbox = bbox;
+    this.bbox = bbox;
   }
 
   toJson() {
-	return {
-	  assetType: [...this.assetType],
-	  bbox: this.bbox
-	};
+    return {
+      assetType: [...this.assetType],
+      bbox: this.bbox,
+    };
   }
-
 }
-
 
 export interface Project {
   description: string;
@@ -78,9 +106,7 @@ export interface Project {
   deletingFailed?: boolean;
 }
 
-export class Project implements Project {
-
-}
+export class Project implements Project {}
 
 export interface ProjectRequest {
   project: Project;
@@ -88,9 +114,7 @@ export interface ProjectRequest {
   watch_content?: boolean;
 }
 
-export class ProjectRequest implements ProjectRequest {
-
-}
+export class ProjectRequest implements ProjectRequest {}
 
 export class AuthToken {
   token: string;
@@ -101,23 +125,22 @@ export class AuthToken {
    * @param expires: Date
    */
   constructor(token: string, expires: Date) {
-	this.token = token;
-	this.expires = new Date(expires);
+    this.token = token;
+    this.expires = new Date(expires);
   }
 
   static fromExpiresIn(token: string, expires_in: number) {
-	const expires = new Date(new Date().getTime() + expires_in * 1000);
-	return new AuthToken(token, expires);
+    const expires = new Date(new Date().getTime() + expires_in * 1000);
+    return new AuthToken(token, expires);
   }
 
   /**
    * Checks if the token is expired or not
    */
   public isExpired(): boolean {
-	return new Date().getTime() > this.expires.getTime();
+    return new Date().getTime() > this.expires.getTime();
   }
 }
-
 
 export interface IFeatureAsset {
   id: number;
@@ -138,16 +161,13 @@ export class FeatureAsset implements IFeatureAsset {
 
   // TODO: Implenent this
   get assetPath(): string {
-	return '';
+    return '';
   }
-
 }
-
 
 interface FeatureStyles {
   [key: string]: string | number;
 }
-
 
 export interface Overlay {
   id: number;
@@ -173,9 +193,12 @@ export class FeatureCollection implements IFeatureCollection {
   type: any;
 }
 
-
 export class Feature implements AppGeoJSONFeature {
   geometry: Geometry;
+  // Taggit specific:
+  // properties.tags: Tag[]
+  // properties.groups: Group[]
+  // properties.values: TagValue[]
   properties: GeoJsonProperties;
   id?: string | number;
   type: any;
@@ -184,32 +207,27 @@ export class Feature implements AppGeoJSONFeature {
   project_id?: number;
 
   constructor(f: AppGeoJSONFeature) {
-	this.geometry = f.geometry;
-	this.properties = f.properties;
-	this.id = f.id;
-	this.type = f.type;
-	this.assets = f.assets;
-	this.styles = f.styles;
-	this.project_id = f.project_id;
+    this.geometry = f.geometry;
+    this.properties = f.properties;
+    this.id = f.id;
+    this.type = f.type;
+    this.assets = f.assets;
+    this.styles = f.styles;
+    this.project_id = f.project_id;
   }
 
   featureType?(): string {
-	if (this.assets &&
-	this.assets.length === 1) {
-	  return this.assets[0].asset_type;
-	}
+    if (this.assets && this.assets.length === 1) {
+      return this.assets[0].asset_type;
+    }
 
-	if (this.assets &&
-	this.assets.length > 1) {
-	  return 'collection';
-	}
+    if (this.assets && this.assets.length > 1) {
+      return 'collection';
+    }
 
-	if (!this.assets.length) {
-	  return this.geometry.type;
-	}
-
-
-
+    if (!this.assets.length) {
+      return this.geometry.type;
+    }
   }
 }
 
