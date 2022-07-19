@@ -41,9 +41,9 @@ export class GroupsService {
   public featureImagesExist: Observable<boolean> =
     this._featureImagesExist.asObservable();
 
-  private _activeFeatureId: BehaviorSubject<number> =
+  private _activeFeatureId: BehaviorSubject<string | number> =
     new BehaviorSubject<number>(null);
-  public activeFeatureId: Observable<number> =
+  public activeFeatureId: Observable<string | number> =
     this._activeFeatureId.asObservable();
 
   private _activePane: BehaviorSubject<string> = new BehaviorSubject<string>(
@@ -162,7 +162,7 @@ export class GroupsService {
     this._activeFeatureNum.next(num);
   }
 
-  setActiveFeatureId(id: number): void {
+  setActiveFeatureId(id: string | number): void {
     this._activeFeatureId.next(id);
   }
 

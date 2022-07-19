@@ -47,6 +47,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   activeFeatureNum: number;
   featurePath: string;
   loaded: boolean;
+  groupsFeatures: Map<string, any>;
 
   constructor(
     private geoDataService: GeoDataService,
@@ -71,6 +72,8 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
     // this.activeFeatureNum = 0;
     // FIXME feature collection giving me an error when trying to access assets
     // this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
+
+    this.geoDataService.features.subscribe();
 
     this.geoDataService.loaded.subscribe(
       (e) => {
@@ -144,6 +147,10 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
       }
     });
 
+    this.geoDataService.groupsFeatures.subscribe((next) => {
+      this.groupsFeatures = next;
+    });
+
     this.geoDataService.activeFeature.subscribe((next) => {
       if (next) {
         this.activeFeature = next;
@@ -208,9 +215,10 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
       this.environment.apiUrl +
       '/assets/' +
       activeGroupObj[0].features[this.activeFeatureNum].assets[0].path;
-    this.groupsService.setActiveFeatureId(
-      activeGroupObj[0].features[this.activeFeatureNum].id
-    );
+
+    // this.groupsService.setActiveFeatureId(
+    //   activeGroupObj[0].features[this.activeFeatureNum].id
+    // );
     featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
     return featureSource;
   }

@@ -5,7 +5,7 @@ import {
   Input,
   TemplateRef,
 } from '@angular/core';
-import { Feature, Project } from '../../models/models';
+import { Feature, Project, NewGroup } from '../../models/models';
 import { GeoDataService } from '../../services/geo-data.service';
 import { AppEnvironment, environment } from '../../../environments/environment';
 import { GroupsService } from '../../services/groups.service';
@@ -217,31 +217,36 @@ export class ImageBoxComponent implements OnInit {
     this.dialog.open(template);
   }
 
-  deleteFromGroup(color: string) {
-    // console.log(this.groupList);
-    this.groupList.forEach((e) => {
-      // When it is the sole feature
-      if (e.features.length <= 1) {
-        this.groupList = this.groupList.filter((e) => e.color != color);
-      } else {
-        if (e.color == color) {
-          e.features = e.features.filter((i) => i.id != this.feature.id);
-        }
-      }
-    });
-
-    let featProp = this.feature.properties;
-
-    featProp.group = featProp.group.filter((e) => e.color != color);
-
-    this.geoDataService.updateFeatureProperty(
+  deleteFromGroup(feat: Feature, group: NewGroup) {
+    this.geoDataService.deleteGroupFeatures(
       this.selectedProject.id,
-      Number(this.feature.id),
-      featProp
+      [feat],
+      group.name
     );
-
-    this.groupsService.addGroup(this.groupList);
-    this.colors = this.colors.filter((e) => e != color);
+    // // console.log(this.groupList);
+    // this.groupList.forEach((e) => {
+    //   // When it is the sole feature
+    //   if (e.features.length <= 1) {
+    //     this.groupList = this.groupList.filter((e) => e.color != color);
+    //   } else {
+    //     if (e.color == color) {
+    //       e.features = e.features.filter((i) => i.id != this.feature.id);
+    //     }
+    //   }
+    // });
+    //
+    // let featProp = this.feature.properties;
+    //
+    // featProp.group = featProp.group.filter((e) => e.color != color);
+    //
+    // this.geoDataService.updateFeatureProperty(
+    //   this.selectedProject.id,
+    //   Number(this.feature.id),
+    //   featProp
+    // );
+    //
+    // this.groupsService.addGroup(this.groupList);
+    // this.colors = this.colors.filter((e) => e != color);
   }
 
   openImageAddModal(template: TemplateRef<any>) {

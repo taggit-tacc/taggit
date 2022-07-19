@@ -3,14 +3,17 @@
 
   <div *ngIf="showSubitem" class="subitem asset-subitem">
 
-	<div *ngFor="let asset of getActiveFeatures()" (click)="jumpToImage(asset)" class="asset-container" [ngClass]="{'highlight': isActiveFeature(asset)}">
+	<div *ngFor="let asset of getActiveFeatures()" 
+      (click)="jumpToImage(asset.id)" 
+      class="asset-container" 
+      [ngClass]="{'highlight': isActiveFeature(asset.id)}">
 
 	  <div class="name-group">
 		{{ getAssetDisplay(asset) }}
 	  </div>
 
 	  <div class="button-group">
-		<div (click)="deleteAsset(asset.id)">
+		<div (click)="deleteAsset(asset)">
 		  <i class="fas fa-minus"
 			 matTooltip="Delete"
 			 matTooltipPosition="above">

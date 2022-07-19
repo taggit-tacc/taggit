@@ -46,15 +46,29 @@ export class GeoDataService {
   private _activeGroupId: BehaviorSubject<number> = new BehaviorSubject(null);
   public activeGroupId: Observable<number> = this._activeGroupId.asObservable();
 
-  private _activeGroupName: BehaviorSubject<string> = new BehaviorSubject('');
-  public activeGroupName: Observable<string> =
-    this._activeGroupName.asObservable();
+  // private _activeGroupName: BehaviorSubject<string> = new BehaviorSubject('');
+  // public activeGroupName: Observable<string> =
+  //   this._activeGroupName.asObservable();
+
+  private _activeGroup: BehaviorSubject<NewGroup> = new BehaviorSubject(null);
+  public activeGroup: Observable<NewGroup> = this._activeGroup.asObservable();
+
+  private _activeGroupFeature: BehaviorSubject<Feature> = new BehaviorSubject(
+    null
+  );
+  public activeGroupFeature: Observable<Feature> =
+    this._activeGroupFeature.asObservable();
 
   private _groups: BehaviorSubject<Map<string, NewGroup>> = new BehaviorSubject(
     null
   );
   public groups: Observable<Map<string, NewGroup>> =
     this._groups.asObservable();
+
+  private _groupsFeatures: BehaviorSubject<Map<string, Feature[]>> =
+    new BehaviorSubject(null);
+  public groupsFeatures: Observable<Map<string, Feature[]>> =
+    this._groupsFeatures.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -89,11 +103,14 @@ export class GeoDataService {
       )
       .subscribe((fc: FeatureCollection) => {
         fc.features = fc.features.map((feat: Feature) => new Feature(feat));
-        this._groups.next(this.getGroups(fc.features));
-        // console.log(this._groups);
+        this.getGroups(fc.features);
+        // this._groups.next(this.getGroups(fc.features));
+        // this._groups.next(this.getGroups(fc.features));
+        console.log(this._groups.value);
         // console.log(this.getGroupFeatures(fc.features, 'test'));
         // TODO this is where it updates
         this._features.next(fc);
+        console.log(this._features.value);
         // this._loaded.next(false);
         this._loaded.next(true);
 
@@ -120,9 +137,15 @@ export class GeoDataService {
         environment.apiUrl + `/projects/${projectId}/point-cloud/`
       )
       .subscribe((resp) => {
-        // console.log(resp);
         this._pointClouds.next(resp);
       });
+  }
+
+  setActiveGroup(group: NewGroup): void {
+    this._activeGroup.next(group);
+    this._activeGroupFeature.next(
+      this._groupsFeatures.value.get(group.name)[0]
+    );
   }
 
   addFeature(feat: Feature): void {
@@ -158,6 +181,7 @@ export class GeoDataService {
     featureId: string | number,
     groupData: any
   ): void {
+    console.log(groupData);
     this.http
       .post(
         environment.apiUrl +
@@ -166,7 +190,9 @@ export class GeoDataService {
       )
       .subscribe(
         // TODO: getFeatures() here
-        (resp) => {},
+        (resp) => {
+          this.getFeatures(projectId);
+        },
         (error) => {}
       );
   }
@@ -375,8 +401,9 @@ export class GeoDataService {
   }
 
   // Call on getFeatures (each time feature update)
-  getGroups(featureList: Feature[]): Map<string, NewGroup> {
+  getGroups(featureList: Feature[]): void {
     const groups = new Map<string, NewGroup>();
+    const groupsFeatures = new Map<string, Feature[]>();
     featureList
       .filter(
         (feat: Feature) =>
@@ -384,16 +411,21 @@ export class GeoDataService {
       )
       .forEach((feat: Feature) => {
         feat.properties.group.forEach((group: NewGroup) => {
+          groupsFeatures.set(
+            group.name,
+            groupsFeatures.has(group.name)
+              ? [...groupsFeatures.get(group.name), feat]
+              : [feat]
+          );
           groups.set(group.name, group);
         });
       });
-    // NOTE: With only images?
-    console.log(groups);
-    return groups;
+    this._groups.next(groups);
+    this._groupsFeatures.next(groupsFeatures);
   }
 
-  getGroup(featureList: Feature[], groupName: string) {
-    return this.getGroups(featureList).get(groupName);
+  getGroup(groupName: string) {
+    return this._groups.value.get(groupName);
   }
 
   getGroupFeatures(featureList: Feature[], groupName: string) {
@@ -405,25 +437,54 @@ export class GeoDataService {
     );
   }
 
-  addGroup(
+  // private createGroup(
+  //   featureList: Feature[],
+  //   featureId: number,
+  //   group: NewGroup // TODO: Generate group with new uuid and not with name
+  // ): Feature[] {
+  //   return featureList.map((feat: Feature) => {
+  //     if (feat.id === featureId) {
+  //       feat.properties.group = feat.properties.group
+  //         .filter((grp: NewGroup) => grp.name !== group.name)
+  //         .push(group);
+  //     }
+  //     return feat;
+  //   });
+  // }
+
+  private createGroup(
     featureList: Feature[],
-    featureId: number,
     group: NewGroup // TODO: Generate group with new uuid and not with name
   ): Feature[] {
     return featureList.map((feat: Feature) => {
-      if (feat.id === featureId) {
-        feat.properties.groups = feat.properties.groups
-          .filter((grp: NewGroup) => grp.name !== group.name)
-          .push(group);
-      }
+      let groupProp = feat.properties.group ? feat.properties.group : [];
+      groupProp = groupProp.filter((grp: NewGroup) => grp.name !== group.name);
+      groupProp.push(group);
+      console.log(groupProp);
+      feat.properties.group = groupProp;
+
       return feat;
+      // return this.createGroupInFeature(feat, group);
     });
+  }
+
+  private createGroupInFeature(
+    feature: Feature,
+    group: NewGroup // TODO: Generate group with new uuid and not with name
+  ): Feature {
+    if (feature.properties.group) {
+      feature.properties.group
+        .filter((grp: NewGroup) => grp.name !== group.name)
+        .push(group);
+    }
+    return feature;
   }
 
   private updateGroup(featureList: Feature[], group: NewGroup): Feature[] {
     return this.getGroupFeatures(featureList, group.name).map(
       (feat: Feature) => {
-        feat.properties.groups = feat.properties.groups
+        console.log(feat);
+        feat.properties.group = feat.properties.group
           .filter((grp: NewGroup) => grp.name !== group.name)
           .push(group);
         return feat;
@@ -434,12 +495,22 @@ export class GeoDataService {
   private deleteGroup(featureList: Feature[], groupName: string): Feature[] {
     return this.getGroupFeatures(featureList, groupName).map(
       (feat: Feature) => {
-        feat.properties.groups = feat.properties.groups.filter(
+        feat.properties.group = feat.properties.group.filter(
           (grp: NewGroup) => grp.name !== groupName
         );
         return feat;
       }
     );
+  }
+
+  createGroupFeatures(
+    projectId: number,
+    featureList: Feature[],
+    group: NewGroup
+  ) {
+    this.createGroup(featureList, group).forEach((feat: Feature) => {
+      this.updateFeatureProperty(projectId, feat.id, feat.properties);
+    });
   }
 
   deleteGroupFeatures(
@@ -462,13 +533,13 @@ export class GeoDataService {
     });
   }
 
-  getTags(featureList: Feature[], groupName: string): Tag[] {
-    return this.getGroup(featureList, groupName).tags;
+  getTags(groupName: string): Tag[] {
+    return this._groups.value.get(groupName).tags;
   }
 
-  setActiveGroup(groupId: number) {
-    this._activeGroupId.next(groupId);
-  }
+  // setActiveGroup(groupId: number) {
+  //   this._activeGroupId.next(groupId);
+  // }
 
   public get overlays(): Observable<Array<Overlay>> {
     return this._overlays.asObservable();

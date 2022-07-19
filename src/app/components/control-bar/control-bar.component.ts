@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, TemplateRef } from '@angular/core';
 import { ProjectsService } from '../../services/projects.service';
-import { Feature, Project } from '../../models/models';
+import { Feature, Project, NewGroup } from '../../models/models';
 import { FeatureCollection } from 'geojson';
 import { GeoDataService } from '../../services/geo-data.service';
 import { LatLng } from 'leaflet';
@@ -58,6 +58,7 @@ export class ControlBarComponent implements OnInit {
   tempGroup: Array<Feature>;
   modalRef: BsModalRef;
   activeGroup: string;
+  groups: Map<string, NewGroup>;
   activePane: string;
   hazMapperLink: string;
   itemsSelected: boolean = false;
@@ -96,6 +97,10 @@ export class ControlBarComponent implements OnInit {
 
     this.groupsService.activeGroup.subscribe((next) => {
       this.activeGroup = next;
+    });
+
+    this.geoDataService.groups.subscribe((next) => {
+      this.groups = next;
     });
 
     this.groupsService.activePane.subscribe((next) => {
@@ -346,6 +351,8 @@ export class ControlBarComponent implements OnInit {
   addToGroupService(name: string) {
     this.groupName = name;
     this.groupsService.setActiveGroup(name);
+    // console.log(this.groupList);
+    // console.log(this.tempGroup);
 
     if (this.groupList.length != 1000) {
       // TODO Make this better
@@ -354,52 +361,65 @@ export class ControlBarComponent implements OnInit {
       } else if (this.groupList.filter((e) => e.name === name).length) {
         console.log('Existing Name');
       } else {
-        let myRandColor: string = this.getRandomColor();
-        this.groupList.push({
-          name: name,
-          features: this.tempGroup,
-          color: myRandColor,
-          icon: 'fa-house-damage',
-        });
-        this.groupsService.addGroup(this.groupList);
-        this.formsService.addGroup(this.groupName);
+        // let myRandColor: string = this.getRandomColor();
+        // this.groupList.push({
+        //   name: name,
+        //   features: this.tempGroup,
+        //   color: myRandColor,
+        //   icon: 'fa-house-damage',
+        // });
+        // this.
+        // this.groupsService.addGroup(this.groupList);
+        // this.formsService.addGroup(this.groupName);
 
-        console.log(this.groupList);
-        console.log(this.tempGroup);
+        // console.log(this.groupList);
+        // console.log(this.tempGroup);
 
         // TODO make this work for persistence //We do currently have persistance, so make of this what you will -Ben
         for (let feat of this.tempGroup) {
           let featProp = feat.properties;
-          console.log(feat.properties);
+          // console.log(feat.properties);
 
           if (featProp.group) {
-            console.log('nope');
-            featProp.group.push({
+            const myRandColor: string = this.getRandomColor();
+            const newGroup: NewGroup = {
               name: name,
               color: myRandColor,
               icon: 'fa-house-damage',
-            });
+            };
+            console.log(this.tempGroup);
+            console.log(newGroup);
+            this.geoDataService.createGroupFeatures(
+              this.selectedProject.id,
+              this.tempGroup,
+              newGroup
+            );
+            // featProp.group.push({
+            //   name: name,
+            //   color: myRandColor,
+            //   icon: 'fa-house-damage',
+            // });
           } else {
             console.log('This is actually happening');
             let featPropList = (featProp.group = []);
-            featPropList.push({
-              name: name,
-              color: myRandColor,
-              icon: 'fa-house-damage',
-            });
+            // featPropList.push({
+            //   name: name,
+            //   color: myRandColor,
+            //   icon: 'fa-house-damage',
+            // });
           }
 
-          this.geoDataService.updateFeatureProperty(
-            this.selectedProject.id,
-
-            Number(feat.id),
-            featProp
-          );
-          console.log('In control-bar');
-          console.log('Current feat: ' + feat.id);
-          console.log('featProp: what gets sent to server');
-          console.log(featProp);
-          console.log('groupList: internal listing');
+          // this.geoDataService.updateFeatureProperty(
+          //   this.selectedProject.id,
+          //
+          //   Number(feat.id),
+          //   featProp
+          // );
+          // console.log('In control-bar');
+          // console.log('Current feat: ' + feat.id);
+          // console.log('featProp: what gets sent to server');
+          // console.log(featProp);
+          // console.log('groupList: internal listing');
         }
       }
     }
@@ -424,6 +444,8 @@ export class ControlBarComponent implements OnInit {
     let showSidebar = !this.showSidebar;
     let showGroup = false;
     this.groupsService.setActiveGroup(this.groupList[0].name);
+    // const [firstGroup] = this.groups.values();
+    // this.geoDataService.setActiveGroup(firstGroup);
 
     let activeGroup = this.groupList.filter(
       (group) => group.name == this.activeGroup

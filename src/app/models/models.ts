@@ -40,7 +40,6 @@ export class Group implements Group {}
 export interface NewGroup {
   name: string;
   id?: number;
-  featureId?: number;
   color?: string;
   icon?: string;
   tags?: Array<Tag>;
@@ -61,6 +60,7 @@ export class Tag implements Tag {}
 // NOTE: For geojson/tag
 export interface TagValue {
   id: number;
+  featureId?: number;
   tagId?: number;
   groupId?: string;
   value?: Array<any> | string | number;

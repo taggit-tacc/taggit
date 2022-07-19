@@ -3,31 +3,32 @@
   <div *ngIf="showSubitem" class="subitem group-subitem">
 	<!-- TODO redundant functionality radio is just for style -->
 	<form class="boxed">
-	  <div *ngFor="let group of groupList" (click)="selectGroupForm(group.name)" class="box form">
-		<input type="radio" [id]="group.name" [value]="group.name" name="skills" [checked]="isChecked(group.name)">
-		<label class="group-container" style="cursor: pointer" [for]="group.name">
+	  <!-- <div *ngFor="let group of groupList" (click)="selectGroupForm(group.name)" class="box form"> -->
+	  <div *ngFor="let group of groupList | keyvalue" (click)="selectGroupForm(group.value)" class="box form">
+		<input type="radio" [id]="group.key" [value]="group.key" name="skills" [checked]="isChecked(group.key)">
+		<label class="group-container" style="cursor: pointer" [for]="group.key">
 		  <div class="name-group">
-			{{group.name}}
+			{{group.key}}
 			<svg class="box" width="10px" height="10px">
 			  <rect width="10px" height="10px" style="fill: #ffffff"/>
-			  <rect width="8px" height="8px" x="1px" y="1px" [style.fill]="group.color"/>
+			  <rect width="8px" height="8px" x="1px" y="1px" [style.fill]="group.value.color"/>
 			</svg>
 		  </div>
 		  <div class="button-group">
-			<div (click)="deleteGroup(group.name)">
+			<div (click)="deleteGroup(group.key)">
 			  <i class="fas fa-minus"
 				 matTooltip="Delete"
 				 matTooltipPosition="below">
 			  </i>
 			</div>
-			<div (click)="openRenameModal(renameModal, group.name)">
+			<div (click)="openRenameModal(renameModal, group.key)">
 			  <i class="fas fa-edit"
 				 matTooltip="Rename"
 				 matTooltipPosition="below">
 			  </i>
 			</div>
-				<div (click)="openIconSelection(iconModal, group.name)">
-					<span class="fa {{group.icon}}"
+				<div (click)="openIconSelection(iconModal, group.key)">
+					<span class="fa {{group.value.icon}}"
 					matTooltip="icons"
 					matTooltipPosition="below"></span>
 				</div>
