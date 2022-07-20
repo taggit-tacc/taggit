@@ -143,9 +143,9 @@ export class GeoDataService {
 
   setActiveGroup(group: NewGroup): void {
     this._activeGroup.next(group);
-    this._activeGroupFeature.next(
-      this._groupsFeatures.value.get(group.name)[0]
-    );
+    // this._activeGroupFeature.next(
+    //   this._groupsFeatures.value.get(group.name)[0]
+    // );
   }
 
   addFeature(feat: Feature): void {
@@ -199,7 +199,7 @@ export class GeoDataService {
 
   updateFeatureStyle(
     projectId: number,
-    featureId: number,
+    featureId: string | number,
     groupData: any
   ): void {
     this.http
@@ -421,6 +421,7 @@ export class GeoDataService {
         });
       });
     this._groups.next(groups);
+    console.log(groupsFeatures);
     this._groupsFeatures.next(groupsFeatures);
   }
 

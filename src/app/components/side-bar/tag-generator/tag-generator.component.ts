@@ -10,7 +10,7 @@ import { GroupsService } from '../../../services/groups.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Feature, Project } from 'src/app/models/models';
+import { Feature, Project, NewGroup } from 'src/app/models/models';
 import { GeoDataService } from 'src/app/services/geo-data.service';
 import { ProjectsService } from 'src/app/services/projects.service';
 import { FeatureService } from 'src/app/services/feature.service';
@@ -38,7 +38,8 @@ export class TagGeneratorComponent implements OnInit {
   enabledControls: Array<string> = [];
   showSubitem: boolean = true;
   activeFormList: Array<any>;
-  groupList: Array<any>;
+  groups: Map<string, NewGroup>;
+  groupsFeatures: Map<string, any>;
   groups$: Subscription;
   tempGroup: Array<Feature>;
   private selectedProject;
@@ -64,8 +65,12 @@ export class TagGeneratorComponent implements OnInit {
       this.activeFormList = next;
     });
 
-    this.groups$ = this.groupsService.groups.subscribe((next) => {
-      this.groupList = next;
+    this.geoDataService.groups.subscribe((next) => {
+      this.groups = next;
+    });
+
+    this.geoDataService.groupsFeatures.subscribe((next) => {
+      this.groupsFeatures = next;
     });
 
     this.projectsService.activeProject.subscribe((next) => {
@@ -166,7 +171,11 @@ export class TagGeneratorComponent implements OnInit {
     }
     //Pass it to feature and form service to propogate to all features in a group
     //
-    this.featureService.createTag(formItem, this.activeGroup, this.groupList);
+    // this.featureService.createTag(formItem, this.activeGroup, this.groupList);
+    this.featureService.createTag(
+      formItem,
+      this.groupsFeatures.get(this.activeGroup)
+    );
     // this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
 
     //Reset user-defined fields to blank options

@@ -10,7 +10,7 @@ import { ModalFileBrowserComponent } from '../modal-file-browser/modal-file-brow
 import { ModalDownloadSelectorComponent } from '../modal-download-selector/modal-download-selector.component';
 import { ModalCreateProjectComponent } from '../modal-create-project/modal-create-project.component';
 import { ModalShareProjectComponent } from '../modal-share-project/modal-share-project.component';
-import { interval, Observable, Subscription } from 'rxjs';
+import { interval, Observable, Subscription, combineLatest } from 'rxjs';
 import { RemoteFile } from 'ng-tapis';
 import { GroupsService } from '../../services/groups.service';
 import { FormsService } from '../../services/forms.service';
@@ -39,7 +39,6 @@ export class ControlBarComponent implements OnInit {
   public activeFeature: Feature;
   features: FeatureCollection;
   featureList: Array<any> = [];
-  activeFeatureNum: number;
 
   public currentUser: AuthenticatedUser;
   private REFRESHTIME = 6; // 60 secs per reload default, right now it's an hour (6000 sec) //This is in seconds, and somehow got set to 6
@@ -49,7 +48,6 @@ export class ControlBarComponent implements OnInit {
   public liveRefresh = true;
   private timer: Observable<number> = interval(this.REFRESHTIME * 1000);
   private timerSubscription: Subscription;
-  groupList: Array<any>;
   showGroup: boolean;
   imageName: string;
   showSidebar: boolean;
@@ -59,6 +57,10 @@ export class ControlBarComponent implements OnInit {
   modalRef: BsModalRef;
   activeGroup: string;
   groups: Map<string, NewGroup>;
+  groupsFeatures: Map<string, any>;
+  activeGroupFeatures: any;
+  activeGroupFeaturesRotate: any;
+  activeGroupFeature: any;
   activePane: string;
   hazMapperLink: string;
   itemsSelected: boolean = false;
@@ -87,7 +89,7 @@ export class ControlBarComponent implements OnInit {
 
       if (this.features != undefined) {
         this.featureList = this.features.features;
-        this.groupsService.setActiveProject(this.featureList[0]);
+        // this.groupsService.setActiveProject(this.featureList[0]);
 
         // TODO This should activate persistence by looping through all features and creating new groups and
         //Not sure about the above note, if anything needs to be done here, it seems like we have achieved persistance
@@ -95,12 +97,27 @@ export class ControlBarComponent implements OnInit {
       }
     });
 
-    this.groupsService.activeGroup.subscribe((next) => {
-      this.activeGroup = next;
-    });
-
     this.geoDataService.groups.subscribe((next) => {
       this.groups = next;
+      this.groupsExist = next && next.size ? true : false;
+    });
+
+    combineLatest(
+      this.groupsService.activeGroup,
+      this.geoDataService.groupsFeatures
+    ).subscribe(([grp, grpFts]) => {
+      this.activeGroup = grp;
+      this.groupsFeatures = grpFts;
+      if (grp && grpFts) {
+        this.activeGroupFeatures = grpFts.get(grp);
+        this.activeGroupFeaturesRotate = [...this.activeGroupFeatures];
+        // this.activeGroupFeature = this.activeGroupFeatures[0];
+      }
+    });
+
+    this.groupsService.activeGroupFeature.subscribe((next) => {
+      this.activeGroupFeature = next;
+      console.log(next);
     });
 
     this.groupsService.activePane.subscribe((next) => {
@@ -168,37 +185,37 @@ export class ControlBarComponent implements OnInit {
         this.projectsService.setActiveProject(lastProj);
       }
 
-      this.groupsService.groups.subscribe((next) => {
-        this.groupList = next;
+      // this.groupsService.groups.subscribe((next) => {
+      //   this.groupList = next;
+      //
+      //   if (this.groupList.length > 0) {
+      //     this.groupsExist = true;
+      //   } else {
+      //     this.groupsExist = false;
+      //   }
+      // });
 
-        if (this.groupList.length > 0) {
-          this.groupsExist = true;
-        } else {
-          this.groupsExist = false;
-        }
-      });
-
-      this.groupsService.activeFeatureNum
-        .pipe(startWith(0))
-        .subscribe((next) => {
-          this.activeFeatureNum = next;
-
-          this.groupList.forEach((e) => {
-            if (e.name == this.activeGroup) {
-              if (e.features[next]) {
-                if (e.features[next].assets[0].display_path) {
-                  this.imageName = /[^/]*$/.exec(
-                    e.features[next].assets[0].display_path
-                  )[0];
-                } else {
-                  this.imageName = /[^/]*$/.exec(
-                    e.features[next].assets[0].path
-                  )[0];
-                }
-              }
-            }
-          });
-        });
+      // this.groupsService.activeFeatureNum
+      //   .pipe(startWith(0))
+      //   .subscribe((next) => {
+      //     this.activeFeatureNum = next;
+      //
+      //     this.groupList.forEach((e) => {
+      //       if (e.name == this.activeGroup) {
+      //         if (e.features[next]) {
+      //           if (e.features[next].assets[0].display_path) {
+      //             this.imageName = /[^/]*$/.exec(
+      //               e.features[next].assets[0].display_path
+      //             )[0];
+      //           } else {
+      //             this.imageName = /[^/]*$/.exec(
+      //               e.features[next].assets[0].path
+      //             )[0];
+      //           }
+      //         }
+      //       }
+      //     });
+      //   });
 
       this.groupsService.tempGroup.subscribe((next) => {
         this.tempGroup = next;
@@ -233,8 +250,7 @@ export class ControlBarComponent implements OnInit {
       this.mapMouseLocation = next;
     });
 
-    // FIXME Maybe redundant //My advice, F*** around and find out -Ben
-    this.groupsService.setActiveFeatureNum(0);
+    // this.groupsService.setActiveFeatureNum(0);
   }
 
   clearAll() {
@@ -351,77 +367,85 @@ export class ControlBarComponent implements OnInit {
   addToGroupService(name: string) {
     this.groupName = name;
     this.groupsService.setActiveGroup(name);
-    // console.log(this.groupList);
-    // console.log(this.tempGroup);
+    // if (this.groupList.length != 1000) {
+    // TODO Make this better
+    if (!name || 0 === name.length) {
+      console.log('Invalid Name');
+    } else if (this.groups.get(name)) {
+      console.log('Existing Name');
+    } else {
+      const myRandColor: string = this.getRandomColor();
+      const newGroup: NewGroup = {
+        name: name,
+        color: myRandColor,
+        icon: 'fa-house-damage',
+      };
+      this.geoDataService.createGroupFeatures(
+        this.selectedProject.id,
+        this.tempGroup,
+        newGroup
+      );
+      // let myRandColor: string = this.getRandomColor();
+      // this.groupList.push({
+      //   name: name,
+      //   features: this.tempGroup,
+      //   color: myRandColor,
+      //   icon: 'fa-house-damage',
+      // });
+      // this.
+      // this.groupsService.addGroup(this.groupList);
+      // this.formsService.addGroup(this.groupName);
 
-    if (this.groupList.length != 1000) {
-      // TODO Make this better
-      if (!name || 0 === name.length) {
-        console.log('Invalid Name');
-      } else if (this.groupList.filter((e) => e.name === name).length) {
-        console.log('Existing Name');
-      } else {
-        // let myRandColor: string = this.getRandomColor();
-        // this.groupList.push({
-        //   name: name,
-        //   features: this.tempGroup,
-        //   color: myRandColor,
-        //   icon: 'fa-house-damage',
-        // });
-        // this.
-        // this.groupsService.addGroup(this.groupList);
-        // this.formsService.addGroup(this.groupName);
+      // console.log(this.groupList);
+      // console.log(this.tempGroup);
 
-        // console.log(this.groupList);
-        // console.log(this.tempGroup);
-
-        // TODO make this work for persistence //We do currently have persistance, so make of this what you will -Ben
-        for (let feat of this.tempGroup) {
-          let featProp = feat.properties;
-          // console.log(feat.properties);
-
-          if (featProp.group) {
-            const myRandColor: string = this.getRandomColor();
-            const newGroup: NewGroup = {
-              name: name,
-              color: myRandColor,
-              icon: 'fa-house-damage',
-            };
-            console.log(this.tempGroup);
-            console.log(newGroup);
-            this.geoDataService.createGroupFeatures(
-              this.selectedProject.id,
-              this.tempGroup,
-              newGroup
-            );
-            // featProp.group.push({
-            //   name: name,
-            //   color: myRandColor,
-            //   icon: 'fa-house-damage',
-            // });
-          } else {
-            console.log('This is actually happening');
-            let featPropList = (featProp.group = []);
-            // featPropList.push({
-            //   name: name,
-            //   color: myRandColor,
-            //   icon: 'fa-house-damage',
-            // });
-          }
-
-          // this.geoDataService.updateFeatureProperty(
-          //   this.selectedProject.id,
-          //
-          //   Number(feat.id),
-          //   featProp
-          // );
-          // console.log('In control-bar');
-          // console.log('Current feat: ' + feat.id);
-          // console.log('featProp: what gets sent to server');
-          // console.log(featProp);
-          // console.log('groupList: internal listing');
-        }
-      }
+      // TODO make this work for persistence //We do currently have persistance, so make of this what you will -Ben
+      // for (let feat of this.tempGroup) {
+      //   let featProp = feat.properties;
+      //   // console.log(feat.properties);
+      //
+      //   if (featProp.group) {
+      //     const myRandColor: string = this.getRandomColor();
+      //     const newGroup: NewGroup = {
+      //       name: name,
+      //       color: myRandColor,
+      //       icon: 'fa-house-damage',
+      //     };
+      //     console.log(this.tempGroup);
+      //     console.log(newGroup);
+      //     this.geoDataService.createGroupFeatures(
+      //       this.selectedProject.id,
+      //       this.tempGroup,
+      //       newGroup
+      //     );
+      //     // featProp.group.push({
+      //     //   name: name,
+      //     //   color: myRandColor,
+      //     //   icon: 'fa-house-damage',
+      //     // });
+      //   } else {
+      //     console.log('This is actually happening');
+      //     let featPropList = (featProp.group = []);
+      //     // featPropList.push({
+      //     //   name: name,
+      //     //   color: myRandColor,
+      //     //   icon: 'fa-house-damage',
+      //     // });
+      //   }
+      //
+      //   // this.geoDataService.updateFeatureProperty(
+      //   //   this.selectedProject.id,
+      //   //
+      //   //   Number(feat.id),
+      //   //   featProp
+      //   // );
+      //   // console.log('In control-bar');
+      //   // console.log('Current feat: ' + feat.id);
+      //   // console.log('featProp: what gets sent to server');
+      //   // console.log(featProp);
+      //   // console.log('groupList: internal listing');
+      // }
+      // }
     }
 
     this.tempGroup = [];
@@ -443,22 +467,28 @@ export class ControlBarComponent implements OnInit {
     }
     let showSidebar = !this.showSidebar;
     let showGroup = false;
-    this.groupsService.setActiveGroup(this.groupList[0].name);
+    const [initialGroupName] = this.groupsFeatures.keys();
+    this.groupsService.setActiveGroup(initialGroupName);
+    const activeGroupFeatures = this.groupsFeatures.get(initialGroupName);
+
+    // activeGroup.setF
     // const [firstGroup] = this.groups.values();
     // this.geoDataService.setActiveGroup(firstGroup);
 
-    let activeGroup = this.groupList.filter(
-      (group) => group.name == this.activeGroup
-    );
+    // let activeGroup = this.groupList.filter(
+    //   (group) => group.name == this.activeGroup
+    // );
 
-    if (activeGroup[0].features.length == 0) {
-      this.groupsService.setFeatureImagesExist(false);
-    } else {
+    if (activeGroupFeatures && activeGroupFeatures.length > 0) {
       this.groupsService.setFeatureImagesExist(true);
+      this.groupsService.setActiveGroupFeature(activeGroupFeatures[0]);
+      console.log(activeGroupFeatures[0]);
+    } else {
+      this.groupsService.setFeatureImagesExist(false);
     }
-
+    //
     this.reloadFeatures();
-    this.groupsService.setActiveFeatureNum(0);
+    // this.groupsService.setActiveFeatureNum(0);
     this.groupsService.setShowSidebar(showSidebar);
     this.groupsService.setShowGroup(showGroup);
     this.router.navigateByUrl('/tagger', { skipLocationChange: true });
@@ -469,26 +499,27 @@ export class ControlBarComponent implements OnInit {
     this.groupsService.setActivePane('tagger');
   }
 
-  // TODO Make it prettier
-  otherPath(dir: boolean) {
-    //Don't even ask, I don't know what we use this for... -Ben
-    let activeGroupObj = this.groupList.filter(
-      (realGroup) => realGroup.name === this.activeGroup
-    );
-
-    // right
-    if (dir) {
-      this.activeFeatureNum += 1;
-      this.activeFeatureNum =
-        this.activeFeatureNum % activeGroupObj[0].features.length;
+  getAssetDisplay() {
+    if (this.activeGroupFeature.assets[0].display_path) {
+      return /[^/]*$/.exec(this.activeGroupFeature.assets[0].display_path)[0];
     } else {
-      if (this.activeFeatureNum == 0) {
-        this.activeFeatureNum = activeGroupObj[0].features.length;
-      }
-      this.activeFeatureNum -= 1;
+      let apath = /[^/]*$/.exec(this.activeGroupFeature.assets[0].path)[0];
+      return apath.slice(0, 15) + '...';
     }
+  }
 
-    this.groupsService.setActiveFeatureNum(this.activeFeatureNum);
+  otherPath(dir: boolean) {
+    if (dir) {
+      this.activeGroupFeaturesRotate.push(
+        this.activeGroupFeaturesRotate.shift()
+      );
+    } else {
+      this.activeGroupFeaturesRotate.unshift(
+        this.activeGroupFeaturesRotate.pop()
+      );
+    }
+    this.activeGroupFeature = this.activeGroupFeaturesRotate[0];
+    this.groupsService.setActiveGroupFeature(this.activeGroupFeature);
   }
 
   getRandomColor() {

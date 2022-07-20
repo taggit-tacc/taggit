@@ -15,14 +15,11 @@ import { Feature } from '@turf/turf';
 })
 export class SelectImageComponent implements OnInit, OnDestroy {
   groups$: Subscription;
-  activeFeatureNum$: Subscription;
   activeGroup$: Subscription;
 
   public selectedProject: Project;
-  groupList: Array<any> = [];
   activeGroup: string;
-  activeFeatureNum: number;
-  activeFeatureId: string | number;
+  activeGroupFeature: Feature;
   showSidebar: boolean;
   showSubitem: boolean = true;
   tempGroup: Array<Feature>;
@@ -40,22 +37,13 @@ export class SelectImageComponent implements OnInit, OnDestroy {
       this.selectedProject = next;
     });
 
-    this.groups$ = this.groupsService.groups.subscribe((next) => {
-      this.groupList = next;
-    });
-
     this.geoDataService.groupsFeatures.subscribe((next) => {
       this.groupsFeatures = next;
     });
 
-    this.activeFeatureNum$ = this.groupsService.activeFeatureNum.subscribe(
-      (next) => {
-        this.activeFeatureNum = next;
-      }
-    );
-
-    this.groupsService.activeFeatureId.subscribe((next) => {
-      this.activeFeatureId = next;
+    this.groupsService.activeGroupFeature.subscribe((next) => {
+      // console.log(next);
+      this.activeGroupFeature = next;
     });
 
     this.activeGroup$ = this.groupsService.activeGroup.subscribe((next) => {
@@ -65,34 +53,14 @@ export class SelectImageComponent implements OnInit, OnDestroy {
 
   getActiveFeatures() {
     return this.groupsFeatures.get(this.activeGroup);
-    // let activeGroupObj = this.groupList.filter(realGroup => realGroup.name === this.activeGroup);
-    // return activeGroupObj[0].features;
   }
 
-  jumpToImage(featureId: string | number) {
-    this.groupsService.setActiveFeatureId(featureId);
-    // let index = 0;
-    // this.groupList.forEach((e) => {
-    //   if (e.name == this.activeGroup) {
-    //     index = e.features.indexOf(asset);
-    //   }
-    // });
-    // this.geoDataService.getFeatures(this.selectedProject.id);
-    // this.groupsService.setActiveFeatureNum(index);
+  jumpToImage(feat: Feature) {
+    this.groupsService.setActiveGroupFeature(feat);
   }
 
-  isActiveFeature(featureId: string | number) {
-    // console.log(this.activeFeatureId === feat.id);
-    // return this.activeFeatureId === feat.id;
-    return this.activeFeatureId === featureId;
-    // return true;
-    // let index = 0;
-    // this.groupList.forEach((e) => {
-    //   if (e.name == this.activeGroup) {
-    //     index = e.features.indexOf(asset);
-    //   }
-    // });
-    // return this.activeFeatureNum == index;
+  isActiveFeature(feature: Feature) {
+    return this.activeGroupFeature.id === feature.id;
   }
 
   // TODO: ensure ui is updated from getFeatures()
@@ -183,7 +151,6 @@ export class SelectImageComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.groups$.unsubscribe();
-    this.activeFeatureNum$.unsubscribe();
     this.activeGroup$.unsubscribe();
   }
 

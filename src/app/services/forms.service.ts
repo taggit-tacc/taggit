@@ -1,6 +1,6 @@
 import { Component, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
-import { Group } from '../models/models';
+import { Group, NewGroup } from '../models/models';
 import { map, first } from 'rxjs/operators';
 import { GroupsService } from './groups.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -27,6 +27,7 @@ export class FormsService {
 
   private activeGroup;
   private groupList;
+  private groups: Map<string, NewGroup>;
   private featureList: Array<any> = [];
   features: FeatureCollection;
   private selectedProject;
@@ -47,12 +48,12 @@ export class FormsService {
       this.groupList = next;
     });
 
-    this.projectsService.activeProject.subscribe((next) => {
-      this.selectedProject = next;
+    this.geoDataService.groups.subscribe((next) => {
+      this.groups = next;
     });
 
-    this.groupsService.activeFeatureId.subscribe((next) => {
-      this.selectedFeatureID = next;
+    this.projectsService.activeProject.subscribe((next) => {
+      this.selectedProject = next;
     });
 
     this.groupsService.activeFeature.subscribe((next) => {
@@ -135,55 +136,23 @@ export class FormsService {
   //Inputs:
   //color:string A 7 digit hexadecimal string (#RRGGBB) passed in from a color tag
   //This method accesses group services to retrive the current group's icon as well
-  saveStyles(selectedColor: string, currentID: number) {
-    let icon: string;
-    let payload;
-    let style;
+  saveStyles(
+    projectId: number,
+    selectedColor: string,
+    groupName: string,
+    feature: Feature
+  ) {
+    const group = this.groups.get(groupName);
+    group.color = this.checkDefault(selectedColor);
 
-    //A check to see if the color isn't supposed to be changed
-    selectedColor = this.checkDefault(selectedColor);
+    const style = {
+      faIcon: group.icon,
+      color: group.color,
+    };
 
-    //Cycles through each group until it finds one that matches the active group
-    this.groupList.forEach((group) => {
-      if (group.name === this.activeGroup) {
-        icon = group.icon;
+    this.geoDataService.updateGroupFeatures(projectId, [feature], group);
 
-        //Creates a temporary group with a copy of the current groups info
-        let tempGroup = [
-          {
-            name: group.name,
-            color: group.color,
-            icon: group.icon,
-          },
-        ];
-
-        //And adds the temp group to a payload along with the necessary style infromation
-        payload = {
-          group: tempGroup,
-          style: {
-            faIcon: icon,
-            color: selectedColor,
-          },
-        };
-
-        style = {
-          faIcon: icon,
-          color: selectedColor,
-        };
-      }
-    });
-
-    //Finally, sends the payload and projectID to GeoAPI to update the feature
-    this.geoDataService.updateFeatureProperty(
-      this.selectedProject.id,
-      currentID,
-      payload
-    );
-    this.geoDataService.updateFeatureStyle(
-      this.selectedProject.id,
-      currentID,
-      style
-    );
+    this.geoDataService.updateFeatureStyle(projectId, feature.id, style);
   }
 
   addGroup(groupName: string) {

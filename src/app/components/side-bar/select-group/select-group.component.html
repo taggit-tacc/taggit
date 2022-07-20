@@ -4,7 +4,7 @@
 	<!-- TODO redundant functionality radio is just for style -->
 	<form class="boxed">
 	  <!-- <div *ngFor="let group of groupList" (click)="selectGroupForm(group.name)" class="box form"> -->
-	  <div *ngFor="let group of groupList | keyvalue" (click)="selectGroupForm(group.value)" class="box form">
+	  <div *ngFor="let group of groups | keyvalue" (click)="selectGroupForm(group.value)" class="box form">
 		<input type="radio" [id]="group.key" [value]="group.key" name="skills" [checked]="isChecked(group.key)">
 		<label class="group-container" style="cursor: pointer" [for]="group.key">
 		  <div class="name-group">

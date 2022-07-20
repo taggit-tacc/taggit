@@ -22,15 +22,16 @@ export class GroupsService {
   private _activeFeature: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public activeFeature: Observable<any> = this._activeFeature.asObservable();
 
+  private _activeGroupFeature: BehaviorSubject<any> = new BehaviorSubject<any>(
+    null
+  );
+  public activeGroupFeature: Observable<any> =
+    this._activeGroupFeature.asObservable();
+
   private _activeGroup: BehaviorSubject<string> = new BehaviorSubject<string>(
     null
   );
   public activeGroup: Observable<string> = this._activeGroup.asObservable();
-
-  private _activeFeatureNum: BehaviorSubject<number> =
-    new BehaviorSubject<number>(null);
-  public activeFeatureNum: Observable<number> =
-    this._activeFeatureNum.asObservable();
 
   private _unselectAll: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public unselectAll: Observable<boolean> = this._unselectAll.asObservable();
@@ -40,11 +41,6 @@ export class GroupsService {
   );
   public featureImagesExist: Observable<boolean> =
     this._featureImagesExist.asObservable();
-
-  private _activeFeatureId: BehaviorSubject<string | number> =
-    new BehaviorSubject<number>(null);
-  public activeFeatureId: Observable<string | number> =
-    this._activeFeatureId.asObservable();
 
   private _activePane: BehaviorSubject<string> = new BehaviorSubject<string>(
     null
@@ -148,6 +144,12 @@ export class GroupsService {
     this._activeFeature.next(feat);
   }
 
+  setActiveGroupFeature(feat: any): void {
+    console.log('setttied');
+    console.log(feat);
+    this._activeGroupFeature.next(feat);
+  }
+
   setActiveGroup(groupName: string): void {
     // console.log(feat.assets[0].path);
     this._activeGroup.next(groupName);
@@ -156,14 +158,6 @@ export class GroupsService {
   setActivePane(pane: string): void {
     // console.log(feat.assets[0].path);
     this._activePane.next(pane);
-  }
-
-  setActiveFeatureNum(num: number): void {
-    this._activeFeatureNum.next(num);
-  }
-
-  setActiveFeatureId(id: string | number): void {
-    this._activeFeatureId.next(id);
   }
 
   setTagFeatureGroup(groupName: string, featureId: number, payload: any): void {

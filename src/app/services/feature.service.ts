@@ -175,30 +175,20 @@ export class FeatureService {
     this.saveTags(this.tagList); //saves tags to backend
   }
 
-  createTag(newTag: tags, activeGroup: string, groupList: Array<any>): void {
-    this.featureCollection.features.forEach((listFeature) => {
-      //Loop through every feature in the project
-      if (listFeature.properties.group) {
-        listFeature.properties.group.forEach((group) => {
-          //Loop through every group attached to the feature
-          //NOTE: While it is tempting to just edit the passed in tag, this causes a strange glitch
-          if (group.name == activeGroup) {
-            let tag: tags = {
-              extra: newTag.extra,
-              feature: listFeature.id,
-              groupName: newTag.groupName,
-              label: newTag.label,
-              options: newTag.options,
-              type: newTag.type,
-            };
-            this.tagList.push(tag);
-          } // end of if statement
-        }); // end of for each group
-      } // end of if prop group
-    }); // end of for each listFeature
-
+  createTag(newTag: tags, featureGroups: Feature[]): void {
+    featureGroups.forEach((feat: Feature) => {
+      let tag: tags = {
+        extra: newTag.extra,
+        feature: feat.id,
+        groupName: newTag.groupName,
+        label: newTag.label,
+        options: newTag.options,
+        type: newTag.type,
+      };
+      this.tagList.push(tag);
+    });
     this.saveTags(this.tagList);
-  } // end of creatTag function
+  }
 
   bulkTagDelete(tagList: Array<any>): void {
     tagList.forEach((delTag) => {
@@ -211,7 +201,7 @@ export class FeatureService {
   updateExtra(
     change: any,
     componentID: number,
-    feature: number,
+    feature: Feature,
     groupName: string,
     label: string,
     type: string
@@ -220,13 +210,13 @@ export class FeatureService {
     this.tagList.forEach((tag) => {
       // updating notes
       if (
-        tag.feature === feature &&
+        tag.feature === feature.id &&
         tag.groupName === groupName &&
         tag.type === type
       ) {
         const index = tag.extra.findIndex(
           (item) =>
-            item['id'] === feature &&
+            item['id'] === feature.id &&
             item['compID'] === componentID &&
             item['groupName'] === groupName &&
             item['label'] === label
@@ -240,7 +230,7 @@ export class FeatureService {
         } else {
           nOption = {
             option: change,
-            id: feature,
+            id: feature.id,
             groupName: groupName,
             compID: componentID,
             label: label,
@@ -255,7 +245,7 @@ export class FeatureService {
 
   updateChecked(
     opt: object,
-    id: number,
+    feature: Feature,
     group: string,
     label: string,
     check: string
@@ -264,10 +254,10 @@ export class FeatureService {
     this.tagList.forEach((tag) => {
       if (check == 'create') {
         if (tag != undefined) {
-          if (tag.feature === id && tag.groupName === group) {
+          if (tag.feature === feature.id && tag.groupName === group) {
             nOption = {
               option: opt['key'],
-              id: id,
+              id: feature.id,
               group: group,
               label: label,
             };
@@ -277,11 +267,11 @@ export class FeatureService {
         }
       } // end of create
       else {
-        if (tag.feature === id && tag.groupName === group) {
+        if (tag.feature === feature.id && tag.groupName === group) {
           const index = tag.extra.findIndex(
             (item) =>
               item['option'] === opt['key'] &&
-              item['id'] === id &&
+              item['id'] === feature.id &&
               item['group'] === group &&
               item['label'] === label
           );

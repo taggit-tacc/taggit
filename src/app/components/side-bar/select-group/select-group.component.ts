@@ -24,8 +24,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
   public selectedProject: Project;
 
   selectedGroup: string;
-  // groupList: Array<any>;
-  groupList: Map<string, NewGroup>;
+  groups: Map<string, NewGroup>;
   groupsFeatures: Map<string, any>;
   showSidebar: boolean;
   activeGroup: string;
@@ -90,13 +89,9 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
     this.projectsService.activeProject.subscribe((next) => {
       this.selectedProject = next;
     });
-    //
-    // this.groups$ = this.groupsService.groups.subscribe((next) => {
-    //   this.groupList = next;
-    // });
 
     this.groups$ = this.geoDataService.groups.subscribe((next) => {
-      this.groupList = next;
+      this.groups = next;
     });
 
     this.geoDataService.groupsFeatures.subscribe((next) => {
@@ -114,11 +109,9 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
   }
 
   selectGroupForm(group: NewGroup) {
-    // console.log(group);
-    // this.geoDataService.getFeatures(this.selectedProject.id);
     this.groupsService.setActiveGroup(group.name);
-    this.groupsService.setActiveFeatureId(
-      this.groupsFeatures.get(group.name)[0].id
+    this.groupsService.setActiveGroupFeature(
+      this.groupsFeatures.get(group.name)[0]
     );
     // TODO: Change to this
     // this.geoDataService.setActiveGroup(group);
@@ -140,6 +133,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
     this.dialog.open(template);
   }
 
+  // TODO: ensure ui is updated from getFeatures()
   deleteGroup(groupName: string) {
     const features = this.groupsFeatures.get(groupName);
     this.geoDataService.deleteGroupFeatures(

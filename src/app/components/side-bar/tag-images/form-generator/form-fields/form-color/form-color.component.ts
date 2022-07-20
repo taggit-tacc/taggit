@@ -4,6 +4,8 @@ import { Subscription } from 'rxjs';
 import { FeatureService } from 'src/app/services/feature.service';
 import { FormsService } from 'src/app/services/forms.service';
 import { GroupsService } from 'src/app/services/groups.service';
+import { Feature, Project } from 'src/app/models/models';
+import { ProjectsService } from 'src/app/services/projects.service';
 
 @Component({
   selector: 'app-form-color',
@@ -18,29 +20,33 @@ export class FormColorComponent implements OnInit {
 
   public chosenTag: string;
   public chosenColor = "#ffffff";
-  private activeFeatureId$: Subscription;
-  activeFeatureId: number;
+  activeGroupFeature: Feature;
+  activeProject: Project;
 
   activeGroup: string;
-  private activeGroup$: Subscription;
 
   constructor(private formsService: FormsService,
     private groupsService: GroupsService,
+    private projectsService: ProjectsService,
     private featureService: FeatureService) { }
 
   ngOnInit() {
-    this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe((next) => {
-      this.activeFeatureId = next;
+    this.groupsService.activeGroupFeature.subscribe((next) => {
+      this.activeGroupFeature = next;
     });
 
-    this.activeGroup$ = this.activeGroup$ = this.groupsService.activeGroup.subscribe((next) => {
+    this.groupsService.activeGroup.subscribe((next) => {
       this.activeGroup = next;
+    });
+
+    this.projectsService.activeProject.subscribe((next) => {
+      this.activeProject = next;
     });
 
     let index
     this.formsService.getSelectedRadio().forEach(opt=> {
       if(opt != undefined){
-        index = opt.findIndex(item => item.id === this.activeFeatureId && item.compID === 1 && item.groupName === this.activeGroup && item.label === this.form['label']);
+        index = opt.findIndex(item => item.id === this.activeGroupFeature.id && item.compID === 1 && item.groupName === this.activeGroup && item.label === this.form['label']);
         if (index > -1){
           this.chosenTag = opt[index].option
         }
@@ -52,7 +58,7 @@ export class FormColorComponent implements OnInit {
   }
 
   updateCheckedTag(){ 
-    this.formsService.saveStyles(this.chosenColor, this.activeFeatureId)
-    this.featureService.updateExtra(this.chosenTag, 1, this.activeFeatureId, this.activeGroup, this.form['label'], "color"); }
+    this.formsService.saveStyles(this.activeProject.id, this.chosenColor, this.activeGroup, this.activeGroupFeature)
+    this.featureService.updateExtra(this.chosenTag, 1, this.activeGroupFeature, this.activeGroup, this.form['label'], "color"); }
 
 }

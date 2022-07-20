@@ -18,7 +18,7 @@
 	  <div class="subitem-scroll">
 		  <div *ngFor = "let tag of tagList">
 			<div *ngIf = "tag.groupName == activeGroup">
-				<div *ngIf = "tag.feature == activeFeatureId">
+				<div *ngIf = "tag.feature == activeGroupFeature.id">
 			<div class="form-item-container">  
 				<div class="name-group"> {{tag.label}} ({{tag.type}})</div>
 				

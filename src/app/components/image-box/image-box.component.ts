@@ -31,7 +31,7 @@ export class ImageBoxComponent implements OnInit {
   status: boolean = false; //Controls the whether or not an image box is selected or not
   hasGroup: boolean = false;
   colors: Array<string> = [];
-  groupList: Array<any>;
+  groups: Map<string, NewGroup>;
   coordinates: Array<any>;
   containingGroupList: Array<any>;
   currentGroup: string = 'hello';
@@ -76,38 +76,42 @@ export class ImageBoxComponent implements OnInit {
       this.selectedProject = next;
     });
 
-    this.groupsService.groups.subscribe((next) => {
-      this.groupList = next;
-
-      if (
-        this.groupList != null &&
-        this.groupList.length > 0 &&
-        this.featureSource != null
-      ) {
-        // console.log(this.groupList)
-
-        this.groupList.forEach((e) => {
-          // console.log(e)
-          e.features.forEach((c) => {
-            if (c.id == this.feature.id) {
-              if (!this.colors.includes(e.color)) {
-                this.colors.push(e.color);
-                //console.log(e.color);
-              }
-              this.hasGroup = true;
-            }
-          });
-        });
-      }
+    this.geoDataService.groups.subscribe((next) => {
+      this.groups = next;
     });
+
+    // this.groupsService.groups.subscribe((next) => {
+    //   this.groupList = next;
+    //
+    //   if (
+    //     this.groupList != null &&
+    //     this.groupList.length > 0 &&
+    //     this.featureSource != null
+    //   ) {
+    //     // console.log(this.groupList)
+    //
+    //     this.groupList.forEach((e) => {
+    //       // console.log(e)
+    //       e.features.forEach((c) => {
+    //         if (c.id == this.feature.id) {
+    //           if (!this.colors.includes(e.color)) {
+    //             this.colors.push(e.color);
+    //             //console.log(e.color);
+    //           }
+    //           this.hasGroup = true;
+    //         }
+    //       });
+    //     });
+    //   }
+    // });
 
     this.groupsService.tempGroup.subscribe((next) => {
       this.tempGroup = next;
     });
 
-    this.groupsService.activeGroup.subscribe((next) => {
-      this.activeGroup = next;
-    });
+    // this.groupsService.activeGroup.subscribe((next) => {
+    //   this.activeGroup = next;
+    // });
 
     this.groupsService.unselectAll.subscribe((next) => {
       this.unselectAll = next;
@@ -217,10 +221,10 @@ export class ImageBoxComponent implements OnInit {
     this.dialog.open(template);
   }
 
-  deleteFromGroup(feat: Feature, group: NewGroup) {
+  deleteFromGroup(group: NewGroup) {
     this.geoDataService.deleteGroupFeatures(
       this.selectedProject.id,
-      [feat],
+      [this.feature],
       group.name
     );
     // // console.log(this.groupList);
@@ -257,89 +261,92 @@ export class ImageBoxComponent implements OnInit {
   }
 
   selectGroupForm(name: string, feat: Feature) {
-    let color = '';
-    let icon = '';
-
-    this.groupsService.setActiveFeatureNum(0);
-    this.groupList.forEach((e) => {
-      if (e.name == name) {
-        //   console.log(this.feature)
-        e.features.push(this.feature);
-        color = e.color;
-        icon = e.icon;
-      }
-    });
-
-    let featProp = feat.properties;
-    if (featProp.group) {
-      let featGroupList = featProp.group.map((e) => {
-        return e.name;
-      });
-
-      if (!featGroupList.includes(name)) {
-        featProp.group.push({
-          name: name,
-          color: color,
-          icon: icon,
-        });
-      }
-    } else {
-      featProp.group = [];
-      featProp.group.push({
-        name: name,
-        color: color,
-        icon: icon,
-      });
-    }
-
-    this.groupList.forEach((e) => {
-      if (e.name == this.activeGroup) {
-        this.tempGroup = e.features;
-      }
-    });
-
-    for (let tag of this.tagList) {
-      if (tag.feature === this.tempGroup[0].id && tag.groupName === name) {
-        let formItem: tags = {
-          type: tag.type,
-          groupName: name,
-          label: tag.label,
-          // value: this.formValue,
-          // required: this.formRequired,
-          options: tag.options,
-          feature: this.feature.id,
-          extra: [],
-        };
-        this.formsService.saveTag(this.activeGroup, formItem, formItem.label);
-      }
-    }
-
-    this.geoDataService.updateFeatureProperty(
+    this.geoDataService.createGroupFeatures(
       this.selectedProject.id,
-      Number(feat.id),
-      featProp
+      [feat],
+      this.groups.get(name)
     );
+    // let color = '';
+    // let icon = '';
 
-    this.groupsService.addGroup(this.groupList);
+    // this.groupsService.setActiveFeatureNum(0);
+    // this.groupList.forEach((e) => {
+    //   if (e.name == name) {
+    //     //   console.log(this.feature)
+    //     e.features.push(this.feature);
+    //     color = e.color;
+    //     icon = e.icon;
+    //   }
+    // });
+
+    // let featProp = feat.properties;
+    // if (featProp.group) {
+    //   let featGroupList = featProp.group.map((e) => {
+    //     return e.name;
+    //   });
+    //
+    //   if (!featGroupList.includes(name)) {
+    //     featProp.group.push({
+    //       name: name,
+    //       color: color,
+    //       icon: icon,
+    //     });
+    //   }
+    // } else {
+    //   featProp.group = [];
+    //   featProp.group.push({
+    //     name: name,
+    //     color: color,
+    //     icon: icon,
+    //   });
+    // }
+
+    // this.groupList.forEach((e) => {
+    //   if (e.name == this.activeGroup) {
+    //     this.tempGroup = e.features;
+    //   }
+    // });
+
+    // for (let tag of this.tagList) {
+    // if (tag.feature === this.tempGroup[0].id && tag.groupName === name) {
+    //   let formItem: tags = {
+    //     type: tag.type,
+    //     groupName: name,
+    //     label: tag.label,
+    //     // value: this.formValue,
+    //     // required: this.formRequired,
+    //     options: tag.options,
+    //     feature: this.feature.id,
+    //     extra: [],
+    //   };
+    //   this.formsService.saveTag(this.activeGroup, formItem, formItem.label);
+    // }
+    // }
+
+    // this.geoDataService.updateFeatureProperty(
+    //   this.selectedProject.id,
+    //   Number(feat.id),
+    //   featProp
+    // );
+
+    // this.groupsService.addGroup(this.groupList);
     //Yes, I know there are two identical lines here. It doesn't work unless it does it twice
     //I don't know why that is, but if you can figure out a better way, go ahead.
-    this.geoDataService.getFeatures(Number(feat.project_id));
-    this.geoDataService.getFeatures(Number(feat.project_id));
+    // this.geoDataService.getFeatures(Number(feat.project_id));
+    // this.geoDataService.getFeatures(Number(feat.project_id));
   }
 
-  addGroups(name: string) {
-    this.tempGroup.forEach((feat) => {
-      this.selectGroupForm(name, feat);
-    });
+  addGroup(name: string) {
+    this.selectGroupForm(name, this.feature);
     this.groupsService.setUnselectAll(true);
     this.scrollService.setScrollRestored(true);
   }
 
-  getGroupNameFromColor(color: string) {
-    this.groupList.forEach((e) => {
-      if (e.color == color) {
-        this.currentGroup = e.name;
-      }
-    });
-  }
+  // getGroupNameFromColor(color: string) {
+  //   this.groupList.forEach((e) => {
+  //     if (e.color == color) {
+  //       this.currentGroup = e.name;
+  //     }
+  //   });
+  // }
 }

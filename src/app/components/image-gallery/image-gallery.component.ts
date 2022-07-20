@@ -27,7 +27,6 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   // FIXME feature collection giving me an error when trying to access assets
   // features: any;
   tempGroup: Array<Feature>;
-  groupList: Array<any>;
   // showGroupBar: boolean;
 
   public projects: Project[];
@@ -44,7 +43,8 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   scrollSum: number = 15;
   activeGroup: string;
   activeFeature: Feature;
-  activeFeatureNum: number;
+  activeGroupFeature: Feature;
+  // activeFeatureNum: number;
   featurePath: string;
   loaded: boolean;
   groupsFeatures: Map<string, any>;
@@ -72,8 +72,6 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
     // this.activeFeatureNum = 0;
     // FIXME feature collection giving me an error when trying to access assets
     // this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
-
-    this.geoDataService.features.subscribe();
 
     this.geoDataService.loaded.subscribe(
       (e) => {
@@ -153,16 +151,17 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
 
     this.geoDataService.activeFeature.subscribe((next) => {
       if (next) {
+        console.log(next);
         this.activeFeature = next;
       }
     });
 
-    this.groupsService.groups.subscribe((next) => {
-      this.groupList = next;
-    });
-
     this.groupsService.activeGroup.subscribe((next) => {
       this.activeGroup = next;
+    });
+
+    this.groupsService.activeGroupFeature.subscribe((next) => {
+      this.activeGroupFeature = next;
     });
 
     this.groupsService.featureImagesExist.subscribe((next) => {
@@ -177,10 +176,6 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
       this.showGroup = next;
     });
 
-    this.groupsService.activeFeatureNum.pipe(startWith(0)).subscribe((next) => {
-      this.activeFeatureNum = next;
-    });
-
     this.groupsService.showSidebar.subscribe((next) => {
       this.showSidebar = next;
       // this.status = !this.status;
@@ -190,37 +185,14 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
         this.status = false;
       }
     });
-
-    this.groupsService.setActiveFeatureNum(0);
   }
 
-  getPath(): string {
-    // let featureSource = this.environment.apiUrl + '/assets/' + this.activeFeature.assets[0].path;
-    let activeGroupObj = this.groupList.filter(
-      (realGroup) => realGroup.name === this.activeGroup
-    );
-    if (activeGroupObj[0] != undefined) {
-      if (
-        activeGroupObj[0].features[this.activeFeatureNum].assets[0].path ==
-        undefined
-      ) {
-        this.groupsService.setActiveFeatureNum(0);
-        // this.groupsService.setActiveFeatureNum(0);
-        if (activeGroupObj[0].features[this.activeFeatureNum] == undefined) {
-          this.groupsService.setActiveGroup(this.groupList[0].name);
-        }
-      }
-    }
-    let featureSource =
+  getPath() {
+    return (
       this.environment.apiUrl +
       '/assets/' +
-      activeGroupObj[0].features[this.activeFeatureNum].assets[0].path;
-
-    // this.groupsService.setActiveFeatureId(
-    //   activeGroupObj[0].features[this.activeFeatureNum].id
-    // );
-    featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
-    return featureSource;
+      this.activeGroupFeature.assets[0].path.replace(/([^:])(\/{2,})/g, '$1/')
+    );
   }
 
   appendSum() {
