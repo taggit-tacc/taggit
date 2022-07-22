@@ -1,10 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 @import '~normalize.css';
-@import "~leaflet/dist/leaflet.css";
-@import "~@fortawesome/fontawesome-free/css/all.css";
+@import '~leaflet/dist/leaflet.css';
+@import '~@fortawesome/fontawesome-free/css/all.css';
 // @import "~foundation-sites/dist/css/foundation.css"
 @import url('https://fonts.googleapis.com/css?family=Raleway');
-@import "variables.scss";
+@import 'variables.scss';
 
 // @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
@@ -13,12 +13,18 @@
 @import 'theme.scss';
 @import '~ngx-toastr/toastr.css';
 
-
 @include angular-material-theme($theme);
 
 // @import "~ngx-foundation/dist/css/ngx-foundation.css";
 
-html, body, h1, h2, h3, h4, h5, h6 {
+html,
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: Roboto;
   margin: 0;
   padding: 0;
@@ -30,9 +36,9 @@ html, body, h1, h2, h3, h4, h5, h6 {
 
 ul.dropdown {
   li {
-	&:hover {
-	  backgroud-color: #d3d3d3;
-	}
+    &:hover {
+      backgroud-color: #d3d3d3;
+    }
   }
 }
 
@@ -40,11 +46,12 @@ ul.dropdown {
   cursor: pointer;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
-.toast-top-right{
+.toast-top-right {
   margin-top: 40px;
 }
 
@@ -63,32 +70,32 @@ html, body {
 }
 
 .break {
-  word-break: break-word
+  word-break: break-word;
 }
 
 .marker-cluster {
   div {
-	width: 25px;
-	height: 25px;
-	background-color: #4f8677;
-	border: 3px solid #fff;
-	text-align: center;
-	border-radius: 50%;
-	line-height: 19px;
-	color: #fff;
+    width: 25px;
+    height: 25px;
+    background-color: #4f8677;
+    border: 3px solid #fff;
+    text-align: center;
+    border-radius: 50%;
+    line-height: 19px;
+    color: #fff;
   }
 }
 
 [appDropdown] {
-  cursor: pointer
+  cursor: pointer;
 }
 
 .no-margin {
-  margin: 0
+  margin: 0;
 }
 
 .no-padding {
-  padding: 0
+  padding: 0;
 }
 
 .dock-panel {
@@ -97,16 +104,16 @@ html, body {
   flex-direction: column;
   height: calc(100vh - 70px);
   .dock-panel-title {
-	color: $lightBlue;
-	font-size: 1.25em;
+    color: $lightBlue;
+    font-size: 1.25em;
   }
   .dock-panel-content {
-	padding: 5px;
-	overflow-y: scroll;
-	height: calc(100% - 85px);
+    padding: 5px;
+    overflow-y: scroll;
+    height: calc(100% - 85px);
   }
   .dock-panel-controls {
-	bottom: 0;
+    bottom: 0;
   }
 }
 
@@ -114,5 +121,11 @@ app-map {
   z-index: 1;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}

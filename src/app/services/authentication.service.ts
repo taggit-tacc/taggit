@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthToken } from '../models/models';
-import {environment} from '../../environments/environment';
-import {Observable, ReplaySubject} from 'rxjs';
-import {Router} from '@angular/router';
+import { environment } from '../../environments/environment';
+import { Observable, ReplaySubject } from 'rxjs';
+import { Router } from '@angular/router';
 
 export class AuthenticatedUser {
   public readonly username: string;
@@ -14,7 +14,6 @@ export class AuthenticatedUser {
     this.username = username;
     this.email = email;
   }
-
 }
 
 interface OpenIDUser {
@@ -22,12 +21,12 @@ interface OpenIDUser {
   email: string;
 }
 
-
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-
-  private _currentUser: ReplaySubject<AuthenticatedUser> = new ReplaySubject<AuthenticatedUser>(1);
-  public readonly currentUser: Observable<AuthenticatedUser> = this._currentUser.asObservable();
+  private _currentUser: ReplaySubject<AuthenticatedUser> =
+    new ReplaySubject<AuthenticatedUser>(1);
+  public readonly currentUser: Observable<AuthenticatedUser> =
+    this._currentUser.asObservable();
   userToken: AuthToken;
   private LS_TOKEN_KEY = 'hazmapperToken';
   private LS_USER_KEY = 'hazmapperUser';
@@ -58,7 +57,6 @@ export class AuthService {
     window.location.href = AUTH_URL;
   }
 
-
   /**
    * Checks to make sure that the user has a token and the token is not expired;
    */
@@ -84,16 +82,13 @@ export class AuthService {
     const userStr = localStorage.getItem(this.LS_USER_KEY);
     const user = JSON.parse(userStr);
     if (user !== null) {
-      this._currentUser.next(
-        new AuthenticatedUser(user.username, user.email)
-      );
+      this._currentUser.next(new AuthenticatedUser(user.username, user.email));
     } else {
-      this.http.get<OpenIDUser>(INFO_URL).subscribe(resp => {
+      this.http.get<OpenIDUser>(INFO_URL).subscribe((resp) => {
         const u = new AuthenticatedUser(resp.name, resp.email);
         localStorage.setItem(this.LS_USER_KEY, JSON.stringify(u));
         this._currentUser.next(u);
       });
     }
   }
-
 }

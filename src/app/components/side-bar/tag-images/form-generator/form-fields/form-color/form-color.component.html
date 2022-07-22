@@ -1,7 +1,20 @@
-<div  class="form-check form-check">
+<div class="form-check form-check">
   <label class="form-check-label">
-      <input class="form-check-input" [(ngModel)]="chosenTag" type="radio" id="inlineCheckbox3" name={{label}} value={{field.label}} (change)="updateCheckedTag()" /> 
-          {{field.label}}
-      <input class="form-check-input" [(ngModel)]="chosenColor" type="color" id="inlineCheckbox3"/>
+    <input
+      class="form-check-input"
+      [(ngModel)]="chosenTag"
+      type="radio"
+      id="inlineCheckbox3"
+      name="{{ label }}"
+      value="{{ field.label }}"
+      (change)="updateCheckedTag()"
+    />
+    {{ field.label }}
+    <input
+      class="form-check-input"
+      [(ngModel)]="chosenColor"
+      type="color"
+      id="inlineCheckbox3"
+    />
   </label>
 </div>

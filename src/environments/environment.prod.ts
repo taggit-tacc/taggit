@@ -1,4 +1,4 @@
-import { EnvironmentType } from "./environmentType";
+import { EnvironmentType } from './environmentType';
 
 export interface AppEnvironment {
   production: boolean;
@@ -16,5 +16,5 @@ export const environment: AppEnvironment = {
   //   apiUrl: 'https://localhost:8000',
   // clientId: 'RMCJHgW9CwJ6mKjhLTDnUYBo9Hka',
   baseHref: '/',
-  backend: EnvironmentType.Production
+  backend: EnvironmentType.Production,
 };

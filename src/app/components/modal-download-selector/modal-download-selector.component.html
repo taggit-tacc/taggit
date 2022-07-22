@@ -1,50 +1,95 @@
-<h4> Select Files </h4>
-<small><em> If no folder is selected, the file will be saved in the root of your selected system. </em></small>
-<hr>
+<h4>Select Files</h4>
+<small
+  ><em>
+    If no folder is selected, the file will be saved in the root of your
+    selected system.
+  </em></small
+>
+<hr />
 <select (ngModelChange)="selectSystem($event)" [(ngModel)]="selectedSystem">
-	<option [ngValue]="myDataSystem"> My Data </option>
-	<option [ngValue]="communityDataSystem"> Community Data</option>
-	<option [ngValue]="publishedDataSystem"> Published Data</option>
-	<optgroup label="My Galleries">
-		<option *ngFor="let project of projects" [ngValue]="project">{{project.description}}</option>
-	</optgroup>
+  <option [ngValue]="myDataSystem">My Data</option>
+  <option [ngValue]="communityDataSystem">Community Data</option>
+  <option [ngValue]="publishedDataSystem">Published Data</option>
+  <optgroup label="My Galleries">
+    <option *ngFor="let project of projects" [ngValue]="project">
+      {{ project.description }}
+    </option>
+  </optgroup>
 </select>
-<div class="fileslisting"  infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="100" [scrollWindow]="false" (scrolled)="getFiles()">
-	<div class="grid-x file-row" *ngFor="let file of filesList" [ngClass]="{'selected':selectedFiles.has(file.path)}">
-		<div class="clickable" (dblclick)="browse(file)">
-			<i class="fas fa-folder" *ngIf="file.type === 'dir'" ></i>
-			<i class="far fa-file" *ngIf="file.type !== 'dir'"></i>
-			<span > {{ file.name }} </span>
-		</div>
-		<div class="size">
-			{{file.length | filesize }}
-		</div>
-	</div>
-	<div class="grid-x" *ngIf="inProgress">
-		<div class="cell medium-12">
-		  <i class="fas fa-spin fa-atom"></i>
-		</div>
-	  </div>
-
+<div
+  class="fileslisting"
+  infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollThrottle]="100"
+  [scrollWindow]="false"
+  (scrolled)="getFiles()"
+>
+  <div
+    class="grid-x file-row"
+    *ngFor="let file of filesList"
+    [ngClass]="{ selected: selectedFiles.has(file.path) }"
+  >
+    <div class="clickable" (dblclick)="browse(file)">
+      <i class="fas fa-folder" *ngIf="file.type === 'dir'"></i>
+      <i class="far fa-file" *ngIf="file.type !== 'dir'"></i>
+      <span> {{ file.name }} </span>
+    </div>
+    <div class="size">
+      {{ file.length | filesize }}
+    </div>
+  </div>
+  <div class="grid-x" *ngIf="inProgress">
+    <div class="cell medium-12">
+      <i class="fas fa-spin fa-atom"></i>
+    </div>
+  </div>
 </div>
 
-<form [formGroup]="downloadSelectForm" (ngSubmit)="update()" id="current-project-form">
-    <div>
-        <small><em> If no filename is specified, it will default to the Gallery ID number. </em></small>
-    </div>
+<form
+  [formGroup]="downloadSelectForm"
+  (ngSubmit)="update()"
+  id="current-project-form"
+>
+  <div>
+    <small
+      ><em>
+        If no filename is specified, it will default to the Gallery ID number.
+      </em></small
+    >
+  </div>
 
-    <mat-form-field>
-        <input matInput type="text" formControlName="Name" appearance="filled"  required="false">
-    </mat-form-field>
+  <mat-form-field>
+    <input
+      matInput
+      type="text"
+      formControlName="Name"
+      appearance="filled"
+      required="false"
+    />
+  </mat-form-field>
 </form>
 <span class="radio-box">
-<mat-radio-group [(ngModel)]="fileExtension">
+  <mat-radio-group [(ngModel)]="fileExtension">
     <mat-radio-button value=".csv">.csv</mat-radio-button>
     <mat-radio-button value=".json">.json</mat-radio-button>
-</mat-radio-group>
+  </mat-radio-group>
 </span>
 
 <div class="button-group">
-	<button mat-raised-button color="warn" class="button warning" (click)="cancel()">Cancel</button>
-	<button mat-raised-button color="primary" class="button" (click)="chooseFiles()">Save</button>
+  <button
+    mat-raised-button
+    color="warn"
+    class="button warning"
+    (click)="cancel()"
+  >
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    class="button"
+    (click)="chooseFiles()"
+  >
+    Save
+  </button>
 </div>

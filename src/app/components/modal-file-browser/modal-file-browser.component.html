@@ -1,47 +1,85 @@
-<h4> Select Files </h4>
-<small><em> Note: Only files are selectable, not folders. Double click on a folder to navigate into it. </em></small>
-<hr>
+<h4>Select Files</h4>
+<small
+  ><em>
+    Note: Only files are selectable, not folders. Double click on a folder to
+    navigate into it.
+  </em></small
+>
+<hr />
 <select (ngModelChange)="selectSystem($event)" [(ngModel)]="selectedSystem">
-	<option [ngValue]="myDataSystem"> My Data </option>
-	<option [ngValue]="communityDataSystem"> Community Data</option>
-	<option [ngValue]="publishedDataSystem"> Published Data</option>
-	<optgroup label="My Projects">
-		<option *ngFor="let project of projects" [ngValue]="project">{{project.description}}</option>
-	</optgroup>
+  <option [ngValue]="myDataSystem">My Data</option>
+  <option [ngValue]="communityDataSystem">Community Data</option>
+  <option [ngValue]="publishedDataSystem">Published Data</option>
+  <optgroup label="My Projects">
+    <option *ngFor="let project of projects" [ngValue]="project">
+      {{ project.description }}
+    </option>
+  </optgroup>
 </select>
 
-<div class="fileslisting"  infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="100" [scrollWindow]="false" (scrolled)="getFiles()">
-	<div class="clickable" class="grid-x file-row" (dblclick)="toRoot()">
-		<i class="fas fa-folder"></i>
-		<span > Home </span>
-	</div>
-	<div class="clickable" class="grid-x file-row">
-		<i class="fas fa-folder-open"></i>
-		<span class="lineBreak"> {{selectedPath}} </span>
-	</div>
-	<div *ngIf="retrievalError" class="grid-x file-row" class="error">
-		Error retrieving files
-	</div>
-	<div class="grid-x file-row" *ngFor="let file of filesList; let fileIndex = index" [ngClass]="{'selected':selectedFiles.has(file.path)}">
-		<div class="clickable" (click)="select($event, file, fileIndex)"  (dblclick)="browse(file)">
-
-			<i class="fas fa-folder" *ngIf="file.type === 'dir'" ></i>
-			<i class="far fa-file" *ngIf="file.type !== 'dir'"></i>
-			<span > {{ file.name }} </span>
-		</div>
-		<div class="size">
-			{{file.length | filesize }}
-		</div>
-	</div>
-	<div class="grid-x" *ngIf="inProgress">
-		<div class="cell medium-12">
-		  <i class="fas fa-spin fa-atom"></i>
-		</div>
-	  </div>
+<div
+  class="fileslisting"
+  infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollThrottle]="100"
+  [scrollWindow]="false"
+  (scrolled)="getFiles()"
+>
+  <div class="clickable" class="grid-x file-row" (dblclick)="toRoot()">
+    <i class="fas fa-folder"></i>
+    <span> Home </span>
+  </div>
+  <div class="clickable" class="grid-x file-row">
+    <i class="fas fa-folder-open"></i>
+    <span class="lineBreak"> {{ selectedPath }} </span>
+  </div>
+  <div *ngIf="retrievalError" class="grid-x file-row" class="error">
+    Error retrieving files
+  </div>
+  <div
+    class="grid-x file-row"
+    *ngFor="let file of filesList; let fileIndex = index"
+    [ngClass]="{ selected: selectedFiles.has(file.path) }"
+  >
+    <div
+      class="clickable"
+      (click)="select($event, file, fileIndex)"
+      (dblclick)="browse(file)"
+    >
+      <i class="fas fa-folder" *ngIf="file.type === 'dir'"></i>
+      <i class="far fa-file" *ngIf="file.type !== 'dir'"></i>
+      <span> {{ file.name }} </span>
+    </div>
+    <div class="size">
+      {{ file.length | filesize }}
+    </div>
+  </div>
+  <div class="grid-x" *ngIf="inProgress">
+    <div class="cell medium-12">
+      <i class="fas fa-spin fa-atom"></i>
+    </div>
+  </div>
 </div>
 
 <div class="button-group">
-	<button mat-raised-button color="basic" (click)="selectAll()">Select all</button>
-	<button mat-raised-button color="warn" class="button warning" (click)="cancel()">Done</button>
-	<button mat-raised-button color="primary" class="button" [disabled]="!selectedFiles.size" (click)="chooseFiles()">Import</button>
+  <button mat-raised-button color="basic" (click)="selectAll()">
+    Select all
+  </button>
+  <button
+    mat-raised-button
+    color="warn"
+    class="button warning"
+    (click)="cancel()"
+  >
+    Done
+  </button>
+  <button
+    mat-raised-button
+    color="primary"
+    class="button"
+    [disabled]="!selectedFiles.size"
+    (click)="chooseFiles()"
+  >
+    Import
+  </button>
 </div>

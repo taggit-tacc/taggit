@@ -8,9 +8,8 @@ describe('SelectImageComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SelectImageComponent ]
-    })
-    .compileComponents();
+      declarations: [SelectImageComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

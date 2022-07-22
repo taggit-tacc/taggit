@@ -9,42 +9,62 @@
   <!-- <label [attr.for]="field.label">{{field.label}}</label> -->
 
   <div [ngSwitch]="field.type" class="form-controls">
-	<ng-container *ngSwitchCase="'text'">
-	  	<app-form-textbox [field]="field.options" [form]="field"></app-form-textbox>
-	</ng-container>
+    <ng-container *ngSwitchCase="'text'">
+      <app-form-textbox
+        [field]="field.options"
+        [form]="field"
+      ></app-form-textbox>
+    </ng-container>
 
-	<ng-container *ngSwitchCase="'dropdown'">
-	  	<app-form-dropdown [field]="field.options" [form]="field"></app-form-dropdown>
-	</ng-container>
+    <ng-container *ngSwitchCase="'dropdown'">
+      <app-form-dropdown
+        [field]="field.options"
+        [form]="field"
+      ></app-form-dropdown>
+    </ng-container>
 
-	<ng-container *ngSwitchCase="'radio'">
-	  <div *ngFor="let opt of field.options" [id]="field.label" class="input-group">	
-	  	<app-form-radio [field]="opt" [form]="field" label={{field.label}}></app-form-radio>
-	  </div>
-	</ng-container>
+    <ng-container *ngSwitchCase="'radio'">
+      <div
+        *ngFor="let opt of field.options"
+        [id]="field.label"
+        class="input-group"
+      >
+        <app-form-radio
+          [field]="opt"
+          [form]="field"
+          label="{{ field.label }}"
+        ></app-form-radio>
+      </div>
+    </ng-container>
 
-	<ng-container *ngSwitchCase="'checkbox'">
-	  <div *ngFor="let opt of field.options" [id]="field.label" class="input-group">
-		<app-form-checkbox [field]="opt" [form]="field"></app-form-checkbox>
-	  </div>
-	</ng-container>
+    <ng-container *ngSwitchCase="'checkbox'">
+      <div
+        *ngFor="let opt of field.options"
+        [id]="field.label"
+        class="input-group"
+      >
+        <app-form-checkbox [field]="opt" [form]="field"></app-form-checkbox>
+      </div>
+    </ng-container>
 
-	<ng-container *ngSwitchCase="'color'">
-		<div *ngFor="let opt of field.options" [id]="field.label" class="input-group">
-			<app-form-color [field]="opt" [form]="field" label={{field.label}} [color]="colorArray[field.options.indexOf(opt)]"></app-form-color>
-		</div>
-	</ng-container>
-
+    <ng-container *ngSwitchCase="'color'">
+      <div
+        *ngFor="let opt of field.options"
+        [id]="field.label"
+        class="input-group"
+      >
+        <app-form-color
+          [field]="opt"
+          [form]="field"
+          label="{{ field.label }}"
+          [color]="colorArray[field.options.indexOf(opt)]"
+        ></app-form-color>
+      </div>
+    </ng-container>
   </div>
 
   <!-- <div class="errorMessage" *ngIf="!isValid"></div> -->
 </div>
-
-
-
-
-
-
 
 <!-- <form (ngSubmit)="onSubmit.emit(this.form.value)" [formGroup]="form" class="form-horizontal"> -->
 <!--   <div *ngFor="let field of formsService.activeFormList | async"> -->

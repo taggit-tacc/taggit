@@ -1,83 +1,83 @@
 :host {
   overflow-y: scroll;
   .select-group {
-	overflow: hidden;
-	max-height: 20%;
-	// height: 20%;
+    overflow: hidden;
+    max-height: 20%;
+    // height: 20%;
   }
 
   .subitem-title {
-	text-align: left;
-	color: #555;
-	font-size: 14px;
-	padding: 10px;
-	background-color: #F1F1F1;
-	display: flex;
-	justify-content: space-between;
+    text-align: left;
+    color: #555;
+    font-size: 14px;
+    padding: 10px;
+    background-color: #f1f1f1;
+    display: flex;
+    justify-content: space-between;
   }
 
   .subitem {
-	border-width: 0px 10px;
-	border-color: #F1F1F1;
-	border-style: solid;
-	overflow-y: scroll;
-	background-color: #FFFFFF;
-	height: 100%;
+    border-width: 0px 10px;
+    border-color: #f1f1f1;
+    border-style: solid;
+    overflow-y: scroll;
+    background-color: #ffffff;
+    height: 100%;
   }
 
   .group-subitem {
-	height: 100px
+    height: 100px;
   }
 
   .subitem-scroll {
-	border-width: 5px;
+    border-width: 5px;
   }
 
-  .boxed input[type="radio"] {
-	display: none;
+  .boxed input[type='radio'] {
+    display: none;
   }
 
   .boxed label {
-	background-color: #fff;
-	transition: all 0.3s;
+    background-color: #fff;
+    transition: all 0.3s;
   }
 
-  .boxed input[type="radio"]:checked + label {
-	background-color: #B3E5FF;
+  .boxed input[type='radio']:checked + label {
+    background-color: #b3e5ff;
   }
 
   .group-container {
-	display: flex;
-	flex-direction: row;
-	margin: 0;
-	justify-content: space-between;
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    justify-content: space-between;
   }
 
   .name-group {
-	display: inline-block;
-	padding: 3px;
+    display: inline-block;
+    padding: 3px;
   }
 
   .button-group {
-	margin: 0;
-	display: flex;
-	flex-direction: row;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
   }
 
   .button-group div {
-	padding: 3px;
+    padding: 3px;
   }
 
-  .fa{
-	  font-weight: 900;
-	  display: inline-block;
-	  font-style: normal;
-	  font-variant: normal;
-	  text-rendering: auto;
-	  font-family: Font Awesome\ 5 Free;
-	  line-height: 1;
+  .fa {
+    font-weight: 900;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    font-family: Font Awesome\5 Free;
+    line-height: 1;
   }
-  .fa option{
-	  font-weight: 900;
+  .fa option {
+    font-weight: 900;
   }
 }

@@ -3,7 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 import { EnvironmentType } from './environmentType';
-import {jwt as devJWT } from './jwt'
+import { jwt as devJWT } from './jwt';
 
 export interface AppEnvironment {
   production: boolean;
@@ -22,7 +22,7 @@ export const environment: AppEnvironment = {
   // clientId: 'RMCJHgW9CwJ6mKjhLTDnUYBo9Hka',
   baseHref: '/',
   jwt: devJWT,
-  backend: EnvironmentType.Local
+  backend: EnvironmentType.Local,
 };
 
 /*

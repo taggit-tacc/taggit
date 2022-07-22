@@ -14,15 +14,14 @@
   // NOTE lot-lan-label was here
 
   .active-project {
-	background-color: $greenActive;
+    background-color: $greenActive;
   }
 
   .menu {
-	button.dropdown.button {
-	  padding: 0.85em 1em;
-	}
+    button.dropdown.button {
+      padding: 0.85em 1em;
+    }
   }
-
 
   // .menu.is-dropdown-submenu {
   //	z-index: 10000;
@@ -32,65 +31,64 @@
 
   // NOTE tiny was here
   .button.tiny {
-	margin: 0;
+    margin: 0;
   }
 
   .current-project {
-	padding: 30px;
-	font-size: 14px;
+    padding: 30px;
+    font-size: 14px;
   }
 
   .goods {
-	height: 27px;
-	margin: 0px;
-	padding: 0px;
+    height: 27px;
+    margin: 0px;
+    padding: 0px;
   }
 
   .toggler {
-	margin-left: 10px;
+    margin-left: 10px;
   }
 
   .picker {
-	display: inline-block;
+    display: inline-block;
   }
 
   .group-bar {
-	display: flex;
-	flex-direction: row;
+    display: flex;
+    flex-direction: row;
   }
 
   .path-buttons {
-	text-align: center;
+    text-align: center;
   }
 
   .project-menu {
-	margin-left: 10px;
+    margin-left: 10px;
   }
 
   .top-bar {
-	position: fixed;
-	margin-top: -50px;
-	height: 50px;
-	// padding: 5px;
-	// padding-left: 0.5em;
-	// flex-wrap: nowrap;
-	// position: fixed;
-	// // overflow: hidden;
-	// width: 100%;
-	z-index: 999;
+    position: fixed;
+    margin-top: -50px;
+    height: 50px;
+    // padding: 5px;
+    // padding-left: 0.5em;
+    // flex-wrap: nowrap;
+    // position: fixed;
+    // // overflow: hidden;
+    // width: 100%;
+    z-index: 999;
   }
 
-  .top-bar-right
-  .top-bar-left {
-	-webkit-box-flex: 0;
-	flex-wrap: nowrap;
-	flex: 0 1 auto;
-	max-width: 100%;
+  .top-bar-right .top-bar-left {
+    -webkit-box-flex: 0;
+    flex-wrap: nowrap;
+    flex: 0 1 auto;
+    max-width: 100%;
   }
 
   .my-button {
-	border-radius: 5px;
-	padding: 5px;
+    border-radius: 5px;
+    padding: 5px;
   }
 
   .button-spacing {
@@ -98,13 +96,13 @@
   }
 
   @media print, screen and (min-width: 40em) {
-	.top-bar {
-	  flex-wrap: nowrap;
-	  flex: 0 1 auto;
-	}
+    .top-bar {
+      flex-wrap: nowrap;
+      flex: 0 1 auto;
+    }
   }
 
   .example-spacer {
-	flex: 1 1 auto;
+    flex: 1 1 auto;
   }
 }
