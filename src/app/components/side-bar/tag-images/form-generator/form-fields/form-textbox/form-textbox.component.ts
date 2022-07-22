@@ -12,7 +12,7 @@ import { GroupsService } from 'src/app/services/groups.service';
 })
 export class FormTextBoxComponent {
   @Input() field: any = {};
-  @Input() form: FormGroup;
+  @Input() form: any;
   note: string;
   notes = 'notes';
   private activeFeatureId$: Subscription;

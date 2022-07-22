@@ -29,10 +29,13 @@ export interface IPointCloud {
 // }
 
 export interface Group {
-  groupName: string;
-  formList: Array<any>;
-  color: string;
-  // type: any;
+  groupName?: string;
+  formList?: Array<any>;
+  color?: string;
+  compID?: any;
+  id?: any;
+  label?: any;
+  option?: any;
 }
 
 export class Group implements Group {}

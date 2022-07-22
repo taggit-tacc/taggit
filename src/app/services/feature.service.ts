@@ -251,7 +251,7 @@ export class FeatureService {
   } // end of updateExtra function
 
   updateChecked(
-    opt: object,
+    opt: any,
     id: number,
     group: string,
     label: string,
@@ -274,7 +274,7 @@ export class FeatureService {
             (item) =>
               item.option === opt.key &&
               item.id === id &&
-              item.group === group &&
+              item.groupName === group &&
               item.label === label
           );
           // item.label === opt['label'] && item.id === id && item.group === group && item.title === label

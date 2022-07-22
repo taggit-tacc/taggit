@@ -12,7 +12,7 @@ import { GroupsService } from 'src/app/services/groups.service';
 })
 export class FormColorComponent implements OnInit {
   @Input() field: any = {};
-  @Input() form: FormGroup;
+  @Input() form: any;
   @Input() color: string;
   @Input() label: String;
 

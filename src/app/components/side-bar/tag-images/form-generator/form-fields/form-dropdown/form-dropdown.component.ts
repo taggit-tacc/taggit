@@ -11,7 +11,7 @@ import { GroupsService } from 'src/app/services/groups.service';
 })
 export class FormDropDownComponent {
   @Input() field: any = {};
-  @Input() form: FormGroup;
+  @Input() form: any;
   chosenTag: string;
   private activeFeatureId$: Subscription;
   activeFeatureId: number;

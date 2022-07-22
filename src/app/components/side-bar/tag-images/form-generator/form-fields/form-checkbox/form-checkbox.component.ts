@@ -11,7 +11,7 @@ import { GroupsService } from 'src/app/services/groups.service';
 })
 export class FormCheckBoxComponent {
   @Input() field: any;
-  @Input() form: FormGroup;
+  @Input() form: any;
   isChecked = false;
   private activeFeatureId$: Subscription;
   activeFeatureId: number;

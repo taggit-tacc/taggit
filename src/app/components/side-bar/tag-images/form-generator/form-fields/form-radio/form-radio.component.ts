@@ -11,7 +11,7 @@ import { GroupsService } from 'src/app/services/groups.service';
 })
 export class FormRadioComponent {
   @Input() field: any = {};
-  @Input() form: FormGroup;
+  @Input() form: any;
   @Input() label: String;
   public chosenTag: string;
   private activeFeatureId$: Subscription;

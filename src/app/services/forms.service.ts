@@ -81,11 +81,11 @@ export class FormsService {
 
   tempData = [];
 
-  newTag: object[] = [];
+  newTag: any[] = [];
 
   optData = [];
 
-  newOpt: object[] = [];
+  newOpt: any[] = [];
   // TODO This should be stored in projects api later on (or not)	//I think it's good here, but this might be good to fully pull out later -Ben
   addForm(groupName: string, formItem: any): void {
     this.forms
@@ -465,7 +465,7 @@ export class FormsService {
     this.tempData = data;
     console.log(this.tempData);
   }
-  deleteOpt(gName: string, opt: object, tag: tags): void {
+  deleteOpt(gName: string, opt: any, tag: tags): void {
     const index = this.optData.findIndex(
       (item) => item.groupName === gName && item.label === tag.label
     );
@@ -477,7 +477,7 @@ export class FormsService {
     }
   }
 
-  addCheckedOpt(opt: object, id: number, group: string, label: string): void {
+  addCheckedOpt(opt: any, id: number, group: string, label: string): void {
     const option = {
       key: opt.key,
       label: opt.label,
@@ -548,7 +548,7 @@ export class FormsService {
   }
 
   deleteCheckedOpt(
-    opt: object,
+    opt: any,
     id: number,
     group: string,
     label: string
