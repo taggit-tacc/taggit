@@ -28,13 +28,13 @@ export class AgaveSystemsService {
       (resp) => {
         this._systems.next(resp.result);
         this._projects.next(
-          resp.result.filter((sys) => sys.id.startsWith('project')),
+          resp.result.filter((sys) => sys.id.startsWith('project'))
         );
       },
       (error) => {
         this._systems.next(null);
         this._projects.next(null);
-      },
+      }
     );
   }
 }

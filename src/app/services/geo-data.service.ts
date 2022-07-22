@@ -43,7 +43,7 @@ export class GeoDataService {
   constructor(
     private http: HttpClient,
     private notificationsService: NotificationsService,
-    private scrollService: ScrollService,
+    private scrollService: ScrollService
   ) {
     this._features = new BehaviorSubject<FeatureCollection>({
       type: 'FeatureCollection',
@@ -64,12 +64,12 @@ export class GeoDataService {
   getFeatures(
     projectId: number,
     query: AssetFilters = new AssetFilters(),
-    restoreScroll = false,
+    restoreScroll = false
   ): void {
     const qstring: string = querystring.stringify(query.toJson());
     this.http
       .get<FeatureCollection>(
-        environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring,
+        environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring
       )
       .subscribe((fc: FeatureCollection) => {
         fc.features = fc.features.map((feat: Feature) => new Feature(feat));
@@ -87,7 +87,7 @@ export class GeoDataService {
     this.http
       .delete(
         environment.apiUrl +
-          `projects/${feature.project_id}/features/${feature.id}/`,
+          `projects/${feature.project_id}/features/${feature.id}/`
       )
       .subscribe((resp) => {
         this.getFeatures(feature.project_id, new AssetFilters(), true);
@@ -97,7 +97,7 @@ export class GeoDataService {
   getPointClouds(projectId: number) {
     this.http
       .get<Array<IPointCloud>>(
-        environment.apiUrl + `/projects/${projectId}/point-cloud/`,
+        environment.apiUrl + `/projects/${projectId}/point-cloud/`
       )
       .subscribe((resp) => {
         // console.log(resp);
@@ -115,7 +115,7 @@ export class GeoDataService {
   addPointCloud(
     projectId: number,
     title: string,
-    conversionParams: string,
+    conversionParams: string
   ): void {
     const payload = {
       description: title,
@@ -129,41 +129,41 @@ export class GeoDataService {
         },
         (error) => {
           // TODO: notification
-        },
+        }
       );
   }
 
   updateFeatureProperty(
     projectId: number,
     featureId: number,
-    groupData: any,
+    groupData: any
   ): void {
     this.http
       .post(
         environment.apiUrl +
           `projects/${projectId}/features/${featureId}/properties/`,
-        groupData,
+        groupData
       )
       .subscribe(
         (resp) => {},
-        (error) => {},
+        (error) => {}
       );
   }
 
   updateFeatureStyle(
     projectId: number,
     featureId: number,
-    groupData: any,
+    groupData: any
   ): void {
     this.http
       .post(
         environment.apiUrl +
           `/projects/${projectId}/features/${featureId}/styles/`,
-        groupData,
+        groupData
       )
       .subscribe(
         (resp) => {},
-        (error) => {},
+        (error) => {}
       );
   }
 
@@ -171,7 +171,7 @@ export class GeoDataService {
     console.log(pc);
     this.http
       .delete(
-        environment.apiUrl + `/projects/${pc.project_id}/point-cloud/${pc.id}/`,
+        environment.apiUrl + `/projects/${pc.project_id}/point-cloud/${pc.id}/`
       )
       .subscribe((resp) => {
         this.getPointClouds(pc.project_id);
@@ -185,7 +185,7 @@ export class GeoDataService {
     this.http
       .post(
         environment.apiUrl + `/projects/${pc.project_id}/point-cloud/${pc.id}/`,
-        form,
+        form
       )
       .subscribe((resp) => {
         console.log(resp);
@@ -202,7 +202,7 @@ export class GeoDataService {
     this.http
       .post(
         environment.apiUrl + `projects/${projectId}/features/files/import/`,
-        payload,
+        payload
       )
       .subscribe(
         (resp) => {
@@ -210,9 +210,9 @@ export class GeoDataService {
         },
         (error) => {
           this.notificationsService.showImportErrorToast(
-            'Import failed! Try again?',
+            'Import failed! Try again?'
           );
-        },
+        }
       );
   }
 
@@ -234,7 +234,7 @@ export class GeoDataService {
       .post(
         environment.apiUrl +
           `projects/${projectId}/features/${featureId}/assets/`,
-        payload,
+        payload
       )
       .subscribe((resp) => {
         this.notificationsService.showSuccessToast('Import started!');
@@ -262,7 +262,7 @@ export class GeoDataService {
 
     this.http
       .get<FeatureCollection>(
-        environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring,
+        environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring
       )
       .subscribe((resp) => {
         const blob = new Blob([JSON.stringify(resp)], {
@@ -282,7 +282,7 @@ export class GeoDataService {
     this.http
       .post<Array<Feature>>(
         environment.apiUrl + `/projects/${projectId}/features/files/`,
-        form,
+        form
       )
       .subscribe(
         (feats) => {
@@ -292,7 +292,7 @@ export class GeoDataService {
         },
         (error) => {
           // TODO: Add notification
-        },
+        }
       );
   }
 
@@ -303,7 +303,7 @@ export class GeoDataService {
       .post<Feature>(
         environment.apiUrl +
           `/api/projects/${projectId}/features/${featureId}/assets/`,
-        form,
+        form
       )
       .subscribe(
         (feature) => {
@@ -316,7 +316,7 @@ export class GeoDataService {
         },
         (error) => {
           // TODO: Add notification
-        },
+        }
       );
   }
 
@@ -335,7 +335,7 @@ export class GeoDataService {
     minLat: number,
     maxLat: number,
     minLon: number,
-    maxLon: number,
+    maxLon: number
   ) {
     const payload = new FormData();
     payload.append('file', file);

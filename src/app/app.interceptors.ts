@@ -15,7 +15,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(
     request: HttpRequest<any>,
-    next: HttpHandler,
+    next: HttpHandler
   ): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
       catchError((err) => {
@@ -27,7 +27,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
         const error = err.error.message || err.statusText;
         return throwError(error);
-      }),
+      })
     );
   }
 }
@@ -38,7 +38,7 @@ export class TokenInterceptor implements HttpInterceptor {
 
   intercept(
     request: HttpRequest<any>,
-    next: HttpHandler,
+    next: HttpHandler
   ): Observable<HttpEvent<any>> {
     if (request.url.indexOf('https://agave.designsafe-ci.org') > -1) {
       if (this.authSvc.isLoggedIn()) {

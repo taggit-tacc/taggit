@@ -23,7 +23,7 @@ export class FormCheckBoxComponent {
   constructor(
     private formsService: FormsService,
     private groupsService: GroupsService,
-    private featureService: FeatureService,
+    private featureService: FeatureService
   ) {}
 
   checkedOpt: any[] = this.formsService.getCheckedOpt();
@@ -39,7 +39,7 @@ export class FormCheckBoxComponent {
           this.groupsService.activeGroup.subscribe((next) => {
             this.activeGroup = next;
           });
-      },
+      }
     );
 
     // this code checks if the option has been checked or not
@@ -52,7 +52,7 @@ export class FormCheckBoxComponent {
               item.id === this.activeFeatureId &&
               item.option === this.field.label &&
               item.group === this.activeGroup &&
-              item.label === this.form.label,
+              item.label === this.form.label
           );
 
           if (index > -1) {
@@ -77,7 +77,7 @@ export class FormCheckBoxComponent {
         this.activeFeatureId,
         this.activeGroup,
         this.form.label,
-        'create',
+        'create'
       );
     } else {
       console.log('Unchecked');
@@ -86,7 +86,7 @@ export class FormCheckBoxComponent {
         this.activeFeatureId,
         this.activeGroup,
         this.form.label,
-        'delete',
+        'delete'
       );
     }
   }

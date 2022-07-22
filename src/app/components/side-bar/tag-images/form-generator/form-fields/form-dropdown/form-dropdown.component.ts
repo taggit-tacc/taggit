@@ -22,7 +22,7 @@ export class FormDropDownComponent {
   constructor(
     private formsService: FormsService,
     private groupsService: GroupsService,
-    private featureService: FeatureService,
+    private featureService: FeatureService
   ) {}
 
   // The problem is that I don't actually know the shape of the data here, I've never actually looked at the dropdown box, so I don't know how
@@ -31,7 +31,7 @@ export class FormDropDownComponent {
     this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe(
       (next) => {
         this.activeFeatureId = next;
-      },
+      }
     );
 
     this.activeGroup$ = this.activeGroup$ =
@@ -48,7 +48,7 @@ export class FormDropDownComponent {
             item.id === this.activeFeatureId &&
             item.compID === 2 &&
             item.groupName === this.activeGroup &&
-            item.label === this.form.label,
+            item.label === this.form.label
         );
         // console.log(index)
         if (index > -1) {
@@ -73,7 +73,7 @@ export class FormDropDownComponent {
       this.activeFeatureId,
       this.activeGroup,
       this.form.label,
-      'dropdown',
+      'dropdown'
     );
   }
 }

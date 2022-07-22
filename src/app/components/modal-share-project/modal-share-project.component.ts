@@ -19,7 +19,7 @@ export class ModalShareProjectComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<ModalShareProjectComponent>,
     private dialog: MatDialog,
-    private projectsService: ProjectsService,
+    private projectsService: ProjectsService
   ) {}
 
   ngOnInit() {
@@ -50,7 +50,7 @@ export class ModalShareProjectComponent implements OnInit {
   submit() {
     this.projectsService.addUserToProject(
       this.activeProj,
-      this.projShareForm.get('name').value,
+      this.projShareForm.get('name').value
     );
     this.dialogRef.close();
   }

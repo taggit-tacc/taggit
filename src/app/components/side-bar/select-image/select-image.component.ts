@@ -30,7 +30,7 @@ export class SelectImageComponent implements OnInit, OnDestroy {
     private formsService: FormsService,
     private groupsService: GroupsService,
     private geoDataService: GeoDataService,
-    private projectsService: ProjectsService,
+    private projectsService: ProjectsService
   ) {}
 
   ngOnInit() {
@@ -45,7 +45,7 @@ export class SelectImageComponent implements OnInit, OnDestroy {
     this.activeFeatureNum$ = this.groupsService.activeFeatureNum.subscribe(
       (next) => {
         this.activeFeatureNum = next;
-      },
+      }
     );
 
     this.activeGroup$ = this.groupsService.activeGroup.subscribe((next) => {
@@ -55,7 +55,7 @@ export class SelectImageComponent implements OnInit, OnDestroy {
 
   getActiveFeatures() {
     const activeGroupObj = this.groupList.filter(
-      (realGroup) => realGroup.name === this.activeGroup,
+      (realGroup) => realGroup.name === this.activeGroup
     );
     return activeGroupObj[0].features;
   }
@@ -97,7 +97,7 @@ export class SelectImageComponent implements OnInit, OnDestroy {
       this.geoDataService.updateFeatureProperty(
         this.selectedProject.id,
         Number(feat.id),
-        featProp,
+        featProp
       );
 
       this.groupsService.addGroup(this.groupList);
@@ -121,7 +121,7 @@ export class SelectImageComponent implements OnInit, OnDestroy {
           this.deleteGroup(group.name);
         } else {
           group.features = group.features.filter(
-            (asset) => asset.id != assetId,
+            (asset) => asset.id != assetId
           );
         }
       }
@@ -131,14 +131,14 @@ export class SelectImageComponent implements OnInit, OnDestroy {
       const featProp = feat.properties;
       if (feat.id == assetId) {
         featProp.group = featProp.group.filter(
-          (e) => e.name != this.activeGroup,
+          (e) => e.name != this.activeGroup
         );
       }
 
       this.geoDataService.updateFeatureProperty(
         this.selectedProject.id,
         Number(feat.id),
-        featProp,
+        featProp
       );
       this.groupsService.addGroup(this.groupList);
     }

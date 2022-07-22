@@ -23,7 +23,7 @@ export class GroupsService {
   public activeFeature: Observable<any> = this._activeFeature.asObservable();
 
   private _activeGroup: BehaviorSubject<string> = new BehaviorSubject<string>(
-    null,
+    null
   );
   public activeGroup: Observable<string> = this._activeGroup.asObservable();
 
@@ -36,7 +36,7 @@ export class GroupsService {
   public unselectAll: Observable<boolean> = this._unselectAll.asObservable();
 
   private _featureImagesExist: BehaviorSubject<boolean> = new BehaviorSubject(
-    null,
+    null
   );
   public featureImagesExist: Observable<boolean> =
     this._featureImagesExist.asObservable();
@@ -47,12 +47,12 @@ export class GroupsService {
     this._activeFeatureId.asObservable();
 
   private _activePane: BehaviorSubject<string> = new BehaviorSubject<string>(
-    null,
+    null
   );
   public activePane: Observable<string> = this._activePane.asObservable();
 
   private _tagFeatureGroup: BehaviorSubject<any> = new BehaviorSubject<any>(
-    null,
+    null
   );
   public tagFeatureGroup: Observable<any> =
     this._tagFeatureGroup.asObservable();
@@ -99,7 +99,7 @@ export class GroupsService {
           }
           //   console.log(tempGroupList[group.name].features)
           const index = tempGroupList[group.name].features.findIndex(
-            (item) => item == feat,
+            (item) => item == feat
           );
           if (index == -1) {
             tempGroupList[group.name].features.push(feat);

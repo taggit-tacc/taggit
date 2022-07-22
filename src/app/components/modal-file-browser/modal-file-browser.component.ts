@@ -47,7 +47,7 @@ export class ModalFileBrowserComponent implements OnInit {
     public dialogRef: MatDialogRef<ModalFileBrowserComponent>,
     private dialog: MatDialog,
     private authService: AuthService,
-    private agaveSystemsService: AgaveSystemsService,
+    private agaveSystemsService: AgaveSystemsService
   ) {}
 
   ngOnInit() {
@@ -69,13 +69,13 @@ export class ModalFileBrowserComponent implements OnInit {
       .subscribe(([user, systems, projects]) => {
         // Uses systems to find the different directories that has the files in
         this.myDataSystem = systems.find(
-          (sys) => sys.id === 'designsafe.storage.default',
+          (sys) => sys.id === 'designsafe.storage.default'
         );
         this.communityDataSystem = systems.find(
-          (sys) => sys.id === 'designsafe.storage.community',
+          (sys) => sys.id === 'designsafe.storage.community'
         );
         this.publishedDataSystem = systems.find(
-          (sys) => sys.id === 'designsafe.storage.published',
+          (sys) => sys.id === 'designsafe.storage.published'
         );
 
         // This is where they choose which one they start with
@@ -162,7 +162,7 @@ export class ModalFileBrowserComponent implements OnInit {
         this.currentDirectory.system,
         this.currentDirectory.path,
         this.offset,
-        ModalFileBrowserComponent.limit,
+        ModalFileBrowserComponent.limit
       )
       .subscribe(
         (listing) => {
@@ -183,7 +183,7 @@ export class ModalFileBrowserComponent implements OnInit {
             if (
               (value.type == 'file' &&
                 allowedExt.includes(
-                  value.path.split('.').pop().toLowerCase(),
+                  value.path.split('.').pop().toLowerCase()
                 )) ||
               value.type == 'dir'
             ) {
@@ -200,7 +200,7 @@ export class ModalFileBrowserComponent implements OnInit {
           // If retrieving the files from DesignSafe bugs out due to the site being down, this is where it ends up
           this.retrievalError = true;
           this.inProgress = false;
-        },
+        }
       );
   }
 

@@ -19,7 +19,7 @@ export class ModalCreateProjectComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<ModalCreateProjectComponent>,
     private dialog: MatDialog,
-    private projectsService: ProjectsService,
+    private projectsService: ProjectsService
   ) {}
 
   ngOnInit() {

@@ -56,7 +56,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
     private spinner: NgxSpinnerService,
     private dialog: MatDialog,
     private scrollService: ScrollService,
-    private featureService: FeatureService,
+    private featureService: FeatureService
   ) {}
 
   ngAfterViewChecked() {
@@ -78,7 +78,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
       },
       (error) => {
         this.projectsExist = false;
-      },
+      }
     );
 
     this.featureService.features$.subscribe((fc: any) => {
@@ -187,7 +187,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   getPath(): string {
     // let featureSource = this.environment.apiUrl + '/assets/' + this.activeFeature.assets[0].path;
     const activeGroupObj = this.groupList.filter(
-      (realGroup) => realGroup.name === this.activeGroup,
+      (realGroup) => realGroup.name === this.activeGroup
     );
     if (activeGroupObj[0] != undefined) {
       if (
@@ -206,7 +206,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
       '/assets/' +
       activeGroupObj[0].features[this.activeFeatureNum].assets[0].path;
     this.groupsService.setActiveFeatureId(
-      activeGroupObj[0].features[this.activeFeatureNum].id,
+      activeGroupObj[0].features[this.activeFeatureNum].id
     );
     featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
     return featureSource;

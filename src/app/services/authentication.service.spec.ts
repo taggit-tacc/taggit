@@ -8,7 +8,7 @@ describe('AuthenticationService', () => {
     TestBed.configureTestingModule({
       providers: [AuthService],
       imports: [HttpClientTestingModule],
-    }),
+    })
   );
 
   it('should be created', () => {

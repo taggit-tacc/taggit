@@ -17,7 +17,7 @@ export class FormsService {
   constructor(
     private groupsService: GroupsService,
     private projectsService: ProjectsService,
-    private geoDataService: GeoDataService,
+    private geoDataService: GeoDataService
   ) {
     this.groupsService.activeGroup.subscribe((next) => {
       this.activeGroup = next;
@@ -98,7 +98,7 @@ export class FormsService {
             }
             return groupObj;
           });
-        }),
+        })
       )
       .subscribe((current) => {
         this._forms.next(current);
@@ -115,7 +115,7 @@ export class FormsService {
         (e) =>
           (group[e.label] = e.required
             ? new FormControl(e.value || '', Validators.required)
-            : new FormControl(e.value || '')),
+            : new FormControl(e.value || ''))
       );
 
       this._formGroup.next(new FormGroup(group));
@@ -131,8 +131,8 @@ export class FormsService {
             if (groupObj.groupName == groupName) {
               return groupObj.formList;
             }
-          }),
-        ),
+          })
+        )
       )
       .subscribe((current) => {
         this._activeFormList.next(current.find((e) => e != undefined));
@@ -197,12 +197,12 @@ export class FormsService {
     this.geoDataService.updateFeatureProperty(
       this.selectedProject.id,
       currentID,
-      payload,
+      payload
     );
     this.geoDataService.updateFeatureStyle(
       this.selectedProject.id,
       currentID,
-      style,
+      style
     );
   }
 
@@ -226,12 +226,12 @@ export class FormsService {
           groupList.map((groupObj) => {
             if (groupObj.groupName == groupName) {
               groupObj.formList = groupObj.formList.filter(
-                (formItem) => formItem.label != form.label,
+                (formItem) => formItem.label != form.label
               );
             }
             return groupObj;
-          }),
-        ),
+          })
+        )
       )
       .subscribe((current) => this._forms.next(current));
 
@@ -242,11 +242,11 @@ export class FormsService {
           groupList.map((groupObj) => {
             if (groupObj.groupName == groupName) {
               return groupObj.formList.filter(
-                (formItem) => formItem.label != form.label,
+                (formItem) => formItem.label != form.label
               );
             }
-          }),
-        ),
+          })
+        )
       )
       .subscribe((current) => {
         this._activeFormList.next(current.find((e) => e != undefined));
@@ -268,8 +268,8 @@ export class FormsService {
               });
             }
             return groupObj;
-          }),
-        ),
+          })
+        )
       )
       .subscribe((current) => {
         this._forms.next(current);
@@ -288,8 +288,8 @@ export class FormsService {
               });
             }
             return groupObj.formList;
-          }),
-        ),
+          })
+        )
       )
       .subscribe((current) => {
         this._activeFormList.next(current.find((e) => e != undefined));
@@ -316,8 +316,8 @@ export class FormsService {
               });
             }
             return groupObj;
-          }),
-        ),
+          })
+        )
       )
       .subscribe((current) => this._forms.next(current));
 
@@ -338,8 +338,8 @@ export class FormsService {
               });
             }
             return groupObj.formList;
-          }),
-        ),
+          })
+        )
       )
       .subscribe((current) => {
         this._activeFormList.next(current.find((e) => e != undefined));
@@ -358,14 +358,14 @@ export class FormsService {
               groupObj.formList.forEach((formItem) => {
                 if (formItem.label == form.label) {
                   formItem.options = formItem.options.filter(
-                    (option) => option.label != opt.label,
+                    (option) => option.label != opt.label
                   );
                 }
               });
             }
             return groupObj;
-          }),
-        ),
+          })
+        )
       )
       .subscribe((current) => {
         this._forms.next(current);
@@ -380,14 +380,14 @@ export class FormsService {
               groupObj.formList.forEach((formItem) => {
                 if (formItem.label == form.label) {
                   formItem.options = formItem.options.filter(
-                    (option) => option.label != opt.label,
+                    (option) => option.label != opt.label
                   );
                 }
               });
             }
             return groupObj.formList;
-          }),
-        ),
+          })
+        )
       )
       .subscribe((current) => {
         this._activeFormList.next(current.find((e) => e != undefined));
@@ -398,7 +398,7 @@ export class FormsService {
 
   getForm(groupName: string, formObj: Array<Group>): Array<any> {
     const groupObj = formObj.filter(
-      (groupObj) => groupObj.groupName === groupName,
+      (groupObj) => groupObj.groupName === groupName
     );
     let finalArray = [];
 
@@ -414,7 +414,7 @@ export class FormsService {
       (item) =>
         item.groupName === gName &&
         item.label === tLabel &&
-        item.feature === tag.feature,
+        item.feature === tag.feature
     );
 
     if (index > -1) {
@@ -435,7 +435,7 @@ export class FormsService {
             (item) =>
               item.groupName === tag.groupName &&
               item.label === tag.label &&
-              item.feature === tag.feature,
+              item.feature === tag.feature
           );
           if (index == -1) {
             this.tempData.push(tag);
@@ -453,7 +453,7 @@ export class FormsService {
         (item) =>
           item.groupName === gName &&
           item.label === tag.label &&
-          item.type === tag.type,
+          item.type === tag.type
       );
       // delete this.exampleNote[index];
       if (index > -1) {
@@ -467,7 +467,7 @@ export class FormsService {
   }
   deleteOpt(gName: string, opt: object, tag: tags): void {
     const index = this.optData.findIndex(
-      (item) => item.groupName === gName && item.label === tag.label,
+      (item) => item.groupName === gName && item.label === tag.label
     );
     if (index > -1) {
       const ind = this.optData[index].options.findIndex((item) => item === opt);
@@ -540,7 +540,7 @@ export class FormsService {
       this.geoDataService.updateFeatureProperty(
         this.selectedProject.id,
         Number(feat.id),
-        payload,
+        payload
       );
       // Clear out the tag section
       payload.tag = [];
@@ -551,14 +551,14 @@ export class FormsService {
     opt: object,
     id: number,
     group: string,
-    label: string,
+    label: string
   ): void {
     const index = this.checkedOptions.findIndex(
       (item) =>
         item.label === opt.label &&
         item.id === id &&
         item.group === group &&
-        item.title === label,
+        item.title === label
     );
     this.checkedOptions.splice(index, 1);
 
@@ -612,7 +612,7 @@ export class FormsService {
                 item.label === opt.label &&
                 item.id === id &&
                 item.group === group &&
-                item.title === label,
+                item.title === label
             );
             tag.extra.splice(index, 1);
           }
@@ -622,7 +622,7 @@ export class FormsService {
       this.geoDataService.updateFeatureProperty(
         this.selectedProject.id,
         Number(feat.id),
-        payload,
+        payload
       );
       // Clear out the tag section
       payload.tag = [];
@@ -646,7 +646,7 @@ export class FormsService {
     componentId: number,
     feature: number,
     group: string,
-    label: string,
+    label: string
   ) {
     let icon: string;
     let payload;
@@ -699,7 +699,7 @@ export class FormsService {
                 item.id === feature &&
                 item.compId === componentId &&
                 item.groupName === group &&
-                item.label === label,
+                item.label === label
             );
 
             if (index > -1) {
@@ -722,7 +722,7 @@ export class FormsService {
       this.geoDataService.updateFeatureProperty(
         this.selectedProject.id,
         Number(feat.id),
-        payload,
+        payload
       );
       // Clear out the tag section
       payload.tag = [];
@@ -748,7 +748,7 @@ export class FormsService {
     componentID: number,
     feature: number,
     group: string,
-    label: string,
+    label: string
   ) {
     let icon: string;
     let payload;
@@ -805,7 +805,7 @@ export class FormsService {
                 item.id === feature &&
                 item.compID === componentID &&
                 item.groupName === group &&
-                item.label === label,
+                item.label === label
             );
             // const index = tag.extra.findIndex(item => item.label === opt['label'] && item.id === id && item.group === group)
 
@@ -835,7 +835,7 @@ export class FormsService {
       this.geoDataService.updateFeatureProperty(
         this.selectedProject.id,
         Number(feat.id),
-        payload,
+        payload
       );
       // Clear out the tag section
       payload.tag = [];

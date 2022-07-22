@@ -27,14 +27,14 @@ export class FormColorComponent implements OnInit {
   constructor(
     private formsService: FormsService,
     private groupsService: GroupsService,
-    private featureService: FeatureService,
+    private featureService: FeatureService
   ) {}
 
   ngOnInit() {
     this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe(
       (next) => {
         this.activeFeatureId = next;
-      },
+      }
     );
 
     this.activeGroup$ = this.activeGroup$ =
@@ -50,7 +50,7 @@ export class FormColorComponent implements OnInit {
             item.id === this.activeFeatureId &&
             item.compID === 1 &&
             item.groupName === this.activeGroup &&
-            item.label === this.form.label,
+            item.label === this.form.label
         );
         if (index > -1) {
           this.chosenTag = opt[index].option;
@@ -69,7 +69,7 @@ export class FormColorComponent implements OnInit {
       this.activeFeatureId,
       this.activeGroup,
       this.form.label,
-      'color',
+      'color'
     );
   }
 }

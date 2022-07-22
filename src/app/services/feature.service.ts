@@ -19,7 +19,7 @@ export class FeatureService {
 
   constructor(
     private geoDataService: GeoDataService,
-    private formsService: FormsService,
+    private formsService: FormsService
   ) {
     this._features = new BehaviorSubject<FeatureCollection>({
       type: 'FeatureCollection',
@@ -49,7 +49,7 @@ export class FeatureService {
   // Takes the feature to be deleted, and filters it out of the feature list
   deleteFeature(feat: Feature): void {
     this.featureCollection.features = this.featureCollection.features.filter(
-      (featListfeat) => featListfeat.id != feat.id,
+      (featListfeat) => featListfeat.id != feat.id
     );
     this._features.next(this.featureCollection); // Update the observable
     this.geoDataService.deleteFeature(feat);
@@ -60,7 +60,7 @@ export class FeatureService {
     delFeats.forEach((feat) => {
       // Filter out every feature in delFeats from the master list
       this.featureCollection.features = this.featureCollection.features.filter(
-        (featListFeature) => featListFeature.id != feat.id,
+        (featListFeature) => featListFeature.id != feat.id
       );
       this.geoDataService.deleteFeature(feat);
     });
@@ -75,7 +75,7 @@ export class FeatureService {
       this.geoDataService.updateFeatureProperty(
         feat.project_id,
         Number(feat.id),
-        feat.properties,
+        feat.properties
       );
     });
     this.geoDataService.getFeatures(features.features[0].project_id);
@@ -87,7 +87,7 @@ export class FeatureService {
     this.geoDataService.updateFeatureProperty(
       feat.project_id,
       Number(feat.id),
-      feat.properties,
+      feat.properties
     );
   }
 
@@ -118,7 +118,7 @@ export class FeatureService {
     this.geoDataService.updateFeatureStyle(
       feature.project_id,
       Number(feature.id),
-      feature.properties,
+      feature.properties
     );
   }
 
@@ -211,7 +211,7 @@ export class FeatureService {
     feature: number,
     groupName: string,
     label: string,
-    type: string,
+    type: string
   ): void {
     let nOption;
     this.tagList.forEach((tag) => {
@@ -226,7 +226,7 @@ export class FeatureService {
             item.id === feature &&
             item.compID === componentID &&
             item.groupName === groupName &&
-            item.label === label,
+            item.label === label
         );
         // const index = tag.extra.findIndex(item => item.label === opt['label'] && item.id === id && item.group === group)
 
@@ -255,7 +255,7 @@ export class FeatureService {
     id: number,
     group: string,
     label: string,
-    check: string,
+    check: string
   ): void {
     let nOption;
     this.tagList.forEach((tag) => {
@@ -275,7 +275,7 @@ export class FeatureService {
               item.option === opt.key &&
               item.id === id &&
               item.group === group &&
-              item.label === label,
+              item.label === label
           );
           // item.label === opt['label'] && item.id === id && item.group === group && item.title === label
           tag.extra.splice(index, 1);

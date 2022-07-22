@@ -8,7 +8,7 @@ describe('AgaveSystemsService', () => {
     TestBed.configureTestingModule({
       providers: [AgaveSystemsService],
       imports: [HttpClientTestingModule],
-    }),
+    })
   );
 
   it('should be created', () => {

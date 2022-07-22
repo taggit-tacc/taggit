@@ -59,7 +59,7 @@ describe('CallbackComponent', () => {
     routerMock = TestBed.get(Router);
     activeRouteMock = TestBed.get(ActivatedRoute);
     spyOnProperty(activeRouteMock.snapshot, 'fragment').and.returnValue(
-      '#access_token=qadad&expires_in=3600',
+      '#access_token=qadad&expires_in=3600'
     );
     spyOn(authMock, 'setToken');
     spyOn(routerMock, 'navigate');

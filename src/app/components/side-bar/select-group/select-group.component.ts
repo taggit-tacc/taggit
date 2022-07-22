@@ -76,7 +76,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
     private geoDataService: GeoDataService,
     private projectsService: ProjectsService,
     private dialog: MatDialog,
-    private featureService: FeatureService,
+    private featureService: FeatureService
   ) {}
 
   ngOnInit() {
@@ -102,7 +102,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
     this.groupsService.setActiveGroup(group);
 
     const activeGroup = this.groupList.filter(
-      (what) => what.name == this.activeGroup,
+      (what) => what.name == this.activeGroup
     );
 
     if (activeGroup[0].features.length == 0) {
@@ -147,7 +147,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
       this.geoDataService.updateFeatureProperty(
         this.selectedProject.id,
         Number(feat.id),
-        featProp,
+        featProp
       );
 
       this.groupsService.addGroup(this.groupList);
@@ -235,7 +235,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
       this.geoDataService.updateFeatureProperty(
         this.selectedProject.id,
         Number(feat.id),
-        featProp,
+        featProp
       );
     }
     this.groupsService.setActiveGroup(name);

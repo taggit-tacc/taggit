@@ -42,7 +42,7 @@ export class TapisFilesService {
     private tapis: ApiService,
     private http: HttpClient,
     private authService: AuthService,
-    private popup: MatSnackBar,
+    private popup: MatSnackBar
   ) {}
 
   checkIfSelectable(file: RemoteFile): boolean {
@@ -80,7 +80,7 @@ export class TapisFilesService {
     path: string,
     fileName: string,
     extension: string,
-    data: any,
+    data: any
   ) {
     // Constructs an object that configures the success/error pop-up
     const snackbarConfig: MatSnackBarConfig = {
@@ -115,7 +115,7 @@ export class TapisFilesService {
         console.log(error);
         const msg = 'Faled to save file to ' + systemID + path;
         this.popup.open(msg, '', snackbarConfig);
-      },
+      }
     );
   }
 

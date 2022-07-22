@@ -75,7 +75,7 @@ export class ControlBarComponent implements OnInit {
     private dialog: MatDialog,
     private scrollService: ScrollService,
     private notificationsService: NotificationsService,
-    private featureService: FeatureService,
+    private featureService: FeatureService
   ) {}
 
   ngOnInit() {
@@ -111,10 +111,10 @@ export class ControlBarComponent implements OnInit {
 
     this.notificationsService.notifications.subscribe((next) => {
       const hasSuccessNotification = next.some(
-        (note) => note.status === 'success',
+        (note) => note.status === 'success'
       );
       const hasFailureNotification = next.some(
-        (note) => note.status === 'error',
+        (note) => note.status === 'error'
       );
       if (hasSuccessNotification) {
         this.geoDataService.getFeatures(this.selectedProject.id);
@@ -127,14 +127,14 @@ export class ControlBarComponent implements OnInit {
           if (
             item.message.substring(0, 16) == 'Error importing ' &&
             !this.foundFilePaths.some(
-              (filePath) => filePath === item.message.substring(16),
+              (filePath) => filePath === item.message.substring(16)
             )
           ) {
             const path = item.message.substring(16);
             this.geoDataService.uploadNewFeature(
               this.selectedProject.id,
               this.createBlankFeature(),
-              path,
+              path
             );
             this.foundFilePaths.push(path);
           }
@@ -187,11 +187,11 @@ export class ControlBarComponent implements OnInit {
               if (e.features[next]) {
                 if (e.features[next].assets[0].display_path) {
                   this.imageName = /[^/]*$/.exec(
-                    e.features[next].assets[0].display_path,
+                    e.features[next].assets[0].display_path
                   )[0];
                 } else {
                   this.imageName = /[^/]*$/.exec(
-                    e.features[next].assets[0].path,
+                    e.features[next].assets[0].path
                   )[0];
                 }
               }
@@ -396,7 +396,7 @@ export class ControlBarComponent implements OnInit {
           this.geoDataService.updateFeatureProperty(
             this.selectedProject.id,
             Number(feat.id),
-            featProp,
+            featProp
           );
           console.log('In control-bar');
           console.log('Current feat: ' + feat.id);
@@ -429,7 +429,7 @@ export class ControlBarComponent implements OnInit {
     this.groupsService.setActiveGroup(this.groupList[0].name);
 
     const activeGroup = this.groupList.filter(
-      (group) => group.name == this.activeGroup,
+      (group) => group.name == this.activeGroup
     );
 
     if (activeGroup[0].features.length == 0) {
@@ -454,7 +454,7 @@ export class ControlBarComponent implements OnInit {
   otherPath(dir: boolean) {
     // Don't even ask, I don't know what we use this for... -Ben
     const activeGroupObj = this.groupList.filter(
-      (realGroup) => realGroup.name === this.activeGroup,
+      (realGroup) => realGroup.name === this.activeGroup
     );
 
     // right
@@ -507,7 +507,7 @@ export class ControlBarComponent implements OnInit {
     forExport: Boolean = false,
     systemID = '',
     path = '',
-    fileName,
+    fileName
   ) {
     let CSVHolder = 'FeatureID,longitude,latitude,src';
     let JSONHolder: String = '';
@@ -598,7 +598,7 @@ export class ControlBarComponent implements OnInit {
             featureSource,
             group,
             tag,
-            styles,
+            styles
           ) + ', \n';
       } else {
         // Compiles the attributes into a CSV format
@@ -755,7 +755,7 @@ export class ControlBarComponent implements OnInit {
     featureSource: string,
     groups = [],
     tags = [],
-    style,
+    style
   ) {
     let compiledJSON = '';
     let transferJSON;

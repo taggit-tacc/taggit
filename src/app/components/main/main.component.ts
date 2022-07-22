@@ -22,7 +22,7 @@ export class MainComponent implements OnInit {
   constructor(
     private geoDataService: GeoDataService,
     private authService: AuthService,
-    private bsModalService: BsModalService,
+    private bsModalService: BsModalService
   ) {}
 
   ngOnInit() {

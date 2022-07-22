@@ -22,7 +22,7 @@ export class ModalCurrentProjectComponent implements OnInit {
     public dialogRef: MatDialogRef<ModalCurrentProjectComponent>,
     private dialog: MatDialog,
     private projectsService: ProjectsService,
-    @Inject(MAT_DIALOG_DATA) public projData: any,
+    @Inject(MAT_DIALOG_DATA) public projData: any
   ) {}
 
   ngOnInit() {
@@ -43,7 +43,7 @@ export class ModalCurrentProjectComponent implements OnInit {
   delete() {
     if (
       confirm(
-        'Are you sure you want to delete this project? This will also delete it from HazMapper, and anyone this project was shared with.',
+        'Are you sure you want to delete this project? This will also delete it from HazMapper, and anyone this project was shared with.'
       )
     ) {
       this.projectsService.delete(this.activeProject);

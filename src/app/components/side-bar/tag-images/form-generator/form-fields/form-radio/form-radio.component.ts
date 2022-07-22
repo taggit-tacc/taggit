@@ -23,14 +23,14 @@ export class FormRadioComponent {
   constructor(
     private formsService: FormsService,
     private groupsService: GroupsService,
-    private featureService: FeatureService,
+    private featureService: FeatureService
   ) {}
 
   ngOnInit() {
     this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe(
       (next) => {
         this.activeFeatureId = next;
-      },
+      }
     );
 
     this.activeGroup$ = this.activeGroup$ =
@@ -46,7 +46,7 @@ export class FormRadioComponent {
             item.id === this.activeFeatureId &&
             item.compID == 0 &&
             item.groupName === this.activeGroup &&
-            item.label === this.form.label,
+            item.label === this.form.label
         );
         if (index > -1) {
           this.chosenTag = opt[index].option;
@@ -69,7 +69,7 @@ export class FormRadioComponent {
       this.activeFeatureId,
       this.activeGroup,
       this.form.label,
-      'radio',
+      'radio'
     );
   }
 }

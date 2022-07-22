@@ -31,14 +31,14 @@ export class FormTextBoxComponent {
   constructor(
     private formsService: FormsService,
     private groupsService: GroupsService,
-    private featureService: FeatureService,
+    private featureService: FeatureService
   ) {}
 
   ngOnInit() {
     this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe(
       (next) => {
         this.activeFeatureId = next;
-      },
+      }
     );
 
     this.activeGroup$ = this.activeGroup$ =
@@ -55,7 +55,7 @@ export class FormTextBoxComponent {
             item.id === this.activeFeatureId &&
             item.compID === 3 &&
             item.groupName === this.activeGroup &&
-            item.label === this.form.label,
+            item.label === this.form.label
         );
         // console.log(index)
         if (index > -1) {
@@ -80,7 +80,7 @@ export class FormTextBoxComponent {
       this.activeFeatureId,
       this.activeGroup,
       this.form.label,
-      'text',
+      'text'
     );
   }
 }

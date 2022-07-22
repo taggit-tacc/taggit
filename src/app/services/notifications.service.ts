@@ -20,7 +20,7 @@ export class NotificationsService {
   constructor(
     private toastr: ToastrService,
     private http: HttpClient,
-    private authService: AuthService,
+    private authService: AuthService
   ) {
     if (this.authService.isLoggedIn()) {
       const timer = interval(this.TIMEOUT);

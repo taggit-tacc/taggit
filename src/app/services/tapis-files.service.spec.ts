@@ -9,7 +9,7 @@ describe('AgaveFilesService', () => {
     TestBed.configureTestingModule({
       providers: [TapisFilesService],
       imports: [HttpClientTestingModule],
-    }),
+    })
   );
 
   it('should be created', () => {

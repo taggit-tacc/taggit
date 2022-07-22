@@ -29,7 +29,7 @@ export class MapComponent implements OnInit {
 
   constructor(
     private GeoDataService: GeoDataService,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute
   ) {
     // Have to bind these to keep this being this
     this.featureClickHandler.bind(this);
@@ -53,14 +53,14 @@ export class MapComponent implements OnInit {
         maxZoom: 19,
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      },
+      }
     );
     const satellite = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       {
         attribution:
           'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-      },
+      }
     );
     // default to streetmap view;
     this.map.addLayer(baseOSM);
@@ -69,7 +69,7 @@ export class MapComponent implements OnInit {
 
     // Publish the mouse location on the mapMouseLocation stream
     this.map.on('mousemove', (ev: LeafletMouseEvent) =>
-      this.mouseEventHandler(ev),
+      this.mouseEventHandler(ev)
     );
     this.GeoDataService.activeOverlay.pipe(skip(1)).subscribe((next) => {
       this.addRemoveOverlay(next);
@@ -110,7 +110,7 @@ export class MapComponent implements OnInit {
         [
           [ov.minLat, ov.minLon],
           [ov.maxLat, ov.maxLon],
-        ],
+        ]
       );
       this.overlays.set(ov.id, overlay);
       this.features.addLayer(overlay);

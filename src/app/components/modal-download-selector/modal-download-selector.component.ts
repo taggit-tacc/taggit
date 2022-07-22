@@ -46,7 +46,7 @@ export class ModalDownloadSelectorComponent implements OnInit {
     public dialogRef: MatDialogRef<ModalDownloadSelectorComponent>,
     private dialog: MatDialog,
     private authService: AuthService,
-    private agaveSystemsService: AgaveSystemsService,
+    private agaveSystemsService: AgaveSystemsService
   ) {}
 
   ngOnInit() {
@@ -70,13 +70,13 @@ export class ModalDownloadSelectorComponent implements OnInit {
       .subscribe(([user, systems, projects]) => {
         // Uses systems to find the different directories that has the files in
         this.myDataSystem = systems.find(
-          (sys) => sys.id === 'designsafe.storage.default',
+          (sys) => sys.id === 'designsafe.storage.default'
         );
         this.communityDataSystem = systems.find(
-          (sys) => sys.id === 'designsafe.storage.community',
+          (sys) => sys.id === 'designsafe.storage.community'
         );
         this.publishedDataSystem = systems.find(
-          (sys) => sys.id === 'designsafe.storage.published',
+          (sys) => sys.id === 'designsafe.storage.published'
         );
 
         // This is where they choose which one they start with
@@ -133,7 +133,7 @@ export class ModalDownloadSelectorComponent implements OnInit {
         this.currentDirectory.system,
         this.currentDirectory.path,
         this.offset,
-        ModalDownloadSelectorComponent.limit,
+        ModalDownloadSelectorComponent.limit
       )
       .subscribe(
         (listing) => {
@@ -162,7 +162,7 @@ export class ModalDownloadSelectorComponent implements OnInit {
         },
         (error) => {
           this.inProgress = false;
-        },
+        }
       );
   }
 

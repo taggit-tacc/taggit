@@ -52,7 +52,7 @@ export class TagGeneratorComponent implements OnInit {
     private router: Router,
     private geoDataService: GeoDataService,
     private projectsService: ProjectsService,
-    private featureService: FeatureService,
+    private featureService: FeatureService
   ) {}
 
   ngOnInit() {
@@ -100,7 +100,7 @@ export class TagGeneratorComponent implements OnInit {
 
   deleteOption(opt: any) {
     this.formOptions = this.formOptions.filter(
-      (option) => option.label != opt.label,
+      (option) => option.label != opt.label
     );
   }
 

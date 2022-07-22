@@ -16,7 +16,7 @@ export class ProjectsService {
   public readonly projects: Observable<Project[]> =
     this._projects.asObservable();
   private _activeProject: ReplaySubject<Project> = new ReplaySubject<Project>(
-    1,
+    1
   );
   public readonly activeProject: Observable<Project> =
     this._activeProject.asObservable();
@@ -35,7 +35,7 @@ export class ProjectsService {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    private notificationsService: NotificationsService,
+    private notificationsService: NotificationsService
   ) {}
 
   testGeoApi(): void {
@@ -67,10 +67,10 @@ export class ProjectsService {
       ? this._projects.next(
           myProjs.map((p) => {
             const deletingProj = this._deletingProjects.value.find(
-              (dp) => dp.id === p.id,
+              (dp) => dp.id === p.id
             );
             return deletingProj ? deletingProj : p;
-          }),
+          })
         )
       : this._projects.next(myProjs);
   }
@@ -86,16 +86,16 @@ export class ProjectsService {
       },
       (error) => {
         this.notificationsService.showErrorToast(
-          'Error importing files Design Safe, GeoAPI might be down',
+          'Error importing files Design Safe, GeoAPI might be down'
         );
-      },
+      }
     );
   }
 
   create(data: ProjectRequest): Observable<Project> {
     const prom = this.http.post<Project>(
       environment.apiUrl + `/projects/`,
-      data,
+      data
     );
     prom.subscribe((proj) => {
       // Spread operator, just pushes the new project into the array
@@ -142,7 +142,7 @@ export class ProjectsService {
         window.localStorage.setItem('lastProj', JSON.stringify('none'));
 
         this._deletingProjects.next(
-          this._deletingProjects.value.filter((p) => p.id !== data.id),
+          this._deletingProjects.value.filter((p) => p.id !== data.id)
         );
         // These next two lines might be causing problems. Adding getProjects causes duplicates during project creation,
         // So I'm thinking that calling these here might be the root of my delete woes, as they're restoring the project I just
@@ -163,7 +163,7 @@ export class ProjectsService {
             return p.id === data.id
               ? { ...p, deleting: false, deletingFailed: true }
               : p;
-          }),
+          })
         );
         this.updateProjectsList();
 
@@ -171,19 +171,19 @@ export class ProjectsService {
 
         this.notificationsService.showErrorToast('Could not delete project!');
         console.error(error);
-      },
+      }
     ); // end of error
   }
 
   getProjectUsers(proj: Project): Observable<Array<IProjectUser>> {
     return this.http
       .get<Array<IProjectUser>>(
-        environment.apiUrl + `/projects/${proj.id}/users/`,
+        environment.apiUrl + `/projects/${proj.id}/users/`
       )
       .pipe(
         tap((users) => {
           this._projectUsers.next(users);
-        }),
+        })
       );
   }
 
@@ -208,7 +208,7 @@ export class ProjectsService {
         (error) => {
           // TODO: Create popup for an error message.
           console.log(error);
-        },
+        }
       );
   }
 }

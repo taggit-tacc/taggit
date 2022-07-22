@@ -26,7 +26,7 @@ export class ScrollableArray<T> {
     this.startIdx = 0;
 
     this.currentSelection.next(
-      this.content.slice(this.startIdx, this.windowSize),
+      this.content.slice(this.startIdx, this.windowSize)
     );
   }
 
@@ -44,7 +44,7 @@ export class ScrollableArray<T> {
       // this.startIdx = idx;
       this.startIdx = Math.min(this.content.length - this.fetchSize, idx);
       this.currentSelection.next(
-        this.content.slice(this.startIdx, this.startIdx + this.windowSize),
+        this.content.slice(this.startIdx, this.startIdx + this.windowSize)
       );
     }
   }
@@ -53,7 +53,7 @@ export class ScrollableArray<T> {
     this.startIdx = Math.max(0, this.startIdx - this.fetchSize);
     const tmp = this.content.slice(
       this.startIdx,
-      this.startIdx + this.windowSize,
+      this.startIdx + this.windowSize
     );
     this.currentSelection.next(tmp);
   }
@@ -61,11 +61,11 @@ export class ScrollableArray<T> {
   scrollDown() {
     this.startIdx = Math.min(
       this.content.length - this.fetchSize,
-      this.startIdx + this.fetchSize,
+      this.startIdx + this.fetchSize
     );
     const tmp = this.content.slice(
       this.startIdx,
-      this.startIdx + this.windowSize,
+      this.startIdx + this.windowSize
     );
     this.currentSelection.next(tmp);
   }

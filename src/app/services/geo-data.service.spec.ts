@@ -5,7 +5,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('GeoDataService', () => {
   beforeEach(() =>
-    TestBed.configureTestingModule({ imports: [HttpClientTestingModule] }),
+    TestBed.configureTestingModule({ imports: [HttpClientTestingModule] })
   );
 
   it('should be created', () => {

@@ -22,7 +22,7 @@ export class Activate implements CanActivate {
 
   canActivate(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot,
+    state: RouterStateSnapshot
   ): boolean {
     if (this.authSvc.isLoggedIn()) {
       return true;

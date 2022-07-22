@@ -41,7 +41,7 @@ export class TagImagesComponent implements OnInit {
     private router: Router,
     private projectsService: ProjectsService,
     private geoDataService: GeoDataService,
-    private featureService: FeatureService,
+    private featureService: FeatureService
   ) {}
 
   ngOnInit() {
@@ -53,7 +53,7 @@ export class TagImagesComponent implements OnInit {
     this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe(
       (next) => {
         this.activeFeatureId = next;
-      },
+      }
     );
 
     this.formGroup$ = this.formsService.formGroup.subscribe((next) => {
@@ -83,7 +83,7 @@ export class TagImagesComponent implements OnInit {
             (item) =>
               item.groupName === tag.groupName &&
               item.label === tag.label &&
-              item.feature === tag.feature,
+              item.feature === tag.feature
           );
           if (index == -1) {
             this.newTag.push(tag);

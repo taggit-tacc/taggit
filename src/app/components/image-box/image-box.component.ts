@@ -56,7 +56,7 @@ export class ImageBoxComponent implements OnInit {
     private formsService: FormsService,
     private dialog: MatDialog,
     private scrollService: ScrollService,
-    private featureService: FeatureService,
+    private featureService: FeatureService
   ) {}
 
   ngOnInit() {
@@ -70,7 +70,7 @@ export class ImageBoxComponent implements OnInit {
     }
     featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
     this.featureSource = featureSource;
-    this.coordinates = this.feature.geometry.coordinates;
+    this.coordinates = this.feature.geometry.bbox;
 
     this.projectsService.activeProject.subscribe((next) => {
       this.selectedProject = next;
@@ -154,7 +154,7 @@ export class ImageBoxComponent implements OnInit {
         .length > 0
     ) {
       this.tempGroup = this.tempGroup.filter(
-        (v) => v.assets[0].id != this.feature.assets[0].id,
+        (v) => v.assets[0].id != this.feature.assets[0].id
       );
     } else {
       this.tempGroup.push(this.feature);
@@ -180,7 +180,7 @@ export class ImageBoxComponent implements OnInit {
         .length > 0
     ) {
       this.tempGroup = this.tempGroup.filter(
-        (v) => v.assets[0].id != this.feature.assets[0].id,
+        (v) => v.assets[0].id != this.feature.assets[0].id
       );
     } else {
       this.tempGroup.push(this.feature);
@@ -237,7 +237,7 @@ export class ImageBoxComponent implements OnInit {
     this.geoDataService.updateFeatureProperty(
       this.selectedProject.id,
       Number(this.feature.id),
-      featProp,
+      featProp
     );
 
     this.groupsService.addGroup(this.groupList);
@@ -311,7 +311,7 @@ export class ImageBoxComponent implements OnInit {
     this.geoDataService.updateFeatureProperty(
       this.selectedProject.id,
       Number(feat.id),
-      featProp,
+      featProp
     );
 
     this.groupsService.addGroup(this.groupList);
