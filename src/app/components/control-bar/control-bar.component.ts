@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, TemplateRef } from '@angular/core';
+import { Component, OnInit, Output, TemplateRef, ChangeDetectorRef } from '@angular/core';
 import { ProjectsService } from '../../services/projects.service';
 import { Feature, Project, NewGroup } from '../../models/models';
 import { FeatureCollection } from 'geojson';
@@ -48,22 +48,21 @@ export class ControlBarComponent implements OnInit {
   public liveRefresh = true;
   private timer: Observable<number> = interval(this.REFRESHTIME * 1000);
   private timerSubscription: Subscription;
-  showGroup: boolean;
   imageName: string;
-  showSidebar: boolean;
   groupsExist: boolean;
   groupName: string;
-  tempGroup: Array<Feature>;
+  showTagger = false;
+  selectedImages: Array<any>;
   modalRef: BsModalRef;
-  activeGroup: string;
+  activeGroup: NewGroup;
   groups: Map<string, NewGroup>;
   groupsFeatures: Map<string, any>;
   activeGroupFeatures: any;
   activeGroupFeaturesRotate: any;
   activeGroupFeature: any;
-  activePane: string;
+  // activePane: string;
   hazMapperLink: string;
-  itemsSelected: boolean = false;
+  // itemsSelected: boolean = false;
   foundFilePaths = [];
 
   constructor(
@@ -73,6 +72,7 @@ export class ControlBarComponent implements OnInit {
     private groupsService: GroupsService,
     private formsService: FormsService,
     private authService: AuthService,
+    private readonly cdr: ChangeDetectorRef,
     private filesService: TapisFilesService,
     private router: Router,
     private dialog: MatDialog,
@@ -88,12 +88,21 @@ export class ControlBarComponent implements OnInit {
       this.features = fc;
 
       if (this.features != undefined) {
-        this.featureList = this.features.features;
-        // this.groupsService.setActiveProject(this.featureList[0]);
-
-        // TODO This should activate persistence by looping through all features and creating new groups and
-        //Not sure about the above note, if anything needs to be done here, it seems like we have achieved persistance
-        this.groupsService.setGroupProperties(this.featureList);
+        this.featureList = fc.features.filter((feature: Feature) => {
+          try {
+            return (
+              feature.initialAsset() && feature.featureType() === 'image'
+            );
+          } catch (error) {
+            //If a feature has no asset, it ends up in this catch
+            console.error(error);
+            // After outputting the error, add an "image not found" placeholder,
+            // Allowing users to still select their errored import
+            // Note that this doesn't really work!
+            feature.assets.push({ path: '../../images/Image-not-found.png' });
+            return false;
+          }
+        });
       }
     });
 
@@ -103,30 +112,25 @@ export class ControlBarComponent implements OnInit {
     });
 
     combineLatest(
-      this.groupsService.activeGroup,
+      this.geoDataService.activeGroup,
       this.geoDataService.groupsFeatures
     ).subscribe(([grp, grpFts]) => {
       this.activeGroup = grp;
       this.groupsFeatures = grpFts;
       if (grp && grpFts) {
-        this.activeGroupFeatures = grpFts.get(grp);
-        this.activeGroupFeaturesRotate = [...this.activeGroupFeatures];
-        // this.activeGroupFeature = this.activeGroupFeatures[0];
+        this.activeGroupFeatures = grpFts.get(grp.name);
+        if (this.activeGroupFeatures) {
+          this.activeGroupFeaturesRotate = [...this.activeGroupFeatures];
+        }
       }
     });
 
-    this.groupsService.activeGroupFeature.subscribe((next) => {
+    this.geoDataService.activeGroupFeature.subscribe((next) => {
       this.activeGroupFeature = next;
-      console.log(next);
-    });
-
-    this.groupsService.activePane.subscribe((next) => {
-      this.activePane = next;
     });
 
     this.geoDataService.activeFeature.subscribe((next) => {
       this.activeFeature = next;
-      if (this.activeFeature) console.log(this.activeFeature.assets[0].path);
     });
 
     this.notificationsService.notifications.subscribe((next) => {
@@ -136,7 +140,6 @@ export class ControlBarComponent implements OnInit {
       let hasFailureNotification = next.some((note) => note.status === 'error');
       if (hasSuccessNotification) {
         this.geoDataService.getFeatures(this.selectedProject.id);
-        console.log('Features Got');
       }
       if (hasFailureNotification) {
         next.forEach((item) => {
@@ -169,13 +172,15 @@ export class ControlBarComponent implements OnInit {
 
       if (this.projects.length) {
         let lastProj;
-        try {
-          //restores view to the last visited project from local storage
-          lastProj = JSON.parse(window.localStorage.getItem('lastProj'));
-          console.log(lastProj);
-        } catch (error) {
-          lastProj = this.projectsService.setActiveProject(this.projects[0]);
-        }
+        // try {
+        //   //restores view to the last visited project from local storage
+        //   lastProj = JSON.parse(window.localStorage.getItem('lastProj'));
+        //   // console.log(lastProj);
+        // } catch (error) {
+        //   lastProj = this.projectsService.setActiveProject(this.projects[0]);
+        // }
+
+        lastProj = this.projectsService.setActiveProject(this.projects[0]);
 
         //If lastProj is null, then there is no project saved, or can be found, default to the first project in the list
         if (lastProj == 'none' || lastProj == null) {
@@ -185,56 +190,12 @@ export class ControlBarComponent implements OnInit {
         this.projectsService.setActiveProject(lastProj);
       }
 
-      // this.groupsService.groups.subscribe((next) => {
-      //   this.groupList = next;
-      //
-      //   if (this.groupList.length > 0) {
-      //     this.groupsExist = true;
-      //   } else {
-      //     this.groupsExist = false;
-      //   }
-      // });
-
-      // this.groupsService.activeFeatureNum
-      //   .pipe(startWith(0))
-      //   .subscribe((next) => {
-      //     this.activeFeatureNum = next;
-      //
-      //     this.groupList.forEach((e) => {
-      //       if (e.name == this.activeGroup) {
-      //         if (e.features[next]) {
-      //           if (e.features[next].assets[0].display_path) {
-      //             this.imageName = /[^/]*$/.exec(
-      //               e.features[next].assets[0].display_path
-      //             )[0];
-      //           } else {
-      //             this.imageName = /[^/]*$/.exec(
-      //               e.features[next].assets[0].path
-      //             )[0];
-      //           }
-      //         }
-      //       }
-      //     });
-      //   });
-
-      this.groupsService.tempGroup.subscribe((next) => {
-        this.tempGroup = next;
+      this.groupsService.selectedImages.subscribe((next) => {
+        this.selectedImages = next;
       });
 
-      this.groupsService.showGroup.subscribe((next) => {
-        this.showGroup = next;
-      });
-
-      this.groupsService.showSidebar.subscribe((next) => {
-        this.showSidebar = next;
-      });
-
-      this.groupsService.tempGroup.subscribe((next) => {
-        this.tempGroup = next;
-      });
-
-      this.groupsService.itemsSelected.subscribe((next) => {
-        this.itemsSelected = next;
+      this.groupsService.showTagger.subscribe((next) => {
+        this.showTagger = next;
       });
     });
 
@@ -253,9 +214,14 @@ export class ControlBarComponent implements OnInit {
     // this.groupsService.setActiveFeatureNum(0);
   }
 
+  ngAfterViewChecked() {
+    this.cdr.detectChanges();
+  }
+
   clearAll() {
-    this.groupsService.setUnselectAll(true);
-    this.groupsService.setItemsSelected(false);
+    this.groupsService.unselectAllImages();
+    // this.groupsService.setUnselectAll(true);
+    // this.groupsService.setItemsSelected(false);
   }
 
   reloadFeatures() {
@@ -331,12 +297,12 @@ export class ControlBarComponent implements OnInit {
       height: '400px',
       width: '600px',
     });
-    this.dialog.afterAllClosed.subscribe((resp) => {
-      //Close the sidebar and return to the gallery screen if the sidebar's open
-      if (this.showSidebar) {
-        this.openSidebar();
-      }
-    });
+    // this.dialog.afterAllClosed.subscribe((resp) => {
+    //   //Close the sidebar and return to the gallery screen if the sidebar's open
+    //   // if (this.showSidebar) {
+    //   //   this.openSidebar();
+    //   // }
+    // });
   }
 
   openShareProjectModal() {
@@ -364,9 +330,8 @@ export class ControlBarComponent implements OnInit {
   }
 
   //Old function, aside from rewriting it for quality, most concerns here have been addressed. Also, it's not exactly broken... -Ben
-  addToGroupService(name: string) {
+  addGroup(name: string) {
     this.groupName = name;
-    this.groupsService.setActiveGroup(name);
     // if (this.groupList.length != 1000) {
     // TODO Make this better
     if (!name || 0 === name.length) {
@@ -374,17 +339,18 @@ export class ControlBarComponent implements OnInit {
     } else if (this.groups.get(name)) {
       console.log('Existing Name');
     } else {
-      const myRandColor: string = this.getRandomColor();
-      const newGroup: NewGroup = {
-        name: name,
-        color: myRandColor,
-        icon: 'fa-house-damage',
-      };
-      this.geoDataService.createGroupFeatures(
+      // const myRandColor: string = this.getRandomColor();
+      // const newGroup: NewGroup = {
+      //   name: name,
+      //   color: myRandColor,
+      //   icon: 'fa-house-damage',
+      // };
+      const newGroup = this.geoDataService.createNewGroup(
         this.selectedProject.id,
-        this.tempGroup,
-        newGroup
+        this.selectedImages,
+        name
       );
+      // this.geoDataService.setActiveGroup(newGroup);
       // let myRandColor: string = this.getRandomColor();
       // this.groupList.push({
       //   name: name,
@@ -448,10 +414,10 @@ export class ControlBarComponent implements OnInit {
       // }
     }
 
-    this.tempGroup = [];
-    this.groupsService.addTempGroup(this.tempGroup);
-    this.groupsService.setUnselectAll(true);
-    this.groupsService.setShowGroup(false);
+    // this.selectedImages = [];
+    // this.groupsService.setSelectedImages(this.selectedImages);
+    // this.groupsService.setUnselectAll(true);
+    this.groupsService.unselectAllImages();
     this.dialog.closeAll();
   }
 
@@ -459,17 +425,31 @@ export class ControlBarComponent implements OnInit {
     this.dialog.open(template);
   }
 
-  openSidebar() {
-    if (!this.showSidebar) {
-      this.scrollService.setScrollPosition();
-    } else {
+  toggleTagger() {
+    if (!this.showTagger) {
       this.scrollService.setScrollRestored(true);
+
+      const [initialGroupName] = this.groupsFeatures.keys();
+      const activeGroupFeatures = this.groupsFeatures.get(initialGroupName);
+      const activeGroup = this.groups.get(initialGroupName);
+      this.geoDataService.setActiveGroup(activeGroup);
+
+      this.groupsService.setShowTagGenerator(false);
+      this.groupsService.unselectAllImages();
+
+      // if (activeGroupFeatures && activeGroupFeatures.length > 0) {
+      //   this.groupsService.setFeatureImagesExist(true);
+      //   // this.geoDataService.setActiveGroupFeature(activeGroupFeatures[0]);
+      //   // console.log(activeGroupFeatures[0]);
+      // } else {
+      //   this.groupsService.setFeatureImagesExist(false);
+      // }
+    } else {
+      this.scrollService.setScrollPosition();
     }
-    let showSidebar = !this.showSidebar;
-    let showGroup = false;
-    const [initialGroupName] = this.groupsFeatures.keys();
-    this.groupsService.setActiveGroup(initialGroupName);
-    const activeGroupFeatures = this.groupsFeatures.get(initialGroupName);
+
+    this.groupsService.toggleTagger();
+    // let showSidebar = !this.showSidebar;
 
     // activeGroup.setF
     // const [firstGroup] = this.groups.values();
@@ -479,33 +459,24 @@ export class ControlBarComponent implements OnInit {
     //   (group) => group.name == this.activeGroup
     // );
 
-    if (activeGroupFeatures && activeGroupFeatures.length > 0) {
-      this.groupsService.setFeatureImagesExist(true);
-      this.groupsService.setActiveGroupFeature(activeGroupFeatures[0]);
-      console.log(activeGroupFeatures[0]);
-    } else {
-      this.groupsService.setFeatureImagesExist(false);
-    }
+    // if (activeGroupFeatures && activeGroupFeatures.length > 0) {
+    //   this.groupsService.setFeatureImagesExist(true);
+    //   // this.geoDataService.setActiveGroupFeature(activeGroupFeatures[0]);
+    //   // console.log(activeGroupFeatures[0]);
+    // } else {
+    //   this.groupsService.setFeatureImagesExist(false);
+    // }
     //
-    this.reloadFeatures();
-    // this.groupsService.setActiveFeatureNum(0);
-    this.groupsService.setShowSidebar(showSidebar);
-    this.groupsService.setShowGroup(showGroup);
-    this.router.navigateByUrl('/tagger', { skipLocationChange: true });
+    // this.reloadFeatures();
 
-    this.tempGroup = [];
-    this.groupsService.addTempGroup(this.tempGroup);
-    this.groupsService.setUnselectAll(true);
-    this.groupsService.setActivePane('tagger');
+
+    // this.selectedImages = [];
+    // this.groupsService.setSelectedImages(this.selectedImages);
+    // this.groupsService.setUnselectAll(true);
   }
 
   getAssetDisplay() {
-    if (this.activeGroupFeature.assets[0].display_path) {
-      return /[^/]*$/.exec(this.activeGroupFeature.assets[0].display_path)[0];
-    } else {
-      let apath = /[^/]*$/.exec(this.activeGroupFeature.assets[0].path)[0];
-      return apath.slice(0, 15) + '...';
-    }
+    return this.activeGroupFeature.featureShortPath();
   }
 
   otherPath(dir: boolean) {
@@ -519,31 +490,22 @@ export class ControlBarComponent implements OnInit {
       );
     }
     this.activeGroupFeature = this.activeGroupFeaturesRotate[0];
-    this.groupsService.setActiveGroupFeature(this.activeGroupFeature);
-  }
-
-  getRandomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
+    this.geoDataService.setActiveGroupFeature(this.activeGroupFeature);
   }
 
   // TODO
   //This is unused, but the paths are valid routes, mostly seen in the sidebar components.
   //Tagger is the basic sidebar that appears when you oppen the taggit screen, Preset is for tag generation
-  goToRoute() {
-    if (this.activePane == 'preset') {
-      this.groupsService.setActivePane('tagger');
-      this.router.navigateByUrl('/tagger', { skipLocationChange: true });
-    } else {
-      this.groupsService.setActivePane('preset');
-      this.router.navigateByUrl('/preset', { skipLocationChange: true });
-    }
-    this.groupsService.setActiveGroup(this.activeGroup);
-  }
+  // goToRoute() {
+  //   if (this.activePane == 'preset') {
+  //     this.groupsService.setActivePane('tagger');
+  //     this.router.navigateByUrl('/tagger', { skipLocationChange: true });
+  //   } else {
+  //     this.groupsService.setActivePane('preset');
+  //     this.router.navigateByUrl('/preset', { skipLocationChange: true });
+  //   }
+  //   this.geoDataService.setActiveGroup(this.activeGroup);
+  // }
 
   // TODO
   //What there is TODO with this, I don't know. Probably nothing at all...
@@ -569,6 +531,8 @@ export class ControlBarComponent implements OnInit {
     this.featureList.forEach((element) => {
       //Retrieves project ID for building a filename
       projID = element.project_id;
+
+      console.log(element);
 
       //retrieves longitude and latitude values as an array
       let coordinates = element.geometry['coordinates'];

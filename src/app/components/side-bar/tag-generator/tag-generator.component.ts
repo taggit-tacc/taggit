@@ -10,7 +10,7 @@ import { GroupsService } from '../../../services/groups.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Feature, Project, NewGroup } from 'src/app/models/models';
+import { Feature, Project, NewGroup, GroupForm } from 'src/app/models/models';
 import { GeoDataService } from 'src/app/services/geo-data.service';
 import { ProjectsService } from 'src/app/services/projects.service';
 import { FeatureService } from 'src/app/services/feature.service';
@@ -22,14 +22,15 @@ import { FeatureService } from 'src/app/services/feature.service';
 })
 export class TagGeneratorComponent implements OnInit {
   formLabel: string;
+  formColor: string;
   formOptions: Array<any> = [];
   selectedGroup: string;
-  showOpt: string;
   formType: string;
   changed: boolean = false;
   labelFilter: string;
+  optionColorFilter = '#000000';
   formItemList: Array<any> = [];
-  activeGroup: string;
+  activeGroup: NewGroup;
   optionFilter: string;
   formName: string;
   formValue: string;
@@ -42,7 +43,7 @@ export class TagGeneratorComponent implements OnInit {
   groupsFeatures: Map<string, any>;
   groups$: Subscription;
   tempGroup: Array<Feature>;
-  private selectedProject;
+  private activeProject: Project;
   newTag: object[] = [];
   newGroup: object[] = [];
 
@@ -57,7 +58,7 @@ export class TagGeneratorComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.groupsService.activeGroup.subscribe((next) => {
+    this.geoDataService.activeGroup.subscribe((next) => {
       this.activeGroup = next;
     });
 
@@ -74,7 +75,7 @@ export class TagGeneratorComponent implements OnInit {
     });
 
     this.projectsService.activeProject.subscribe((next) => {
-      this.selectedProject = next;
+      this.activeProject = next;
     });
 
     this.formOptions = [];
@@ -91,13 +92,19 @@ export class TagGeneratorComponent implements OnInit {
     this.formLabel = event.target.value;
   }
 
+  inputFormColor(event: any) {
+    this.formColor = event.target.value;
+    console.log(this.formColor);
+  }
+
   addOptionItem(value: string) {
     if (value) {
       let formWithValue = this.formOptions.filter((e) => e.label == value);
       if (formWithValue.length == 0 && value.length != 0) {
         this.formOptions.push({
-          key: value[0],
+          // key: value[0],
           label: value,
+          color: this.optionColorFilter,
         });
       }
     }
@@ -119,18 +126,13 @@ export class TagGeneratorComponent implements OnInit {
   }
 
   renameOption(opt: any, label: string) {
-    if (this.showOpt == 'show-option') {
-      this.showOpt = 'no-show-option';
-    } else {
-      this.showOpt = 'show-option';
-    }
-
     label = label.toLowerCase();
     this.formOptions.forEach((e) => {
       if (e.label == opt.label) {
         e.label = label;
       }
     });
+    console.log(this.formOptions);
   }
 
   selectInputForm(name: string) {
@@ -147,15 +149,17 @@ export class TagGeneratorComponent implements OnInit {
     this.labelFilter = '';
   }
 
+  clearOptionColor() {
+    this.optionColorFilter = '#000000';
+  }
+
   addFormItem() {
     //Assemble the new tag
-    let formItem: tags = {
+    let formItem: GroupForm = {
       type: this.formType,
-      groupName: this.activeGroup,
+      groupName: this.activeGroup.name,
       label: this.formLabel,
       options: [],
-      feature: 0,
-      extra: [],
     };
     this.openOption[this.formLabel] = false;
     //Adds the options for drop down, checklist, and radio buttons
@@ -163,7 +167,7 @@ export class TagGeneratorComponent implements OnInit {
       let myOpts = [];
       for (const opt of this.formOptions) {
         myOpts.push({
-          key: opt[0],
+          // key: opt[0],
           label: opt,
         });
       }
@@ -172,25 +176,25 @@ export class TagGeneratorComponent implements OnInit {
     //Pass it to feature and form service to propogate to all features in a group
     //
     // this.featureService.createTag(formItem, this.activeGroup, this.groupList);
-    this.featureService.createTag(
+    this.featureService.createForm(
+      this.activeProject.id,
       formItem,
-      this.groupsFeatures.get(this.activeGroup)
+      this.groups.get(this.activeGroup.name),
+      this.groupsFeatures.get(this.activeGroup.name)
     );
     // this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
 
     //Reset user-defined fields to blank options
     this.formLabel = '';
+    this.formColor = '';
     this.formOptions = [];
     this.labelFilter = '';
     this.changed = true;
-    //Navigate back to the display panel
-    this.groupsService.setActivePane('tagger');
-    this.router.navigateByUrl('/tagger', { skipLocationChange: true });
+    this.groupsService.setShowTagGenerator(false);
   }
 
   cancelCreate() {
-    this.groupsService.setActivePane('tagger');
-    this.router.navigateByUrl('/tagger', { skipLocationChange: true });
+    this.groupsService.setShowTagGenerator(false);
   }
 
   expandPanel() {

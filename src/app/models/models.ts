@@ -42,17 +42,25 @@ export interface NewGroup {
   id?: number;
   color?: string;
   icon?: string;
-  tags?: Array<Tag>;
+  forms?: GroupForm[];
 }
 
 export class NewGroup implements NewGroup {}
 
-export interface Tag {
-  id: number;
-  groupId?: number;
+export interface GroupForm {
+  id?: string;
+  groupName?: string;
   label?: string;
+  color?: string;
   type?: string;
   options?: Array<any>;
+}
+
+export class GroupForm implements GroupForm {}
+
+export interface Tag {
+  id?: string;
+  value?: any;
 }
 
 export class Tag implements Tag {}
@@ -143,12 +151,12 @@ export class AuthToken {
 }
 
 export interface IFeatureAsset {
-  id: number;
-  path: string;
-  uuid: string;
-  feature_id: number;
-  asset_type: string;
-  display_path: string;
+  id?: number;
+  path?: string;
+  uuid?: string;
+  feature_id?: number;
+  asset_type?: string;
+  display_path?: string;
 }
 
 export class FeatureAsset implements IFeatureAsset {
@@ -216,9 +224,13 @@ export class Feature implements AppGeoJSONFeature {
     this.project_id = f.project_id;
   }
 
+  initialAsset?() {
+    return this.assets[0];
+  }
+
   featureType?(): string {
     if (this.assets && this.assets.length === 1) {
-      return this.assets[0].asset_type;
+      return this.initialAsset().asset_type;
     }
 
     if (this.assets && this.assets.length > 1) {
@@ -227,6 +239,29 @@ export class Feature implements AppGeoJSONFeature {
 
     if (!this.assets.length) {
       return this.geometry.type;
+    }
+  }
+
+  featurePath?(): string {
+    const initialAsset = this.initialAsset();
+    if (initialAsset.display_path) {
+      return initialAsset.display_path;
+    } else if (initialAsset.path) {
+      return initialAsset.path;
+    } else {
+      return this.id.toString()
+    }
+  }
+
+  featureShortPath?(): string {
+    const [initialAsset] = this.assets;
+    if (initialAsset.display_path) {
+      return /[^/]*$/.exec(initialAsset.display_path)[0];
+    } else if (initialAsset.path) {
+      const path = /[^/]*$/.exec(initialAsset.path)[0];
+      return path.slice(0, 15) + '...';
+    } else {
+      return this.id.toString()
     }
   }
 }

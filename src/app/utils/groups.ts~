@@ -1,0 +1,36 @@
+export const iconList: Array<any> = [
+  { id: 'fa-house-damage', unicode: '&#xf6f1; house-damage' },
+  { id: 'fa-car', unicode: '&#xf1b9; car' },
+  { id: 'fa-tree', unicode: '&#xf1bb; tree' },
+
+  { id: 'fa-school', unicode: '&#xf549; school' },
+  { id: 'fa-archway', unicode: '&#xf557; archway' },
+  { id: 'fa-building', unicode: '&#xf1ad; building' },
+  { id: 'fa-bus', unicode: '&#xf207; bus' },
+  { id: 'fa-church', unicode: '&#xf51d; church' },
+
+  { id: 'fa-helicopter', unicode: '&#xf533; helicopter' },
+  { id: 'fa-hospital-alt', unicode: '&#xf47d; hospital' },
+  { id: 'fa-hotel', unicode: '&#xf594; hotel' },
+  { id: 'fa-igloo', unicode: '&#xf7ae; igloo' },
+  { id: 'fa-motorcycle', unicode: '&#xf21c; motorcycle' },
+  { id: 'fa-place-of-worship', unicode: '&#xf67f; place-of-worship' },
+  { id: 'fa-plane', unicode: '&#xf072; plane' },
+  { id: 'fa-school', unicode: '&#xf549; school' },
+
+  { id: 'fa-rocket', unicode: '&#xf135; rocket' },
+  { id: 'fa-ship', unicode: '&#xf21a; ship' },
+  { id: 'fa-shopping-cart', unicode: '&#xf07a; shopping-cart' },
+  { id: 'fa-shuttle-van', unicode: '&#xf5b6; shuttle-van' },
+  { id: 'fa-monument', unicode: '&#xf5a6; monument' },
+  { id: 'fa-store', unicode: '&#xf54e; store' },
+
+  { id: 'fa-subway', unicode: '&#xf239; subway' },
+  { id: 'fa-taxi', unicode: '&#xf1ba; taxi' },
+  { id: 'fa-train', unicode: '&#xf238; train' },
+  { id: 'fa-truck', unicode: '&#xf0d1; truck' },
+  { id: 'fa-truck-pickup', unicode: '&#xf63c; truck-pickup' },
+  { id: 'fa-university', unicode: '&#xf19c; university' },
+  { id: 'fa-warehouse', unicode: '&#xf494; warehouse' },
+  { id: 'fa-bolt', unicode: '&#xf0e7; bolt' },
+];

@@ -4,11 +4,12 @@ import { FormsService, tags } from '../../../services/forms.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, combineLatest } from 'rxjs';
 import { GeoDataService } from 'src/app/services/geo-data.service';
 import { Feature, FeatureCollection } from 'geojson';
 import { ProjectsService } from 'src/app/services/projects.service';
 import { FeatureService } from 'src/app/services/feature.service';
+import { NewGroup, GroupForm } from 'src/app/models/models';
 
 @Component({
   selector: 'app-tag-images',
@@ -16,23 +17,22 @@ import { FeatureService } from 'src/app/services/feature.service';
   styleUrls: ['./tag-images.component.scss'],
 })
 export class TagImagesComponent implements OnInit {
-  activeGroup: string;
+  activeGroup: NewGroup;
   payload: any;
   selectedGroup: string;
   openOption: any = {};
-  // activeFeatureId: number;
-  private formGroup$: Subscription;
-  private activeGroup$: Subscription;
-  // private activeFeatureId$: Subscription;
-  private selectedProject;
-  form: FormGroup;
+  private activeProject;
   showSubitem: boolean = true;
-  tagList: tags[] = [];
+  formList: GroupForm[] = [];
   newTag: tags[] = [];
   newTagValue = '';
   featureList: Array<any> = [];
+  groups: Map<string, NewGroup>;
+  groupsFeatures: Map<string, Feature[]>;
+  activeGroupFeatures: any;
   tempGroup: Array<Feature>;
   activeGroupFeature: Feature;
+  tagValues = [];
 
   constructor(
     private groupsService: GroupsService,
@@ -45,38 +45,32 @@ export class TagImagesComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.activeGroup$ = this.activeGroup$ =
-    //   this.groupsService.activeGroup.subscribe((next) => {
-    //     this.activeGroup = next;
-    //   });
-    this.groupsService.activeGroup.subscribe((next) => {
-      this.activeGroup = next;
+    combineLatest(
+      this.geoDataService.activeGroup,
+      this.geoDataService.groupsFeatures,
+      this.geoDataService.groups
+    ).subscribe(([grp, grpFts, grps]) => {
+      this.activeGroup = grp;
+      this.groupsFeatures = grpFts;
+      this.groups = grps;
+      if (grp) {
+        this.formList = grp.forms;
+        if (grpFts) {
+          this.activeGroupFeatures = grpFts.get(grp.name);
+        }
+      }
     });
 
-    // this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe(
-    //   (next) => {
-    //     this.activeFeatureId = next;
-    //   }
-    // );
-
-    this.formGroup$ = this.formsService.formGroup.subscribe((next) => {
-      this.form = next;
-    });
-
-    this.groupsService.activeGroupFeature.subscribe((next) => {
+    this.geoDataService.activeGroupFeature.subscribe((next) => {
       this.activeGroupFeature = next;
     });
 
     this.projectsService.activeProject.subscribe((next) => {
-      this.selectedProject = next;
+      this.activeProject = next;
     });
 
     this.featureService.features$.subscribe((fc: FeatureCollection) => {
       this.featureList = fc.features;
-    });
-
-    this.featureService.tags$.subscribe((tags) => {
-      this.tagList = tags;
     });
 
     // this is to get the list of tags so far
@@ -107,13 +101,24 @@ export class TagImagesComponent implements OnInit {
   }
 
   //Takes the name of the tag's group, and the tag itself to delete
-  deleteTag(tag: tags) {
-    this.featureService.deleteTag(tag);
+  deleteForm(tag: GroupForm) {
+    this.featureService.deleteForm(
+      this.activeProject.id,
+      tag,
+      this.groups.get(this.activeGroup.name),
+      this.groupsFeatures.get(this.activeGroup.name)
+    );
   }
 
   //submits a tag's name change to geoAPI
-  renameTag(tag) {
-    this.featureService.renameTag(tag, this.newTagValue);
+  renameForm(tag: GroupForm) {
+    this.featureService.renameForm(
+      this.activeProject.id,
+      tag,
+      this.groups.get(this.activeGroup.name),
+      this.groupsFeatures.get(this.activeGroup.name),
+      this.newTagValue
+    );
     //Reset newTagValue for the next rename
     this.newTagValue = '';
     this.dialog.closeAll(); //Ensures the window closes when using enter-submission
@@ -127,25 +132,25 @@ export class TagImagesComponent implements OnInit {
     }
   }
 
-  createNewTag() {
-    this.groupsService.setActivePane('preset');
-    this.router.navigateByUrl('/preset', { skipLocationChange: true });
+  createNewForm() {
+    this.groupsService.setShowTagGenerator(true);
   }
 
-  onSubmit() {
-    this.payload = this.form.getRawValue();
+  saveTags() {
+    this.formsService.updateTagValues(
+      this.activeProject,
+      this.activeGroupFeature,
+      this.formList,
+      this.tagValues
+    );
   }
 
-  ngOnDestroy() {
-    this.formGroup$.unsubscribe();
-    // this.activeFeatureId$.unsubscribe();
-    this.activeGroup$.unsubscribe();
+  setValue(formValue) {
+    this.tagValues = this.tagValues.filter((value) => value.id !== formValue.id);
+    this.tagValues.push(formValue);
   }
 
   expandPanel() {
     this.showSubitem = !this.showSubitem;
-    if (this.showSubitem) {
-    } else {
-    }
   }
 }

@@ -1,10 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Feature, FeatureCollection } from '../models/models';
+import {
+  Feature,
+  FeatureCollection,
+  NewGroup,
+  GroupForm,
+} from '../models/models';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { GeoDataService } from './geo-data.service';
 import { FormsService, tags } from './forms.service';
 import { feature } from '@turf/turf';
 import { AbstractEmitterVisitor } from '@angular/compiler/src/output/abstract_emitter';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root',
@@ -13,9 +19,6 @@ export class FeatureService {
   private featureCollection: FeatureCollection;
   private _features: BehaviorSubject<FeatureCollection>;
   public features$: Observable<FeatureCollection>;
-  private _tags: BehaviorSubject<tags[]>;
-  public tags$: Observable<tags[]>;
-  private tagList: tags[];
 
   constructor(
     private geoDataService: GeoDataService,
@@ -27,22 +30,9 @@ export class FeatureService {
     });
     this.features$ = this._features.asObservable();
 
-    this._tags = new BehaviorSubject<tags[]>([]);
-    this.tags$ = this._tags.asObservable();
-
     this.geoDataService.features.subscribe((fc: FeatureCollection) => {
       this._features.next(fc);
       this.featureCollection = fc;
-      // console.log(this.featureCollection)
-
-      //Update the tag list alongside the features
-      try {
-        if (this.tagList == undefined) {
-          //Only update if tagList is empty, after retrieval, the only way to edit tags will be to edit this list
-          this.tagList = this.formsService.getTags();
-          this._tags.next(this.tagList);
-        }
-      } catch (error) {}
     });
   }
 
@@ -67,23 +57,6 @@ export class FeatureService {
     this._features.next(this.featureCollection); //Update the observable with the filtered list
   }
 
-  //saveFeatures takes a feature list and passes it to GeoAPI to save
-  //With this scheme, you can just update a feature's property
-  saveFeatures(features: FeatureCollection): void {
-    this._features.next(features); //Update the observable
-    features.features.forEach((feat) => {
-      console.log(feat.id);
-      // this.geoDataService.updateFeatureProperty(
-      //   feat.project_id,
-      //   Number(feat.id),
-      //   feat.properties
-      // );
-    });
-    this.geoDataService.getFeatures(features.features[0].project_id);
-  }
-
-  //This might be a little short to consider a function, but it saves me from writing it every time...
-  //Assumes that the feature passed in has had it's properties updated or changed before being passed in
   saveFeature(feat: Feature): void {
     this.geoDataService.updateFeatureProperty(
       feat.project_id,
@@ -123,163 +96,59 @@ export class FeatureService {
     );
   }
 
-  //Save tags has 2 purposes, first it updates every feature's tag list to reflect the change, then it sends the features to GeoAPI to be saved
-  saveTags(tagList): void {
-    this._tags.next(tagList); //Update the observable
-    let customList = [];
-    //Update each feature's tag list
-    console.log(tagList);
-
-    this.featureCollection.features.forEach((feat) => {
-      tagList.forEach((tag) => {
-        if (feat.id == tag.feature) {
-          customList.push(tag);
-        }
-      }); //end of for each tag
-
-      feat.properties.tag = customList;
-      customList = [];
-    });
-    // this.saveFeatures(this.featureCollection); //Save updated features to backend
-  }
-
-  //Takes the entire tag that should be deleted and filters the list from it
-  //NOTE: This does sucessfully delete multiple tags at a time, just not if you delete multiple and immediately reload...
-  deleteTag(tag: tags): void {
-    //If groupname and label of the passed in tag match, remove from list
-    let tempTags = [];
-    this.tagList.forEach((listTag) => {
-      if (
-        !(
-          listTag.groupName == tag.groupName &&
-          listTag.label == tag.label &&
-          listTag.type == tag.type
-        )
-      ) {
-        tempTags.push(listTag);
-      }
-    });
-    this.tagList = tempTags;
-    this.saveTags(this.tagList); //saves tags to backend
-  }
-
-  renameTag(tag: tags, newName: string): void {
-    let oldName = tag.label; //The passed in tag has the old tag's name
-
-    this.tagList.forEach((listTag) => {
-      if (listTag.label == oldName && listTag.type == tag.type) {
-        listTag.label = newName;
-      }
-    });
-
-    this.saveTags(this.tagList); //saves tags to backend
-  }
-
-  createTag(newTag: tags, featureGroups: Feature[]): void {
-    featureGroups.forEach((feat: Feature) => {
-      let tag: tags = {
-        extra: newTag.extra,
-        feature: feat.id,
-        groupName: newTag.groupName,
-        label: newTag.label,
-        options: newTag.options,
-        type: newTag.type,
-      };
-      this.tagList.push(tag);
-    });
-    this.saveTags(this.tagList);
-  }
-
-  bulkTagDelete(tagList: Array<any>): void {
-    tagList.forEach((delTag) => {
-      //Filter out each tag from the tag list
-      this.tagList = this.tagList.filter((listTag) => listTag != delTag);
-    });
-    this.saveTags(this.tagList); //saves tags to backend
-  }
-
-  updateExtra(
-    change: any,
-    componentID: number,
-    feature: Feature,
-    groupName: string,
-    label: string,
-    type: string
+  deleteForm(
+    projectId: number,
+    form: GroupForm,
+    activeGroup: NewGroup,
+    featureGroups: Feature[]
   ): void {
-    let nOption;
-    this.tagList.forEach((tag) => {
-      // updating notes
-      if (
-        tag.feature === feature.id &&
-        tag.groupName === groupName &&
-        tag.type === type
-      ) {
-        const index = tag.extra.findIndex(
-          (item) =>
-            item['id'] === feature.id &&
-            item['compID'] === componentID &&
-            item['groupName'] === groupName &&
-            item['label'] === label
-        );
-        // const index = tag.extra.findIndex(item => item.label === opt['label'] && item.id === id && item.group === group)
+    const taggedGroup: NewGroup = {
+      ...activeGroup,
+      forms: activeGroup.forms.filter((t: GroupForm) => t.id !== form.id),
+    };
 
-        if (index > -1) {
-          // console.log(tag.extra)
-          // console.log(tag.extra[index])
-          tag.extra[index]['option'] = change;
-        } else {
-          nOption = {
-            option: change,
-            id: feature.id,
-            groupName: groupName,
-            compID: componentID,
-            label: label,
-          };
-          // console.log(rOption)
-          tag.extra.push(nOption);
-        }
-      } // end of updating notes
-    }); // end of for each tag
-    this.saveTags(this.tagList);
-  } // end of updateExtra function
+    this.geoDataService.updateGroupFeatures(
+      projectId,
+      featureGroups,
+      taggedGroup
+    );
+  }
 
-  updateChecked(
-    opt: object,
-    feature: Feature,
-    group: string,
-    label: string,
-    check: string
+  renameForm(
+    projectId: number,
+    targetForm: GroupForm,
+    activeGroup: NewGroup,
+    featureGroups: Feature[],
+    newName: string
   ): void {
-    let nOption;
-    this.tagList.forEach((tag) => {
-      if (check == 'create') {
-        if (tag != undefined) {
-          if (tag.feature === feature.id && tag.groupName === group) {
-            nOption = {
-              option: opt['key'],
-              id: feature.id,
-              group: group,
-              label: label,
-            };
-            console.log(nOption);
-            tag.extra.push(nOption);
-          }
-        }
-      } // end of create
-      else {
-        if (tag.feature === feature.id && tag.groupName === group) {
-          const index = tag.extra.findIndex(
-            (item) =>
-              item['option'] === opt['key'] &&
-              item['id'] === feature.id &&
-              item['group'] === group &&
-              item['label'] === label
-          );
-          // item.label === opt['label'] && item.id === id && item.group === group && item.title === label
-          tag.extra.splice(index, 1);
-        }
-      } // end of else
-    }); // end of for each tag
-    this.saveTags(this.tagList);
-  } // end of updateChecked function
+    const taggedGroup: NewGroup = {
+      ...activeGroup,
+      forms: [...activeGroup.forms.filter(form => form.id !== targetForm.id), { ...targetForm, label: newName }],
+    };
+
+    this.geoDataService.updateGroupFeatures(
+      projectId,
+      featureGroups,
+      taggedGroup
+    );
+  }
+
+  createForm(
+    projectId: number,
+    form: GroupForm,
+    activeGroup: NewGroup,
+    featureGroups: Feature[]
+  ): void {
+    const id = uuidv4();
+    form = { ...form, id };
+    const taggedGroup: NewGroup = {
+      ...activeGroup,
+      forms: activeGroup.forms ? [...activeGroup.forms, form] : [form],
+    };
+    this.geoDataService.updateGroupFeatures(
+      projectId,
+      featureGroups,
+      taggedGroup
+    );
+  }
 }

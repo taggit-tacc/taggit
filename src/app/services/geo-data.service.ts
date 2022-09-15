@@ -11,6 +11,7 @@ import {
   NewGroup,
   Tag,
   TagValue,
+  GroupForm,
 } from '../models/models';
 import { Feature, FeatureCollection } from '../models/models';
 import { environment } from '../../environments/environment';
@@ -20,6 +21,8 @@ import * as querystring from 'querystring';
 import { RemoteFile } from 'ng-tapis';
 import { NotificationsService } from './notifications.service';
 import { ScrollService } from './scroll.service';
+import { getRandomColor } from '../utils/randomColor';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root',
@@ -46,17 +49,13 @@ export class GeoDataService {
   private _activeGroupId: BehaviorSubject<number> = new BehaviorSubject(null);
   public activeGroupId: Observable<number> = this._activeGroupId.asObservable();
 
-  // private _activeGroupName: BehaviorSubject<string> = new BehaviorSubject('');
-  // public activeGroupName: Observable<string> =
-  //   this._activeGroupName.asObservable();
-
   private _activeGroup: BehaviorSubject<NewGroup> = new BehaviorSubject(null);
   public activeGroup: Observable<NewGroup> = this._activeGroup.asObservable();
 
-  private _activeGroupFeature: BehaviorSubject<Feature> = new BehaviorSubject(
+  private _activeGroupFeature: BehaviorSubject<any> = new BehaviorSubject<any>(
     null
   );
-  public activeGroupFeature: Observable<Feature> =
+  public activeGroupFeature: Observable<any> =
     this._activeGroupFeature.asObservable();
 
   private _groups: BehaviorSubject<Map<string, NewGroup>> = new BehaviorSubject(
@@ -91,6 +90,15 @@ export class GeoDataService {
     this._activeOverlay = new BehaviorSubject<any>(null);
   }
 
+  getFeature(
+    projectId: number,
+    feature: Feature
+  ): Observable<FeatureCollection> {
+    return this.http.get<FeatureCollection>(
+      environment.apiUrl + `/projects/${projectId}/features/${feature.id}/`
+    );
+  }
+
   getFeatures(
     projectId: number,
     query: AssetFilters = new AssetFilters(),
@@ -104,14 +112,7 @@ export class GeoDataService {
       .subscribe((fc: FeatureCollection) => {
         fc.features = fc.features.map((feat: Feature) => new Feature(feat));
         this.getGroups(fc.features);
-        // this._groups.next(this.getGroups(fc.features));
-        // this._groups.next(this.getGroups(fc.features));
-        console.log(this._groups.value);
-        // console.log(this.getGroupFeatures(fc.features, 'test'));
-        // TODO this is where it updates
         this._features.next(fc);
-        console.log(this._features.value);
-        // this._loaded.next(false);
         this._loaded.next(true);
 
         if (restoreScroll) {
@@ -143,9 +144,18 @@ export class GeoDataService {
 
   setActiveGroup(group: NewGroup): void {
     this._activeGroup.next(group);
-    // this._activeGroupFeature.next(
-    //   this._groupsFeatures.value.get(group.name)[0]
-    // );
+    if (group) {
+      const groupFeatures = this._groupsFeatures.value.get(group.name);
+      if (!this._activeGroupFeature.value || !groupFeatures.some(gf => this._activeGroupFeature.value.id === gf.id)) {
+        this.setActiveGroupFeature(groupFeatures[0]);
+      } 
+    } else {
+      this.setActiveGroupFeature(null);
+    }
+  }
+
+  setActiveGroupFeature(feat: any): void {
+    this._activeGroupFeature.next(feat);
   }
 
   addFeature(feat: Feature): void {
@@ -181,7 +191,6 @@ export class GeoDataService {
     featureId: string | number,
     groupData: any
   ): void {
-    console.log(groupData);
     this.http
       .post(
         environment.apiUrl +
@@ -215,7 +224,6 @@ export class GeoDataService {
   }
 
   deletePointCloud(pc: IPointCloud): void {
-    console.log(pc);
     this.http
       .delete(
         environment.apiUrl + `/projects/${pc.project_id}/point-cloud/${pc.id}/`
@@ -228,7 +236,6 @@ export class GeoDataService {
   addFileToPointCloud(pc: IPointCloud, file: File) {
     const form = new FormData();
     form.append('file', file);
-    console.log(pc);
     this.http
       .post(
         environment.apiUrl + `/projects/${pc.project_id}/point-cloud/${pc.id}/`,
@@ -298,7 +305,6 @@ export class GeoDataService {
     this.http
       .post(environment.apiUrl + `projects/${projectId}/features/`, payload)
       .subscribe((resp) => {
-        //this.getFeatures(projectId)
         response = new Feature(resp[0]);
         this.importImage(projectId, response, path);
       });
@@ -421,37 +427,25 @@ export class GeoDataService {
         });
       });
     this._groups.next(groups);
-    console.log(groupsFeatures);
     this._groupsFeatures.next(groupsFeatures);
+    const activeGroup = this._activeGroup.value;
+    if (activeGroup) {
+      this.setActiveGroup(groups.get(activeGroup.name));
+    }
   }
 
   getGroup(groupName: string) {
     return this._groups.value.get(groupName);
   }
 
-  getGroupFeatures(featureList: Feature[], groupName: string) {
+  getGroupFeatures(featureList: Feature[], group: NewGroup) {
     return featureList.filter(
       (feat: Feature) =>
         feat.properties.group &&
         feat.properties.group.length &&
-        feat.properties.group.some((grp: NewGroup) => grp.name === groupName)
+        feat.properties.group.some((grp: NewGroup) => grp.id === group.id)
     );
   }
-
-  // private createGroup(
-  //   featureList: Feature[],
-  //   featureId: number,
-  //   group: NewGroup // TODO: Generate group with new uuid and not with name
-  // ): Feature[] {
-  //   return featureList.map((feat: Feature) => {
-  //     if (feat.id === featureId) {
-  //       feat.properties.group = feat.properties.group
-  //         .filter((grp: NewGroup) => grp.name !== group.name)
-  //         .push(group);
-  //     }
-  //     return feat;
-  //   });
-  // }
 
   private createGroup(
     featureList: Feature[],
@@ -459,13 +453,11 @@ export class GeoDataService {
   ): Feature[] {
     return featureList.map((feat: Feature) => {
       let groupProp = feat.properties.group ? feat.properties.group : [];
-      groupProp = groupProp.filter((grp: NewGroup) => grp.name !== group.name);
+      groupProp = groupProp.filter((grp: NewGroup) => grp.id !== group.id);
       groupProp.push(group);
-      console.log(groupProp);
       feat.properties.group = groupProp;
 
       return feat;
-      // return this.createGroupInFeature(feat, group);
     });
   }
 
@@ -482,26 +474,45 @@ export class GeoDataService {
   }
 
   private updateGroup(featureList: Feature[], group: NewGroup): Feature[] {
-    return this.getGroupFeatures(featureList, group.name).map(
+    return this.getGroupFeatures(featureList, group).map(
       (feat: Feature) => {
-        console.log(feat);
-        feat.properties.group = feat.properties.group
-          .filter((grp: NewGroup) => grp.name !== group.name)
-          .push(group);
+        const groupProp = feat.properties.group.filter(
+          (grp: NewGroup) => grp.id !== group.id
+        );
+        groupProp.push(group);
+        feat.properties.group = groupProp;
+
         return feat;
       }
     );
   }
 
-  private deleteGroup(featureList: Feature[], groupName: string): Feature[] {
-    return this.getGroupFeatures(featureList, groupName).map(
+  private deleteGroup(featureList: Feature[], group: NewGroup): Feature[] {
+    return this.getGroupFeatures(featureList, group).map(
       (feat: Feature) => {
         feat.properties.group = feat.properties.group.filter(
-          (grp: NewGroup) => grp.name !== groupName
+          (grp: NewGroup) => grp.id !== group.id
         );
         return feat;
       }
     );
+  }
+
+  createNewGroup(
+    projectId: number,
+    featureList: Feature[],
+    name: string
+  ) {
+    const id = uuidv4();
+    const myRandColor: string = getRandomColor();
+    const group: NewGroup = {
+      id,
+      name,
+      color: myRandColor,
+      icon: 'fa-house-damage'
+    };
+    this.createGroupFeatures(projectId, featureList, group);
+    return group;
   }
 
   createGroupFeatures(
@@ -517,9 +528,9 @@ export class GeoDataService {
   deleteGroupFeatures(
     projectId: number,
     featureList: Feature[],
-    groupName: string
+    group: NewGroup
   ) {
-    this.deleteGroup(featureList, groupName).forEach((feat: Feature) => {
+    this.deleteGroup(featureList, group).forEach((feat: Feature) => {
       this.updateFeatureProperty(projectId, feat.id, feat.properties);
     });
   }
@@ -534,13 +545,36 @@ export class GeoDataService {
     });
   }
 
-  getTags(groupName: string): Tag[] {
-    return this._groups.value.get(groupName).tags;
+  renameGroup(projectId: number, featureList: Feature[], group: NewGroup, name: string): void {
+    const renamedGroup = {
+      ...group,
+      name
+    };
+
+    this.updateGroupFeatures(
+      projectId,
+      featureList,
+      renamedGroup
+    );
   }
 
-  // setActiveGroup(groupId: number) {
-  //   this._activeGroupId.next(groupId);
-  // }
+  reiconGroup(projectId: number, featureList: Feature[], group: NewGroup, icon: string): void {
+    const reiconedGroup = {
+      ...group,
+      icon
+    };
+
+    this.updateGroupFeatures(
+      projectId,
+      featureList,
+      reiconedGroup
+    );
+  }
+
+
+  getForms(groupName: string): GroupForm[] {
+    return this._groups.value.get(groupName).forms;
+  }
 
   public get overlays(): Observable<Array<Overlay>> {
     return this._overlays.asObservable();

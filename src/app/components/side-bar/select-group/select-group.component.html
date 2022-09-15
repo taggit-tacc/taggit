@@ -3,7 +3,6 @@
   <div *ngIf="showSubitem" class="subitem group-subitem">
 	<!-- TODO redundant functionality radio is just for style -->
 	<form class="boxed">
-	  <!-- <div *ngFor="let group of groupList" (click)="selectGroupForm(group.name)" class="box form"> -->
 	  <div *ngFor="let group of groups | keyvalue" (click)="selectGroupForm(group.value)" class="box form">
 		<input type="radio" [id]="group.key" [value]="group.key" name="skills" [checked]="isChecked(group.key)">
 		<label class="group-container" style="cursor: pointer" [for]="group.key">
@@ -15,19 +14,19 @@
 			</svg>
 		  </div>
 		  <div class="button-group">
-			<div (click)="deleteGroup(group.key)">
+			<div (click)="deleteGroup(group.value)">
 			  <i class="fas fa-minus"
 				 matTooltip="Delete"
 				 matTooltipPosition="below">
 			  </i>
 			</div>
-			<div (click)="openRenameModal(renameModal, group.key)">
+			<div (click)="openRenameModal(renameModal, group.value)">
 			  <i class="fas fa-edit"
 				 matTooltip="Rename"
 				 matTooltipPosition="below">
 			  </i>
 			</div>
-				<div (click)="openIconSelection(iconModal, group.key)">
+				<div (click)="openIconSelection(iconModal, group.value)">
 					<span class="fa {{group.value.icon}}"
 					matTooltip="icons"
 					matTooltipPosition="below"></span>
@@ -45,7 +44,6 @@
 	  <br/>
 	  <div class="button-group">
 		<button matDialogClose color="primary" mat-raised-button (click)="renameGroup(groupRename.value)">Rename</button>
-		<!-- <button matDialogClose color="primary" mat-raised-button (click)="saveGroup(groupRename.value, currentIcon)">Rename</button> -->
 		<button matDialogClose mat-button>Cancel</button>
 	  </div>
 	</ng-template>
@@ -53,13 +51,13 @@
 	<ng-template #iconModal>
 		<div class="iconDropdown">
 		<select class="fa" [(ngModel)]="choice">
-			<option class="fa" *ngFor="let icons of iconList" value={{icons.id}} [innerHTML]="icons.unicode"></option>
+		  <option class="fa" *ngFor="let icon of iconList" value={{icon.id}} [innerHTML]="icon.unicode">
+          </option>
 		</select>
 		<br/>
 	  	<br/>
 		<div class="button-group">
 			<button matDialogClose color="primary" mat-raised-button (click)="saveIcon(choice)">Save</button>
-	<!-- <button matDialogClose color="primary" mat-raised-button (click)="saveGroup(selectedGroup, choice)">Save</button> -->
 			<button matDialogClose mat-button>Cancel</button>
 		  </div>
 	</div>

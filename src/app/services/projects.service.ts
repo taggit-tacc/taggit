@@ -79,7 +79,7 @@ export class ProjectsService {
   getProjects(): void {
     this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe(
       (resp) => {
-        console.log(resp);
+        // console.log(resp);
         this.updateProjectsList(resp);
         //DEBUG: outputs results of query
         //console.log(this._projects.getValue())

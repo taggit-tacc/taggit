@@ -3,4 +3,9 @@
 <!-- <app-tagger></app-tagger> -->
 <app-select-group></app-select-group>
 <app-select-image></app-select-image>
-<router-outlet></router-outlet>
+
+<app-tag-generator *ngIf="showTagGenerator; else elseBlock"></app-tag-generator>
+<ng-template #elseBlock>
+  <app-tag-images></app-tag-images>
+</ng-template>
+<!-- <router-outlet></router-outlet> -->

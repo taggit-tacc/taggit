@@ -1,7 +1,16 @@
-<div  class="form-check form-check">
-  <label class="form-check-label">
-      <input class="form-check-input" [(ngModel)]="chosenTag" type="radio" id="inlineCheckbox3" name={{label}} value={{field.label}} (change)="updateCheckedTag()" /> 
-          {{field.label}}
-      <input class="form-check-input" [(ngModel)]="chosenColor" type="color" id="inlineCheckbox3"/>
-  </label>
+<div *ngFor="let opt of form.options" [id]="form.label" class="input-group">
+  <div  class="form-check form-check">
+    <label class="form-check-label">
+      <input class="form-check-input" [(ngModel)]="chosenTag" type="radio" id="inlineCheckbox3" name={{label}} value={{opt.label}} (change)="updateCheckedTag()" /> 
+      {{opt.label}}
+
+	  <svg class="box" width="10px" height="10px">
+        <rect width="10px" height="10px" style="fill: #ffffff"/>
+        <rect width="8px" height="8px" x="1px" y="1px" [style.fill]="opt.color"/>
+      </svg>
+
+      <!-- <input class="form-check-input" [(ngModel)]="opt.color" (change)="chooseColor(opt)" type="color" id="inlineCheckbox3"/> -->
+
+    </label>
+  </div>
 </div>

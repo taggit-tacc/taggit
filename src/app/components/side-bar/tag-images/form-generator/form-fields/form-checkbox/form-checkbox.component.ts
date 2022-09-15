@@ -1,82 +1,61 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { FeatureService } from 'src/app/services/feature.service';
 import { FormsService } from 'src/app/services/forms.service';
 import { GroupsService } from 'src/app/services/groups.service';
-import { Feature } from 'src/app/models/models';
+import { Feature, GroupForm, Project, NewGroup } from 'src/app/models/models';
+import { ProjectsService } from 'src/app/services/projects.service';
+import { GeoDataService } from 'src/app/services/geo-data.service';
 
 @Component({
   selector: 'app-form-checkbox',
   templateUrl: 'form-checkbox.component.html',
 })
 export class FormCheckBoxComponent {
+  @Output() formValue: EventEmitter<any> = new EventEmitter<any>();
   @Input() field: any;
-  @Input() form: FormGroup;
-  isChecked: boolean = false;
+  @Input() form: GroupForm;
+  value: any[] = [];
   activeGroupFeature: Feature;
-  activeGroup: string;
-  // get isValid() { return this.form.controls[this.field.name].valid; }
-  // get isDirty() { return this.form.controls[this.field.name].dirty; }
+  activeGroup: NewGroup;
+  private activeProject: Project;
 
   constructor(
     private formsService: FormsService,
     private groupsService: GroupsService,
+    private geoDataService: GeoDataService,
+    private projectsService: ProjectsService,
     private featureService: FeatureService
   ) {}
 
-  checkedOpt: any[] = this.formsService.getCheckedOpt();
-
   ngOnInit() {
-    this.groupsService.activeGroupFeature.subscribe((next) => {
+    this.geoDataService.activeGroupFeature.subscribe((next) => {
       this.activeGroupFeature = next;
+      this.value = this.formsService.getTagValue(next, this.form);
+      this.formValue.emit({id: this.form.id, value: this.value});
     });
 
-    this.groupsService.activeGroup.subscribe((next) => {
+
+    this.geoDataService.activeGroup.subscribe((next) => {
       this.activeGroup = next;
     });
-    // this code checks if the option has been checked or not
-    if (this.formsService.getCheckedOpt().length != 0) {
-      let index;
-      this.checkedOpt.forEach((opt) => {
-        if (opt != undefined) {
-          index = opt.findIndex(
-            (item) =>
-              item.id === this.activeGroupFeature.id &&
-              item.option === this.field.label &&
-              item.group === this.activeGroup &&
-              item.label === this.form['label']
-          );
 
-          if (index > -1) {
-            this.isChecked = true;
-          }
-        }
-      });
-      // const index = this.checkedOpt.findIndex(item => item.id === this.activeFeatureId && item.label === this.field.label );
-    }
+    this.projectsService.activeProject.subscribe((next) => {
+      this.activeProject = next;
+    });
   }
 
-  // adds/deletes to/from the list of checked options
-  selected(e: any, option: object) {
+  isChecked(opt) {
+    return this.value.some(val => val.label === opt.label);
+  }
+
+  selected(e: any, option: any) {
+    this.value = this.value.filter((opt) => opt.label !== option.label);
     if (e.target.checked) {
-      console.log('Checked');
-      this.featureService.updateChecked(
-        option,
-        this.activeGroupFeature,
-        this.activeGroup,
-        this.form['label'],
-        'create'
-      );
-    } else {
-      console.log('Unchecked');
-      this.featureService.updateChecked(
-        option,
-        this.activeGroupFeature,
-        this.activeGroup,
-        this.form['label'],
-        'delete'
-      );
+      this.value.push(option);
     }
+    this.formValue.emit({id: this.form.id, value: this.value});
   }
 }
