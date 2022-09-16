@@ -7,6 +7,7 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { AuthService } from './services/authentication.service';
+import { environment } from '../environments/environment';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
@@ -48,6 +49,19 @@ export class TokenInterceptor implements HttpInterceptor {
           },
         });
       }
+    }
+    // we put the JWT on the request to our geoapi API because it is not behind ws02 if in local dev
+    // and if user is logged in
+    if (
+      request.url.indexOf('http://localhost') > -1 &&
+      this.authSvc.isLoggedIn()
+    ) {
+      // add header
+      request = request.clone({
+        setHeaders: {
+          'X-JWT-Assertion-designsafe': environment.jwt,
+        },
+      });
     }
 
     return next.handle(request);

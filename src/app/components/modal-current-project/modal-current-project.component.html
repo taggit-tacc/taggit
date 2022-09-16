@@ -21,32 +21,8 @@
   </mat-form-field>
 
   <div class="button-group small">
-    <button
-      mat-raised-button
-      color="basic"
-      class="button small warning"
-      type="button"
-      (click)="close()"
-    >
-      Close
-    </button>
-    <button
-      mat-raised-button
-      color="warn"
-      class="button small warning"
-      type="delete"
-      (click)="delete()"
-    >
-      Delete
-    </button>
-    <button
-      mat-raised-button
-      color="primary"
-      class="button small align-right"
-      type="submit"
-      [disabled]="!projCreateForm.valid"
-    >
-      Update
-    </button>
+    <button mat-raised-button color="basic" class="button small warning" type="button" (click)="close()">Close</button>
+    <button *ngIf="activeProject.deletable" mat-raised-button color="warn" class="button small warning" type="delete" (click)="delete()">Delete</button>
+    <button mat-raised-button color="primary" class="button small align-right" type="submit" [disabled]="!projCreateForm.valid">Update</button>
   </div>
 </form>
