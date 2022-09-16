@@ -176,21 +176,16 @@ export class ModalFileBrowserComponent implements OnInit {
 
   // TODO: Ian: Error message on incorrect file type?
   select(event: any, file: RemoteFile, index: number) {
-	if (event.shiftKey) {
-		this.selectFilesShiftClick(index, file);
-	  }
-	else {
-		if (this.tapisFilesService.checkIfSelectable(file)) {
-			this.addSelectedFile(file, index);
-		}
-		else{
-			// console.log("not selectable")
-	}
-	}
-	// here?
-	// else {
-	//   Signal Error!
-	// }
+    if (event.shiftKey) {
+      this.selectFilesShiftClick(index, file);
+    }
+    else {
+      if (this.tapisFilesService.checkIfSelectable(file)) {
+        this.addSelectedFile(file, index);
+      }
+      else{
+      }
+    }
   }
 
   selectFilesShiftClick(index: number, file: RemoteFile) {
@@ -209,7 +204,6 @@ export class ModalFileBrowserComponent implements OnInit {
 			this.selectedFiles.delete(file.path);
 		} else {
 			this.selectedFiles.set(file.path, file);
-		//   console.log(this.selectedFiles + "GOT HERE");
 		}
 	}
   }

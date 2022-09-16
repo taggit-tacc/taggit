@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FeatureCollection } from 'geojson';
-import { Project, NewGroup } from '../../../models/models';
+import { Project, TagGroup } from '../../../models/models';
 import { ProjectsService } from '../../../services/projects.service';
 import { GeoDataService } from '../../../services/geo-data.service';
 import { FormsService } from '../../../services/forms.service';
-import { GroupsService } from '../../../services/groups.service';
 import { Subscription } from 'rxjs';
 import { Feature } from '@turf/turf';
 
@@ -15,17 +14,14 @@ import { Feature } from '@turf/turf';
 })
 export class SelectImageComponent implements OnInit {
   public activeProject: Project;
-  private groups: Map<string, NewGroup>;
-  activeGroup: NewGroup;
+  private groups: Map<string, TagGroup>;
+  activeGroup: TagGroup;
   activeGroupFeature: Feature;
-  showTagger: boolean;
   showSubitem: boolean = true;
-  tempGroup: Array<Feature>;
   groupsFeatures: Map<string, any>;
 
   constructor(
     private formsService: FormsService,
-    private groupsService: GroupsService,
     private geoDataService: GeoDataService,
     private projectsService: ProjectsService
   ) {}
@@ -109,8 +105,5 @@ export class SelectImageComponent implements OnInit {
 
   expandPanel() {
     this.showSubitem = !this.showSubitem;
-    if (this.showSubitem) {
-    } else {
-    }
   }
 }

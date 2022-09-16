@@ -36,7 +36,6 @@ export class ModalShareProjectComponent implements OnInit {
     this.projectsService.getProjectUsers(this.activeProj).subscribe((next) =>{
       this.projectUsers = next;
       this.onlyOne = (this.projectUsers.length == 1)
-      console.log(this.onlyOne)
     });
   }
 

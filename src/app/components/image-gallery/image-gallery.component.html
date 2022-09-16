@@ -7,7 +7,7 @@
         [infiniteScrollThrottle]="1500"
         (scrolled)="onScroll()"
         class="img-list-container"
-        *ngIf="!showTagger; else elseBlock">
+        *ngIf="!showTagger; else tagger">
         <app-image-box
           *ngFor="let feat of featureListScroll"
           [feature]="feat">
@@ -23,7 +23,7 @@
         id = "img-spin"
         [fullScreen] = "false">
       </ngx-spinner>
-      <ng-template #elseBlock>
+      <ng-template #tagger>
         <div>
           <div class="imager">
             <img class="view-image" [src]="getPath()">

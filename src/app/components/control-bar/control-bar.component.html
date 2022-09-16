@@ -13,7 +13,6 @@
     </span>
     <button mat-menu-item (click)="openCreateProjectModal()">Create Gallery</button>
     <button mat-menu-item [matMenuTriggerFor]="projectList">Select Gallery</button>
-    <!-- <button mat-menu-item (click)="openShareProjectModal()">Share Gallery</button> -->
     <button mat-menu-item (click)="openFilePicker(test)">File Browser</button>
     <button mat-menu-item [matMenuTriggerFor]="saveOptions">Save as</button>
   </mat-menu>
@@ -32,7 +31,7 @@
 
   <span class="example-spacer"></span>
 
-  <div *ngIf="showTagger; else doThat" class="path-buttons">
+  <div *ngIf="showTagger" class="path-buttons">
     <div class="slides" style="line-height: 1; font-size: 12px">
       {{getAssetDisplay()}}
       <div class="lr-buttons" style="margin-top: 5px">
@@ -41,25 +40,6 @@
       </div>
     </div>
   </div>
-
-  <ng-template #doThat>
-    <!-- <input placeholder="Search images" -->
-    <!--	   name="" -->
-    <!--	   type="text" -->
-    <!--	   value="" -->
-    <!--	   class="goods"/> -->
-
-
-    <!-- <mat-form-field appearance="fill"> -->
-    <!--   <input matInput placeholder="Search"> -->
-    <!-- </mat-form-field> -->
-
-    <!-- <mat-form-field class="example-full-width"> -->
-    <!--   <input matInput type="text" -->
-    <!--		 [(ngModel)]="value" -->
-    <!--		 placeholder="Search"> -->
-    <!-- </mat-form-field> -->
-  </ng-template>
 
   <span class="example-spacer"></span>
 
@@ -80,23 +60,19 @@
         <mat-label>Group Name</mat-label>
         <input matInput placeholder="Group Name" (keyup.enter)="addGroup(groupInput.value)" #groupInput>
       </mat-form-field>
+
+      <div style="color: #ff0000" *ngIf="invalidNameError">
+        Invalid Name!
+      </div>
+      <div style="color: #ff0000" *ngIf="existingNameError">
+        Existing Name!
+      </div>
       <br/>
       <br/>
-      <button mat-raised-button matDialogClose color="primary" (click)="addGroup(groupInput.value)">Add Group</button>
+      <button mat-raised-button color="primary" (click)="addGroup(groupInput.value)">Add Group</button>
       <button mat-button matDialogClose color="secondary">Cancel</button>
     </ng-template>
   </div>
-
-  <!-- <button *ngIf="groupsExist && showSidebar && activePane == 'preset'" -->
-  <!--		  mat-button -->
-  <!--		  color="secondary" -->
-  <!--		  (click)="goToRoute()">Tagger</button> -->
-
-  <!-- <button *ngIf="groupsExist && showSidebar && activePane == 'tagger'" -->
-  <!--		  mat-button -->
-  <!--		  color="secondary" -->
-  <!--		  (click)="goToRoute()">Preset</button> -->
-
 
   <button *ngIf="groupsExist && !showTagger"
     mat-raised-button

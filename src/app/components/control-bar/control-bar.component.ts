@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, TemplateRef, ChangeDetectorRef } from '@angular/core';
 import { ProjectsService } from '../../services/projects.service';
-import { Feature, Project, NewGroup } from '../../models/models';
+import { Feature, Project, TagGroup } from '../../models/models';
 import { FeatureCollection } from 'geojson';
 import { GeoDataService } from '../../services/geo-data.service';
 import { LatLng } from 'leaflet';
@@ -41,28 +41,24 @@ export class ControlBarComponent implements OnInit {
   featureList: Array<any> = [];
 
   public currentUser: AuthenticatedUser;
-  private REFRESHTIME = 6; // 60 secs per reload default, right now it's an hour (6000 sec) //This is in seconds, and somehow got set to 6
   public projects: Project[];
   public selectedProject: Project;
   public mapMouseLocation: LatLng = new LatLng(0, 0);
-  public liveRefresh = true;
-  private timer: Observable<number> = interval(this.REFRESHTIME * 1000);
-  private timerSubscription: Subscription;
   imageName: string;
   groupsExist: boolean;
   groupName: string;
   showTagger = false;
   selectedImages: Array<any>;
   modalRef: BsModalRef;
-  activeGroup: NewGroup;
-  groups: Map<string, NewGroup>;
+  activeGroup: TagGroup;
+  groups: Map<string, TagGroup>;
   groupsFeatures: Map<string, any>;
   activeGroupFeatures: any;
   activeGroupFeaturesRotate: any;
   activeGroupFeature: any;
-  // activePane: string;
-  hazMapperLink: string;
-  // itemsSelected: boolean = false;
+  invalidNameError = false;
+  existingNameError = false;
+  hazmapperLink: string;
   foundFilePaths = [];
 
   constructor(
@@ -203,15 +199,13 @@ export class ControlBarComponent implements OnInit {
       this.selectedProject = next;
       this.getDataForProject(this.selectedProject);
       //retrieves uuid for project, formats result into a link to that Hazmapper map
-      this.hazMapperLink =
+      this.hazmapperLink =
         'https://hazmapper.tacc.utexas.edu/hazmapper/project/' + next.uuid;
     });
 
     this.geoDataService.mapMouseLocation.pipe(skip(1)).subscribe((next) => {
       this.mapMouseLocation = next;
     });
-
-    // this.groupsService.setActiveFeatureNum(0);
   }
 
   ngAfterViewChecked() {
@@ -220,30 +214,6 @@ export class ControlBarComponent implements OnInit {
 
   clearAll() {
     this.groupsService.unselectAllImages();
-    // this.groupsService.setUnselectAll(true);
-    // this.groupsService.setItemsSelected(false);
-  }
-
-  reloadFeatures() {
-    this.geoDataService.getFeatures(this.selectedProject.id);
-  }
-
-  setLiveRefresh(option: boolean) {
-    option
-      ? (this.timerSubscription = this.timer.subscribe(() => {
-          this.reloadFeatures();
-        }))
-      : this.timerSubscription.unsubscribe();
-  }
-
-  //Similar to setLiveRefresh, but it runs the time out once and then unsubscribes from the timer
-  startRefreshTimer(option: boolean) {
-    option
-      ? (this.timerSubscription = this.timer.subscribe(() => {
-          this.reloadFeatures();
-          this.setLiveRefresh(false);
-        }))
-      : this.timerSubscription.unsubscribe();
   }
 
   selectProject(p: Project): void {
@@ -286,7 +256,6 @@ export class ControlBarComponent implements OnInit {
     const modal = this.dialog.open(ModalDownloadSelectorComponent);
     let path: Array<string>;
     modal.afterClosed().subscribe((passbackData: Array<string>) => {
-      console.log(passbackData);
       path = passbackData;
       this.saveFile(path[3] == '.json', true, path[0], path[1], path[2]);
     });
@@ -297,12 +266,6 @@ export class ControlBarComponent implements OnInit {
       height: '400px',
       width: '600px',
     });
-    // this.dialog.afterAllClosed.subscribe((resp) => {
-    //   //Close the sidebar and return to the gallery screen if the sidebar's open
-    //   // if (this.showSidebar) {
-    //   //   this.openSidebar();
-    //   // }
-    // });
   }
 
   openShareProjectModal() {
@@ -329,96 +292,25 @@ export class ControlBarComponent implements OnInit {
     });
   }
 
-  //Old function, aside from rewriting it for quality, most concerns here have been addressed. Also, it's not exactly broken... -Ben
   addGroup(name: string) {
     this.groupName = name;
-    // if (this.groupList.length != 1000) {
-    // TODO Make this better
     if (!name || 0 === name.length) {
-      console.log('Invalid Name');
+      this.invalidNameError = true;
+      this.existingNameError = false;
     } else if (this.groups.get(name)) {
-      console.log('Existing Name');
+      this.invalidNameError = false;
+      this.existingNameError = true;
     } else {
-      // const myRandColor: string = this.getRandomColor();
-      // const newGroup: NewGroup = {
-      //   name: name,
-      //   color: myRandColor,
-      //   icon: 'fa-house-damage',
-      // };
+      this.invalidNameError = false;
+      this.existingNameError = false;
       const newGroup = this.geoDataService.createNewGroup(
         this.selectedProject.id,
         this.selectedImages,
         name
       );
-      // this.geoDataService.setActiveGroup(newGroup);
-      // let myRandColor: string = this.getRandomColor();
-      // this.groupList.push({
-      //   name: name,
-      //   features: this.tempGroup,
-      //   color: myRandColor,
-      //   icon: 'fa-house-damage',
-      // });
-      // this.
-      // this.groupsService.addGroup(this.groupList);
-      // this.formsService.addGroup(this.groupName);
-
-      // console.log(this.groupList);
-      // console.log(this.tempGroup);
-
-      // TODO make this work for persistence //We do currently have persistance, so make of this what you will -Ben
-      // for (let feat of this.tempGroup) {
-      //   let featProp = feat.properties;
-      //   // console.log(feat.properties);
-      //
-      //   if (featProp.group) {
-      //     const myRandColor: string = this.getRandomColor();
-      //     const newGroup: NewGroup = {
-      //       name: name,
-      //       color: myRandColor,
-      //       icon: 'fa-house-damage',
-      //     };
-      //     console.log(this.tempGroup);
-      //     console.log(newGroup);
-      //     this.geoDataService.createGroupFeatures(
-      //       this.selectedProject.id,
-      //       this.tempGroup,
-      //       newGroup
-      //     );
-      //     // featProp.group.push({
-      //     //   name: name,
-      //     //   color: myRandColor,
-      //     //   icon: 'fa-house-damage',
-      //     // });
-      //   } else {
-      //     console.log('This is actually happening');
-      //     let featPropList = (featProp.group = []);
-      //     // featPropList.push({
-      //     //   name: name,
-      //     //   color: myRandColor,
-      //     //   icon: 'fa-house-damage',
-      //     // });
-      //   }
-      //
-      //   // this.geoDataService.updateFeatureProperty(
-      //   //   this.selectedProject.id,
-      //   //
-      //   //   Number(feat.id),
-      //   //   featProp
-      //   // );
-      //   // console.log('In control-bar');
-      //   // console.log('Current feat: ' + feat.id);
-      //   // console.log('featProp: what gets sent to server');
-      //   // console.log(featProp);
-      //   // console.log('groupList: internal listing');
-      // }
-      // }
+      this.dialog.closeAll();
+      this.groupsService.unselectAllImages();
     }
-
-    // this.selectedImages = [];
-    // this.groupsService.setSelectedImages(this.selectedImages);
-    // this.groupsService.setUnselectAll(true);
-    this.groupsService.unselectAllImages();
-    this.dialog.closeAll();
   }
 
   openAddGroupModal(template: TemplateRef<any>) {
@@ -436,43 +328,11 @@ export class ControlBarComponent implements OnInit {
 
       this.groupsService.setShowTagGenerator(false);
       this.groupsService.unselectAllImages();
-
-      // if (activeGroupFeatures && activeGroupFeatures.length > 0) {
-      //   this.groupsService.setFeatureImagesExist(true);
-      //   // this.geoDataService.setActiveGroupFeature(activeGroupFeatures[0]);
-      //   // console.log(activeGroupFeatures[0]);
-      // } else {
-      //   this.groupsService.setFeatureImagesExist(false);
-      // }
     } else {
       this.scrollService.setScrollPosition();
     }
 
     this.groupsService.toggleTagger();
-    // let showSidebar = !this.showSidebar;
-
-    // activeGroup.setF
-    // const [firstGroup] = this.groups.values();
-    // this.geoDataService.setActiveGroup(firstGroup);
-
-    // let activeGroup = this.groupList.filter(
-    //   (group) => group.name == this.activeGroup
-    // );
-
-    // if (activeGroupFeatures && activeGroupFeatures.length > 0) {
-    //   this.groupsService.setFeatureImagesExist(true);
-    //   // this.geoDataService.setActiveGroupFeature(activeGroupFeatures[0]);
-    //   // console.log(activeGroupFeatures[0]);
-    // } else {
-    //   this.groupsService.setFeatureImagesExist(false);
-    // }
-    //
-    // this.reloadFeatures();
-
-
-    // this.selectedImages = [];
-    // this.groupsService.setSelectedImages(this.selectedImages);
-    // this.groupsService.setUnselectAll(true);
   }
 
   getAssetDisplay() {
@@ -492,24 +352,6 @@ export class ControlBarComponent implements OnInit {
     this.activeGroupFeature = this.activeGroupFeaturesRotate[0];
     this.geoDataService.setActiveGroupFeature(this.activeGroupFeature);
   }
-
-  // TODO
-  //This is unused, but the paths are valid routes, mostly seen in the sidebar components.
-  //Tagger is the basic sidebar that appears when you oppen the taggit screen, Preset is for tag generation
-  // goToRoute() {
-  //   if (this.activePane == 'preset') {
-  //     this.groupsService.setActivePane('tagger');
-  //     this.router.navigateByUrl('/tagger', { skipLocationChange: true });
-  //   } else {
-  //     this.groupsService.setActivePane('preset');
-  //     this.router.navigateByUrl('/preset', { skipLocationChange: true });
-  //   }
-  //   this.geoDataService.setActiveGroup(this.activeGroup);
-  // }
-
-  // TODO
-  //What there is TODO with this, I don't know. Probably nothing at all...
-  clearAndUnselect() {}
 
   //saves project as a CSV file by first organizing a JSON or a CSV and converting it. Saves to either MyData or local
   //I apologize in advance for this mess of a function -Ben
@@ -532,7 +374,6 @@ export class ControlBarComponent implements OnInit {
       //Retrieves project ID for building a filename
       projID = element.project_id;
 
-      console.log(element);
 
       //retrieves longitude and latitude values as an array
       let coordinates = element.geometry['coordinates'];
@@ -634,7 +475,6 @@ export class ControlBarComponent implements OnInit {
           CSVHolder += tempCSV;
         } else {
           group.forEach((group) => {
-            console.log(group);
             //If tags exist, try to add each tag to the CSV
             if (tag != undefined) {
               try {
@@ -643,7 +483,6 @@ export class ControlBarComponent implements OnInit {
                   //TODO: If a group doesn't have a tag, it doesn't get printed at all
                   if (true) {
                     //(tag.groupName === group.name) {
-                    console.log(tag);
                     //			  featureID			 Longitude				Latitude			   src
                     let tempCSV =
                       element.id +

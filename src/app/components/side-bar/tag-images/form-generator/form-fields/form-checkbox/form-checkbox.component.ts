@@ -5,7 +5,7 @@ import { take } from 'rxjs/operators';
 import { FeatureService } from 'src/app/services/feature.service';
 import { FormsService } from 'src/app/services/forms.service';
 import { GroupsService } from 'src/app/services/groups.service';
-import { Feature, GroupForm, Project, NewGroup } from 'src/app/models/models';
+import { Feature, GroupForm, Project, TagGroup } from 'src/app/models/models';
 import { ProjectsService } from 'src/app/services/projects.service';
 import { GeoDataService } from 'src/app/services/geo-data.service';
 
@@ -19,7 +19,7 @@ export class FormCheckBoxComponent {
   @Input() form: GroupForm;
   value: any[] = [];
   activeGroupFeature: Feature;
-  activeGroup: NewGroup;
+  activeGroup: TagGroup;
   private activeProject: Project;
 
   constructor(

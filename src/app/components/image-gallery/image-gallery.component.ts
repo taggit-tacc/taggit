@@ -5,7 +5,7 @@ import {
   Feature,
   Project,
   FeatureCollection,
-  NewGroup,
+  TagGroup,
 } from '../../models/models';
 import { AppEnvironment, environment } from '../../../environments/environment';
 import { ProjectsService } from '../../services/projects.service';
@@ -35,7 +35,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   featureList: Array<any> = [];
   featureListScroll: Array<any>;
   scrollSum: number = 15;
-  activeGroup: NewGroup;
+  activeGroup: TagGroup;
   activeFeature: Feature;
   activeGroupFeature: Feature;
   // activeFeatureNum: number;
@@ -124,7 +124,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
       }
     });
 
-    this.geoDataService.activeGroup.subscribe((next: NewGroup) => {
+    this.geoDataService.activeGroup.subscribe((next: TagGroup) => {
       this.activeGroup = next;
     });
 

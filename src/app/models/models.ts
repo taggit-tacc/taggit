@@ -37,7 +37,7 @@ export interface Group {
 
 export class Group implements Group {}
 
-export interface NewGroup {
+export interface TagGroup {
   name: string;
   id?: number;
   color?: string;
@@ -45,7 +45,7 @@ export interface NewGroup {
   forms?: GroupForm[];
 }
 
-export class NewGroup implements NewGroup {}
+export class TagGroup implements TagGroup {}
 
 export interface GroupForm {
   id?: string;

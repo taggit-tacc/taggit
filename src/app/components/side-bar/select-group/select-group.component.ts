@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, TemplateRef } from '@angular/core';
 import { FeatureCollection } from 'geojson';
-import { Project, NewGroup } from '../../../models/models';
+import { Project, TagGroup } from '../../../models/models';
 import { ProjectsService } from '../../../services/projects.service';
 import { FormsService } from '../../../services/forms.service';
 import { GroupsService } from '../../../services/groups.service';
@@ -25,19 +25,17 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
   public selectedProject: Project;
 
   iconList = groupIcons;
-  selectedGroup: NewGroup;
-  groups: Map<string, NewGroup>;
+  selectedIcon: string = 'fa-house-damage';
+
+  selectedGroup: TagGroup;
+
+  activeGroup: TagGroup;
+  groups: Map<string, TagGroup>;
   groupsFeatures: Map<string, any>;
+
   showTagger: boolean;
-  activeGroup: NewGroup;
   showSubitem: boolean = true;
 
-  currentIcon: string = 'fa-house-damage';
-  choice: string;
-  features: any;
-  selectedImages: Array<Feature>;
-
-  
   constructor(
     private formsService: FormsService,
     private groupsService: GroupsService,
@@ -48,10 +46,6 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.groupsService.selectedImages.subscribe((next) => {
-      this.selectedImages = next;
-    });
-
     this.projectsService.activeProject.subscribe((next) => {
       this.selectedProject = next;
     });
@@ -70,13 +64,9 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
         this.groupsService.toggleTagger();
       }
     });
-
-    this.geoDataService.features.subscribe((next: FeatureCollection) => {
-      this.features = next.features;
-    });
   }
 
-  selectGroupForm(group: NewGroup) {
+  selectGroupForm(group: TagGroup) {
     this.geoDataService.setActiveGroup(group);
   }
 
@@ -85,7 +75,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
   }
 
   // TODO: ensure ui is updated from getFeatures()
-  deleteGroup(group: NewGroup) {
+  deleteGroup(group: TagGroup) {
     const features = this.groupsFeatures.get(group.name);
     this.geoDataService.deleteGroupFeatures(
       this.selectedProject.id,
@@ -94,15 +84,14 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
     );
   }
 
-  openRenameModal(template: TemplateRef<any>, group: NewGroup) {
-    console.log(group)
+  openRenameModal(template: TemplateRef<any>, group: TagGroup) {
     this.selectedGroup = group;
     this.dialog.open(template);
   }
 
-  openIconSelection(template: TemplateRef<any>, group: NewGroup) {
+  openIconSelection(template: TemplateRef<any>, group: TagGroup) {
     this.selectedGroup = group;
-    this.choice = group.icon;
+    this.selectedIcon = group.icon;
     this.dialog.open(template);
   }
 

@@ -50,14 +50,14 @@
 
 	<ng-template #iconModal>
 		<div class="iconDropdown">
-		<select class="fa" [(ngModel)]="choice">
+		<select class="fa" [(ngModel)]="selectedIcon">
 		  <option class="fa" *ngFor="let icon of iconList" value={{icon.id}} [innerHTML]="icon.unicode">
           </option>
 		</select>
 		<br/>
 	  	<br/>
 		<div class="button-group">
-			<button matDialogClose color="primary" mat-raised-button (click)="saveIcon(choice)">Save</button>
+			<button matDialogClose color="primary" mat-raised-button (click)="saveIcon(selectedIcon)">Save</button>
 			<button matDialogClose mat-button>Cancel</button>
 		  </div>
 	</div>

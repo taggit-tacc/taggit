@@ -5,7 +5,7 @@ import {
   Input,
   TemplateRef,
 } from '@angular/core';
-import { Feature, Project, NewGroup } from '../../models/models';
+import { Feature, Project, TagGroup } from '../../models/models';
 import { GeoDataService } from '../../services/geo-data.service';
 import { AppEnvironment, environment } from '../../../environments/environment';
 import { GroupsService } from '../../services/groups.service';
@@ -31,16 +31,14 @@ export class ImageBoxComponent implements OnInit {
   imageSelected: string = 'img-unselected'; //Controls the whether or not an image box is selected or not
   hasGroup: boolean = false;
   colors: Array<string> = [];
-  groups: Map<string, NewGroup>;
+  groups: Map<string, TagGroup>;
   coordinates: Array<any>;
   containingGroupList: Array<any>;
   selectedImages: Array<any>;
   modalRef: BsModalRef;
-  groupToAdd: NewGroup;
+  groupToAdd: TagGroup;
 
   public activeProject: Project;
-
-  unselectAll: boolean = false;
 
   constructor(
     private geoDataService: GeoDataService,
@@ -82,12 +80,6 @@ export class ImageBoxComponent implements OnInit {
         : 'img-unselected';
     });
 
-    this.groupsService.unselectAll.subscribe((next) => {
-      this.unselectAll = next;
-      if (this.unselectAll == true) {
-        this.status = false;
-      }
-    });
     this.featurePath = this.feature.featurePath();
   }
 
@@ -117,7 +109,7 @@ export class ImageBoxComponent implements OnInit {
     this.dialog.open(template);
   }
 
-  deleteFromGroup(feature: Feature, group: NewGroup) {
+  deleteFromGroup(feature: Feature, group: TagGroup) {
     this.geoDataService.deleteGroupFeatures(
       this.activeProject.id,
       [feature],
@@ -130,7 +122,7 @@ export class ImageBoxComponent implements OnInit {
     this.dialog.open(template);
   }
 
-  addGroup(group: NewGroup) {
+  addGroup(group: TagGroup) {
     this.geoDataService.createGroupFeatures(
       this.activeProject.id,
       this.selectedImages,

@@ -1,16 +1,11 @@
 import { Injectable } from '@angular/core';
 import {
   Feature,
-  FeatureCollection,
-  NewGroup,
-  GroupForm,
+  FeatureCollection
 } from '../models/models';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { GeoDataService } from './geo-data.service';
-import { FormsService, tags } from './forms.service';
 import { feature } from '@turf/turf';
-import { AbstractEmitterVisitor } from '@angular/compiler/src/output/abstract_emitter';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +17,6 @@ export class FeatureService {
 
   constructor(
     private geoDataService: GeoDataService,
-    private formsService: FormsService
   ) {
     this._features = new BehaviorSubject<FeatureCollection>({
       type: 'FeatureCollection',
@@ -79,76 +73,5 @@ export class FeatureService {
       }
     });
     this.saveFeature(feature);
-  }
-
-  //Update Styles takes an object defining new style options and the feature they should be connected with
-  updateStyle(feature: Feature, style): void {
-    //Update and save the list
-    this.featureCollection.features.forEach((feat) => {
-      if (feat.id == feature.id) {
-        feat.styles = style;
-      }
-    });
-    this.geoDataService.updateFeatureStyle(
-      feature.project_id,
-      Number(feature.id),
-      feature.properties
-    );
-  }
-
-  deleteForm(
-    projectId: number,
-    form: GroupForm,
-    activeGroup: NewGroup,
-    featureGroups: Feature[]
-  ): void {
-    const taggedGroup: NewGroup = {
-      ...activeGroup,
-      forms: activeGroup.forms.filter((t: GroupForm) => t.id !== form.id),
-    };
-
-    this.geoDataService.updateGroupFeatures(
-      projectId,
-      featureGroups,
-      taggedGroup
-    );
-  }
-
-  renameForm(
-    projectId: number,
-    targetForm: GroupForm,
-    activeGroup: NewGroup,
-    featureGroups: Feature[],
-    newName: string
-  ): void {
-    const taggedGroup: NewGroup = {
-      ...activeGroup,
-      forms: [...activeGroup.forms.filter(form => form.id !== targetForm.id), { ...targetForm, label: newName }],
-    };
-
-    this.geoDataService.updateGroupFeatures(
-      projectId,
-      featureGroups,
-      taggedGroup
-    );
-  }
-
-  createForm(
-    projectId: number,
-    form: GroupForm,
-    activeGroup: NewGroup,
-    featureGroups: Feature[]
-  ): void {
-    const id = uuidv4();
-    form = { ...form, id };
-    const taggedGroup: NewGroup = {
-      ...activeGroup,
-      forms: activeGroup.forms ? [...activeGroup.forms, form] : [form],
-    };
-    this.geoDataService.updateGroupFeatures(
-      projectId,
-      featureGroups,
-      taggedGroup
-    );
   }
 }

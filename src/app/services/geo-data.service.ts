@@ -8,7 +8,7 @@ import {
   IFeatureAsset,
   IPointCloud,
   Overlay,
-  NewGroup,
+  TagGroup,
   Tag,
   TagValue,
   GroupForm,
@@ -49,8 +49,8 @@ export class GeoDataService {
   private _activeGroupId: BehaviorSubject<number> = new BehaviorSubject(null);
   public activeGroupId: Observable<number> = this._activeGroupId.asObservable();
 
-  private _activeGroup: BehaviorSubject<NewGroup> = new BehaviorSubject(null);
-  public activeGroup: Observable<NewGroup> = this._activeGroup.asObservable();
+  private _activeGroup: BehaviorSubject<TagGroup> = new BehaviorSubject(null);
+  public activeGroup: Observable<TagGroup> = this._activeGroup.asObservable();
 
   private _activeGroupFeature: BehaviorSubject<any> = new BehaviorSubject<any>(
     null
@@ -58,10 +58,10 @@ export class GeoDataService {
   public activeGroupFeature: Observable<any> =
     this._activeGroupFeature.asObservable();
 
-  private _groups: BehaviorSubject<Map<string, NewGroup>> = new BehaviorSubject(
+  private _groups: BehaviorSubject<Map<string, TagGroup>> = new BehaviorSubject(
     null
   );
-  public groups: Observable<Map<string, NewGroup>> =
+  public groups: Observable<Map<string, TagGroup>> =
     this._groups.asObservable();
 
   private _groupsFeatures: BehaviorSubject<Map<string, Feature[]>> =
@@ -142,7 +142,7 @@ export class GeoDataService {
       });
   }
 
-  setActiveGroup(group: NewGroup): void {
+  setActiveGroup(group: TagGroup): void {
     this._activeGroup.next(group);
     if (group) {
       const groupFeatures = this._groupsFeatures.value.get(group.name);
@@ -408,7 +408,7 @@ export class GeoDataService {
 
   // Call on getFeatures (each time feature update)
   getGroups(featureList: Feature[]): void {
-    const groups = new Map<string, NewGroup>();
+    const groups = new Map<string, TagGroup>();
     const groupsFeatures = new Map<string, Feature[]>();
     featureList
       .filter(
@@ -416,7 +416,7 @@ export class GeoDataService {
           feat.properties.group && feat.properties.group.length > 0
       )
       .forEach((feat: Feature) => {
-        feat.properties.group.forEach((group: NewGroup) => {
+        feat.properties.group.forEach((group: TagGroup) => {
           groupsFeatures.set(
             group.name,
             groupsFeatures.has(group.name)
@@ -438,22 +438,22 @@ export class GeoDataService {
     return this._groups.value.get(groupName);
   }
 
-  getGroupFeatures(featureList: Feature[], group: NewGroup) {
+  getGroupFeatures(featureList: Feature[], group: TagGroup) {
     return featureList.filter(
       (feat: Feature) =>
         feat.properties.group &&
         feat.properties.group.length &&
-        feat.properties.group.some((grp: NewGroup) => grp.id === group.id)
+        feat.properties.group.some((grp: TagGroup) => grp.id === group.id)
     );
   }
 
   private createGroup(
     featureList: Feature[],
-    group: NewGroup // TODO: Generate group with new uuid and not with name
+    group: TagGroup // TODO: Generate group with new uuid and not with name
   ): Feature[] {
     return featureList.map((feat: Feature) => {
       let groupProp = feat.properties.group ? feat.properties.group : [];
-      groupProp = groupProp.filter((grp: NewGroup) => grp.id !== group.id);
+      groupProp = groupProp.filter((grp: TagGroup) => grp.id !== group.id);
       groupProp.push(group);
       feat.properties.group = groupProp;
 
@@ -463,21 +463,21 @@ export class GeoDataService {
 
   private createGroupInFeature(
     feature: Feature,
-    group: NewGroup // TODO: Generate group with new uuid and not with name
+    group: TagGroup // TODO: Generate group with new uuid and not with name
   ): Feature {
     if (feature.properties.group) {
       feature.properties.group
-        .filter((grp: NewGroup) => grp.name !== group.name)
+        .filter((grp: TagGroup) => grp.name !== group.name)
         .push(group);
     }
     return feature;
   }
 
-  private updateGroup(featureList: Feature[], group: NewGroup): Feature[] {
+  private updateGroup(featureList: Feature[], group: TagGroup): Feature[] {
     return this.getGroupFeatures(featureList, group).map(
       (feat: Feature) => {
         const groupProp = feat.properties.group.filter(
-          (grp: NewGroup) => grp.id !== group.id
+          (grp: TagGroup) => grp.id !== group.id
         );
         groupProp.push(group);
         feat.properties.group = groupProp;
@@ -487,11 +487,11 @@ export class GeoDataService {
     );
   }
 
-  private deleteGroup(featureList: Feature[], group: NewGroup): Feature[] {
+  private deleteGroup(featureList: Feature[], group: TagGroup): Feature[] {
     return this.getGroupFeatures(featureList, group).map(
       (feat: Feature) => {
         feat.properties.group = feat.properties.group.filter(
-          (grp: NewGroup) => grp.id !== group.id
+          (grp: TagGroup) => grp.id !== group.id
         );
         return feat;
       }
@@ -505,7 +505,7 @@ export class GeoDataService {
   ) {
     const id = uuidv4();
     const myRandColor: string = getRandomColor();
-    const group: NewGroup = {
+    const group: TagGroup = {
       id,
       name,
       color: myRandColor,
@@ -518,7 +518,7 @@ export class GeoDataService {
   createGroupFeatures(
     projectId: number,
     featureList: Feature[],
-    group: NewGroup
+    group: TagGroup
   ) {
     this.createGroup(featureList, group).forEach((feat: Feature) => {
       this.updateFeatureProperty(projectId, feat.id, feat.properties);
@@ -528,7 +528,7 @@ export class GeoDataService {
   deleteGroupFeatures(
     projectId: number,
     featureList: Feature[],
-    group: NewGroup
+    group: TagGroup
   ) {
     this.deleteGroup(featureList, group).forEach((feat: Feature) => {
       this.updateFeatureProperty(projectId, feat.id, feat.properties);
@@ -538,14 +538,14 @@ export class GeoDataService {
   updateGroupFeatures(
     projectId: number,
     featureList: Feature[],
-    group: NewGroup
+    group: TagGroup
   ) {
     this.updateGroup(featureList, group).forEach((feat: Feature) => {
       this.updateFeatureProperty(projectId, feat.id, feat.properties);
     });
   }
 
-  renameGroup(projectId: number, featureList: Feature[], group: NewGroup, name: string): void {
+  renameGroup(projectId: number, featureList: Feature[], group: TagGroup, name: string): void {
     const renamedGroup = {
       ...group,
       name
@@ -558,7 +558,7 @@ export class GeoDataService {
     );
   }
 
-  reiconGroup(projectId: number, featureList: Feature[], group: NewGroup, icon: string): void {
+  reiconGroup(projectId: number, featureList: Feature[], group: TagGroup, icon: string): void {
     const reiconedGroup = {
       ...group,
       icon
