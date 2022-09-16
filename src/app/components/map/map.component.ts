@@ -29,7 +29,7 @@ export class MapComponent implements OnInit {
   environment: AppEnvironment;
 
   constructor(private GeoDataService: GeoDataService,
-			  private route: ActivatedRoute,
+			           private route: ActivatedRoute,
 			  ) {
 
 	// Have to bind these to keep this being this

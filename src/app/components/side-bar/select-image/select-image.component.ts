@@ -17,7 +17,7 @@ export class SelectImageComponent implements OnInit {
   private groups: Map<string, TagGroup>;
   activeGroup: TagGroup;
   activeGroupFeature: Feature;
-  showSubitem: boolean = true;
+  showSubitem = true;
   groupsFeatures: Map<string, any>;
 
   constructor(
@@ -73,7 +73,7 @@ export class SelectImageComponent implements OnInit {
         const [nextGroup] = this.groups.values();
         if (nextGroup) {
           this.geoDataService.setActiveGroup(nextGroup);
-          return this.groupsFeatures.get(nextGroup.name)
+          return this.groupsFeatures.get(nextGroup.name);
         } else {
           return [];
         }

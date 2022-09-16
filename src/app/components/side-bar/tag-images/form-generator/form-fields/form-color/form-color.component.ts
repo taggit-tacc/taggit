@@ -18,7 +18,7 @@ export class FormColorComponent implements OnInit {
   @Input() label: String;
 
   public chosenTag: string;
-  public chosenColor = "#ffffff";
+  public chosenColor = '#ffffff';
   value: any = {};
 
   constructor(

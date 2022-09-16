@@ -25,7 +25,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
   public selectedProject: Project;
 
   iconList = groupIcons;
-  selectedIcon: string = 'fa-house-damage';
+  selectedIcon = 'fa-house-damage';
 
   selectedGroup: TagGroup;
 
@@ -34,7 +34,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
   groupsFeatures: Map<string, any>;
 
   showTagger: boolean;
-  showSubitem: boolean = true;
+  showSubitem = true;
 
   constructor(
     private formsService: FormsService,

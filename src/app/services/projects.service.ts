@@ -73,7 +73,7 @@ export class ProjectsService {
       : this._projects.next(myProjs);
   }
 
-  //Queries database for all user projects.
+  // Queries database for all user projects.
   getProjects(): void {
     this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe(
       (resp) => {
@@ -95,8 +95,8 @@ export class ProjectsService {
     prom.subscribe((proj) => {
       this._projects.next([...this._projects.value, proj]);
 
-      //Awkward as hell, but this ensures we actually transition to the newly created project
-      //Without this, the screen flickers briefly to the new project, but ends up stuck on the old project
+      // Awkward as hell, but this ensures we actually transition to the newly created project
+      // Without this, the screen flickers briefly to the new project, but ends up stuck on the old project
       this.setActiveProject(proj);
       this.setActiveProject(proj);
     });
@@ -104,7 +104,7 @@ export class ProjectsService {
   }
 
   setActiveProject(proj: Project): void {
-    //saves change as last visited project
+    // saves change as last visited project
     window.localStorage.setItem('lastProj', JSON.stringify(proj));
     try {
       this._activeProject.next(proj);
@@ -121,7 +121,7 @@ export class ProjectsService {
       });
   }
 
-  //Note: This will delete the project for everyone, if the project is shared.
+  // Note: This will delete the project for everyone, if the project is shared.
   delete(data: Project): void {
     this._deletingProjects.next([
       ...this._deletingProjects.value,
@@ -136,12 +136,12 @@ export class ProjectsService {
         this._deletingProjects.next(
           this._deletingProjects.value.filter((p) => p.id !== data.id)
         );
-        //These next two lines might be causing problems. Adding getProjects causes duplicates during project creation,
-        //So I'm thinking that calling these here might be the root of my delete woes, as they're restoring the project I just
-        //deleted...
+        // These next two lines might be causing problems. Adding getProjects causes duplicates during project creation,
+        // So I'm thinking that calling these here might be the root of my delete woes, as they're restoring the project I just
+        // deleted...
         this.updateProjectsList();
         this.getProjects();
-        //As elegant as a brick to the face, but this solves the delete issues...
+        // As elegant as a brick to the face, but this solves the delete issues...
         window.localStorage.setItem('lastProj', JSON.stringify('none'));
       },
       (error) => {
@@ -195,7 +195,7 @@ export class ProjectsService {
           this.getProjectUsers(proj).subscribe();
         },
         (error) => {
-          //TODO: Create popup for an error message.
+          // TODO: Create popup for an error message.
           console.log(error);
         }
       );

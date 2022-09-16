@@ -1,9 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import {instance, mock, when} from "ts-mockito";
+import {instance, mock, when} from 'ts-mockito';
 import { ControlBarComponent } from './control-bar.component';
-import {ProjectsService} from "../../services/projects.service";
-import {GeoDataService} from "../../services/geo-data.service";
-import {BsModalService} from "ngx-foundation";
+import {ProjectsService} from '../../services/projects.service';
+import {GeoDataService} from '../../services/geo-data.service';
+import {BsModalService} from 'ngx-foundation';
 
 describe('ControlBarComponent', () => {
   let component: ControlBarComponent;

@@ -29,7 +29,7 @@ import { v4 as uuidv4 } from 'uuid';
 })
 export class GeoDataService {
   // TODO: clean this up and put the observables up here. Also look into Replay/Behavior
-  //TODO: Go over this and remove all unused functions, a lot of this was copy/pasted over from Hazmapper without a second thought
+  // TODO: Go over this and remove all unused functions, a lot of this was copy/pasted over from Hazmapper without a second thought
   private _features: BehaviorSubject<FeatureCollection>;
   private features$: Observable<FeatureCollection>;
   private _activeFeature: BehaviorSubject<any>;
@@ -246,7 +246,7 @@ export class GeoDataService {
       });
   }
 
-  //This function updates the underlying observable, so changes naturally flow to feature service
+  // This function updates the underlying observable, so changes naturally flow to feature service
   importFileFromTapis(projectId: number, files: Array<RemoteFile>): void {
     const tmp = files.map((f) => ({ system: f.system, path: f.path }));
     const payload = {
@@ -271,20 +271,20 @@ export class GeoDataService {
       );
   }
 
-  //An alternate function for importing images with no GPS data. A feature is created elsewhere, and the image is added to the feature
-  //Inputs:
-  //projectId: Id number of current project
-  //features: A pre-created feature with user-defined or zeroed out gps data
-  //file: A Tapis Remote File containing the image to be imported
+  // An alternate function for importing images with no GPS data. A feature is created elsewhere, and the image is added to the feature
+  // Inputs:
+  // projectId: Id number of current project
+  // features: A pre-created feature with user-defined or zeroed out gps data
+  // file: A Tapis Remote File containing the image to be imported
   importImage(projectId: number, feature: Feature, path: string): void {
-    let featureId = feature.id;
+    const featureId = feature.id;
     let file;
     this.fileList.forEach((remoteFile) => {
       if (remoteFile.path == path) {
         file = remoteFile;
       }
     });
-    let payload = { system_id: file.system, path: file.path };
+    const payload = { system_id: file.system, path: file.path };
     this.http
       .post(
         environment.apiUrl +
@@ -293,15 +293,15 @@ export class GeoDataService {
       )
       .subscribe((resp) => {
         this.notificationsService.showSuccessToast('Import started!');
-        //this.getFeatures(projectId)
+        // this.getFeatures(projectId)
       });
   }
 
-  //Creates a new feature from an uploaded locally created feature
+  // Creates a new feature from an uploaded locally created feature
   uploadNewFeature(projectId: number, feature: Feature, path: string): void {
-    let payload = feature;
+    const payload = feature;
     let response;
-    //Calls the addFeatureAsset route in GeoAPI, resp is a list of features
+    // Calls the addFeatureAsset route in GeoAPI, resp is a list of features
     this.http
       .post(environment.apiUrl + `projects/${projectId}/features/`, payload)
       .subscribe((resp) => {
@@ -362,7 +362,7 @@ export class GeoDataService {
       .subscribe(
         (feature) => {
           // TODO workaround to update activeFeature
-          let f = this._activeFeature.getValue();
+          const f = this._activeFeature.getValue();
           if (f && f.id === featureId) {
             this.activeFeature = new Feature(feature);
             this.getFeatures(projectId);

@@ -23,13 +23,13 @@ import { FeatureService } from 'src/app/services/feature.service';
   styleUrls: ['./image-box.component.scss'],
 })
 export class ImageBoxComponent implements OnInit {
-  @Input() feature: Feature;
+  @Input() feature: any;
   environment: AppEnvironment;
   featureSource: string;
   featurePath: string;
-  status: boolean = false; //Controls the whether or not an image box is selected or not
-  imageSelected: string = 'img-unselected'; //Controls the whether or not an image box is selected or not
-  hasGroup: boolean = false;
+  status = false; // Controls the whether or not an image box is selected or not
+  imageSelected = 'img-unselected'; // Controls the whether or not an image box is selected or not
+  hasGroup = false;
   colors: Array<string> = [];
   groups: Map<string, TagGroup>;
   coordinates: Array<any>;
@@ -63,7 +63,7 @@ export class ImageBoxComponent implements OnInit {
     }
     featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
     this.featureSource = featureSource;
-    this.coordinates = this.feature.geometry['coordinates'];
+    this.coordinates = this.feature.geometry.coordinates;
 
     this.projectsService.activeProject.subscribe((next) => {
       this.activeProject = next;
@@ -93,7 +93,7 @@ export class ImageBoxComponent implements OnInit {
 
   imageDelete() {
     const featureService = this.featureService;
-    this.selectedImages.forEach(function (value) {
+    this.selectedImages.forEach(function(value) {
       featureService.deleteFeature(value);
     });
     this.groupsService.unselectAllImages();

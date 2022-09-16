@@ -23,7 +23,7 @@ export class GroupsService {
 
   imageSelected(feature: Feature): boolean {
     const currentFeatures = this._selectedImages.value;
-    return currentFeatures.some(feat => feat.id === feature.id)
+    return currentFeatures.some(feat => feat.id === feature.id);
   }
 
   unselectAllImages() {

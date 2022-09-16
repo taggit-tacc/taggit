@@ -7,7 +7,7 @@ import { GroupsService } from '../../services/groups.service';
   styleUrls: ['./side-bar.component.scss'],
 })
 export class SideBarComponent implements OnInit {
-  showTagGenerator= false;
+  showTagGenerator = false;
 
   constructor(
     private groupsService: GroupsService,

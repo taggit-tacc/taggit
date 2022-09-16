@@ -34,7 +34,7 @@ export class TagGeneratorComponent implements OnInit {
   formRequired: boolean;
   openOption: any = {};
   enabledControls: Array<string> = [];
-  showSubitem: boolean = true;
+  showSubitem = true;
   groups: Map<string, TagGroup>;
   groupsFeatures: Map<string, any>;
   groups$: Subscription;
@@ -85,7 +85,7 @@ export class TagGeneratorComponent implements OnInit {
 
   addOptionItem(value: string) {
     if (value) {
-      let formWithValue = this.formOptions.filter((e) => e.label == value);
+      const formWithValue = this.formOptions.filter((e) => e.label == value);
       if (formWithValue.length == 0 && value.length != 0) {
         this.formOptions.push({
           label: value,
@@ -144,7 +144,7 @@ export class TagGeneratorComponent implements OnInit {
   }
 
   addFormItem() {
-    //Assemble the new tag
+    // Assemble the new tag
     const formItem: GroupForm = {
       type: this.formType,
       groupName: this.activeGroup.name,
@@ -152,9 +152,9 @@ export class TagGeneratorComponent implements OnInit {
       options: [],
     };
     this.openOption[this.formLabel] = false;
-    //Adds the options for drop down, checklist, and radio buttons
+    // Adds the options for drop down, checklist, and radio buttons
     if (this.formType !== 'text' && this.formOptions.length != 0) {
-      let myOpts = [];
+      const myOpts = [];
       for (const opt of this.formOptions) {
         myOpts.push({
           label: opt,
@@ -170,7 +170,7 @@ export class TagGeneratorComponent implements OnInit {
       this.groupsFeatures.get(this.activeGroup.name)
     );
 
-    //Reset user-defined fields to blank options
+    // Reset user-defined fields to blank options
     this.formLabel = '';
     this.formColor = '';
     this.formOptions = [];

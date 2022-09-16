@@ -13,7 +13,7 @@ export class FormTextBoxComponent {
   @Output() formValue: EventEmitter<any> = new EventEmitter<any>();
   @Input() field: any = {};
   @Input() form: GroupForm;
-  value: string = '';
+  value = '';
 
   constructor(
     private formsService: FormsService,

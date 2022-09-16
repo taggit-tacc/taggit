@@ -249,7 +249,7 @@ export class Feature implements AppGeoJSONFeature {
     } else if (initialAsset.path) {
       return initialAsset.path;
     } else {
-      return this.id.toString()
+      return this.id.toString();
     }
   }
 
@@ -261,7 +261,7 @@ export class Feature implements AppGeoJSONFeature {
       const path = /[^/]*$/.exec(initialAsset.path)[0];
       return path.slice(0, 15) + '...';
     } else {
-      return this.id.toString()
+      return this.id.toString();
     }
   }
 }

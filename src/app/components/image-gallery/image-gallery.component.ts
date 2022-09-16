@@ -28,13 +28,13 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   public projects: Project[];
   groupName: string;
   showTagger = false;
-  scrolling: boolean = false;
+  scrolling = false;
   scrollStatus: string;
   imagesExist: boolean;
   projectsExist: boolean;
   featureList: Array<any> = [];
   featureListScroll: Array<any>;
-  scrollSum: number = 15;
+  scrollSum = 15;
   activeGroup: TagGroup;
   activeFeature: Feature;
   activeGroupFeature: Feature;
@@ -85,11 +85,11 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
                 feature.initialAsset() && feature.featureType() === 'image'
               );
             } catch (error) {
-              //If a feature has no asset, it ends up in this catch
+              // If a feature has no asset, it ends up in this catch
               console.error(error);
-              //After outputting the error, add an "image not found" placeholder,
-              //Allowing users to still select their errored import
-              //Note that this doesn't really work!
+              // After outputting the error, add an "image not found" placeholder,
+              // Allowing users to still select their errored import
+              // Note that this doesn't really work!
               feature.assets.push({ path: '../../images/Image-not-found.png' });
               return false;
             }
@@ -157,7 +157,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
         this.scrolling = false;
         return;
       }
-      //If scrollSum is larger than the length of the feature list, curtail it to just be the length
+      // If scrollSum is larger than the length of the feature list, curtail it to just be the length
       if (this.scrollSum > this.featureList.length) {
         this.scrollSum = this.featureList.length;
       }

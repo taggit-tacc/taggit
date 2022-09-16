@@ -21,7 +21,7 @@ export class TagImagesComponent implements OnInit {
   payload: any;
   selectedGroup: string;
   activeGroup: TagGroup;
-  showSubitem: boolean = true;
+  showSubitem = true;
   formList: GroupForm[] = [];
   tagName = '';
   groups: Map<string, TagGroup>;
@@ -67,7 +67,7 @@ export class TagImagesComponent implements OnInit {
     this.dialog.open(template);
   }
 
-  //Takes the name of the tag's group, and the tag itself to delete
+  // Takes the name of the tag's group, and the tag itself to delete
   deleteForm(tag: GroupForm) {
     this.formsService.deleteForm(
       this.activeProject.id,
@@ -77,7 +77,7 @@ export class TagImagesComponent implements OnInit {
     );
   }
 
-  //submits a tag's name change to geoAPI
+  // submits a tag's name change to geoAPI
   renameForm(tag: GroupForm) {
     this.formsService.renameForm(
       this.activeProject.id,
@@ -86,9 +86,9 @@ export class TagImagesComponent implements OnInit {
       this.groupsFeatures.get(this.activeGroup.name),
       this.tagName
     );
-    //Reset newTagValue for the next rename
+    // Reset newTagValue for the next rename
     this.tagName = '';
-    this.dialog.closeAll(); //Ensures the window closes when using enter-submission
+    this.dialog.closeAll(); // Ensures the window closes when using enter-submission
   }
 
   showTagGenerator() {
