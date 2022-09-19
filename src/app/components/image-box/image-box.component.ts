@@ -1,7 +1,6 @@
 import {
   Component,
   OnInit,
-  EventEmitter,
   Input,
   TemplateRef,
 } from '@angular/core';
@@ -10,10 +9,8 @@ import { GeoDataService } from '../../services/geo-data.service';
 import { AppEnvironment, environment } from '../../../environments/environment';
 import { GroupsService } from '../../services/groups.service';
 import { ProjectsService } from '../../services/projects.service';
-import { BsModalService } from 'ngx-foundation/modal';
 import { BsModalRef } from 'ngx-foundation/modal/bs-modal-ref.service';
 import { MatDialog } from '@angular/material/dialog';
-import { FormsService, tags } from 'src/app/services/forms.service';
 import { ScrollService } from 'src/app/services/scroll.service';
 import { FeatureService } from 'src/app/services/feature.service';
 
@@ -44,8 +41,6 @@ export class ImageBoxComponent implements OnInit {
     private geoDataService: GeoDataService,
     private groupsService: GroupsService,
     private projectsService: ProjectsService,
-    private modalService: BsModalService,
-    private formsService: FormsService,
     private dialog: MatDialog,
     private scrollService: ScrollService,
     private featureService: FeatureService
@@ -54,7 +49,7 @@ export class ImageBoxComponent implements OnInit {
   ngOnInit() {
     // TODO: put this in models
     this.environment = environment;
-    let featureSource;
+    let featureSource: string;
     if (this.feature.assets[0].path != '../../images/Image-not-found.png') {
       featureSource =
         this.environment.apiUrl + '/assets/' + this.feature.assets[0].path;

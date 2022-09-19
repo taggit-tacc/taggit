@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FeatureCollection } from 'geojson';
 import { Project, TagGroup } from '../../../models/models';
 import { ProjectsService } from '../../../services/projects.service';
 import { GeoDataService } from '../../../services/geo-data.service';
 import { FormsService } from '../../../services/forms.service';
-import { Subscription } from 'rxjs';
 import { Feature } from '@turf/turf';
 
 @Component({
@@ -21,7 +19,6 @@ export class SelectImageComponent implements OnInit {
   groupsFeatures: Map<string, any>;
 
   constructor(
-    private formsService: FormsService,
     private geoDataService: GeoDataService,
     private projectsService: ProjectsService
   ) {}

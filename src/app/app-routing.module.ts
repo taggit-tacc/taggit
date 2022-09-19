@@ -4,11 +4,6 @@ import { NotFoundComponent} from './components/notfound/notfound.component';
 import {AuthService} from './services/authentication.service';
 import {MainComponent} from './components/main/main.component';
 import { CallbackComponent } from './components/callback/callback.component';
-import { ImageGalleryComponent } from './components/image-gallery/image-gallery.component';
-// import { TaggerComponent } from './components/tagger/tagger.component';
-// import { PresetGeneratorComponent } from './components/preset-generator/preset-generator.component';
-import { TagGeneratorComponent } from './components/side-bar/tag-generator/tag-generator.component';
-import { TagImagesComponent } from './components/side-bar/tag-images/tag-images.component';
 
 @Injectable()
 export class Activate implements CanActivate {

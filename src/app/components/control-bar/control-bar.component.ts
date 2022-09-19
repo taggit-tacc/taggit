@@ -84,21 +84,9 @@ export class ControlBarComponent implements OnInit {
       this.features = fc;
 
       if (this.features != undefined) {
-        this.featureList = fc.features.filter((feature: Feature) => {
-          try {
-            return (
-              feature.initialAsset() && feature.featureType() === 'image'
-            );
-          } catch (error) {
-            // If a feature has no asset, it ends up in this catch
-            console.error(error);
-            // After outputting the error, add an "image not found" placeholder,
-            // Allowing users to still select their errored import
-            // Note that this doesn't really work!
-            feature.assets.push({ path: '../../images/Image-not-found.png' });
-            return false;
-          }
-        });
+        this.featureList = fc.features.filter((feature: Feature) => 
+              feature.assets.length && feature.initialAsset() && feature.featureType() === 'image'
+        );
       }
     });
 

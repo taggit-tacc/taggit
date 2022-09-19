@@ -1,12 +1,11 @@
-import { Component, OnInit, OnDestroy, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { GroupsService } from '../../../services/groups.service';
 import { FormsService, tags } from '../../../services/forms.service';
 import { MatDialog } from '@angular/material/dialog';
-import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription, combineLatest } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { GeoDataService } from 'src/app/services/geo-data.service';
-import { Feature, FeatureCollection } from 'geojson';
+import { Feature } from 'geojson';
 import { ProjectsService } from 'src/app/services/projects.service';
 import { FeatureService } from 'src/app/services/feature.service';
 import { TagGroup, GroupForm } from 'src/app/models/models';
@@ -33,10 +32,8 @@ export class TagImagesComponent implements OnInit {
     private groupsService: GroupsService,
     private formsService: FormsService,
     private dialog: MatDialog,
-    private router: Router,
     private projectsService: ProjectsService,
     private geoDataService: GeoDataService,
-    private featureService: FeatureService
   ) {}
 
   ngOnInit() {

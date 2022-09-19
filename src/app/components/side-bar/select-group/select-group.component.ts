@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, TemplateRef } from '@angular/core';
-import { FeatureCollection } from 'geojson';
 import { Project, TagGroup } from '../../../models/models';
 import { ProjectsService } from '../../../services/projects.service';
 import { FormsService } from '../../../services/forms.service';
@@ -7,10 +6,8 @@ import { GroupsService } from '../../../services/groups.service';
 import { GeoDataService } from '../../../services/geo-data.service';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
-import { templateJitUrl } from '@angular/compiler';
-import { Feature, tag } from '@turf/turf';
-import { group } from '@angular/animations';
 import { FeatureService } from 'src/app/services/feature.service';
+
 import { groupIcons } from 'src/app/utils/groups';
 
 @Component({
@@ -37,12 +34,10 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
   showSubitem = true;
 
   constructor(
-    private formsService: FormsService,
     private groupsService: GroupsService,
     private geoDataService: GeoDataService,
     private projectsService: ProjectsService,
     private dialog: MatDialog,
-    private featureService: FeatureService
   ) {}
 
   ngOnInit() {

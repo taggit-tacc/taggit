@@ -1,17 +1,5 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  OnDestroy,
-  OnChanges,
-  Output,
-  EventEmitter,
-} from '@angular/core';
-import { FormsService } from '../../../../services/forms.service';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { consoleTestResultHandler } from 'tslint/lib/test';
-import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
+import { Component, OnInit, EventEmitter } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { GroupForm } from 'src/app/models/models';
 
 @Component({
@@ -20,10 +8,9 @@ import { GroupForm } from 'src/app/models/models';
   styleUrls: ['./form-generator.component.scss'],
 })
 export class FormGeneratorComponent implements OnInit {
-
-  constructor(private formsService: FormsService) {}
-  @Input() form: GroupForm;
-  @Output() newValue = new EventEmitter();
+  constructor() {}
+  form: GroupForm;
+  newValue = new EventEmitter();
   checked = false;
   colorArray: Array<string> = [];
   values = [];
@@ -52,7 +39,7 @@ export class FormGeneratorComponent implements OnInit {
     }
     this.colorArray.push('#00FF00');
     let baseNum = 0;
-    let temp;
+    let temp: string;
     // First loop, counts up from zero towards 255
     for (let index = 0; index < itemCount; index++) {
       baseNum = baseNum + incrementVal;

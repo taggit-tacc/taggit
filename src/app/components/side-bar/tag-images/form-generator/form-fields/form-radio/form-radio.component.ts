@@ -1,8 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { FormsService } from 'src/app/services/forms.service';
-import { Feature, GroupForm, Project, TagGroup } from 'src/app/models/models';
+import { GroupForm } from 'src/app/models/models';
 import { GeoDataService } from 'src/app/services/geo-data.service';
 
 @Component({
