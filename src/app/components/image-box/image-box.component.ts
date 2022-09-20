@@ -197,7 +197,7 @@ export class ImageBoxComponent implements OnInit {
 
   imageDelete() {
     const featureService = this.featureService;
-    this.tempGroup.forEach(function (value) {
+    this.tempGroup.forEach(function(value) {
       featureService.deleteFeature(value);
     });
     // Resets contents of temp group

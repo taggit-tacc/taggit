@@ -91,7 +91,7 @@ export class ModalFileBrowserComponent implements OnInit {
 
         this.projects = projects;
         this.currentUser = user;
-        const init = <RemoteFile>{
+        const init = <RemoteFile> {
           system: this.myDataSystem.id,
           type: 'dir',
           path: this.currentUser.username,
@@ -111,7 +111,7 @@ export class ModalFileBrowserComponent implements OnInit {
     system.id === this.myDataSystem.id
       ? (pth = this.currentUser.username)
       : (pth = '/');
-    const init = <RemoteFile>{
+    const init = <RemoteFile> {
       system: system.id,
       type: 'dir',
       path: pth,
@@ -141,7 +141,7 @@ export class ModalFileBrowserComponent implements OnInit {
     this.selectedSystem.id === this.myDataSystem.id
       ? (pth = this.currentUser.username)
       : (pth = '/');
-    const init = <RemoteFile>{
+    const init = <RemoteFile> {
       system: this.selectedSystem.id,
       type: 'dir',
       path: pth,
@@ -179,7 +179,7 @@ export class ModalFileBrowserComponent implements OnInit {
           }
           const newFile = [];
           const allowedExt = this.allowedExtensions;
-          files.forEach(function (value, index) {
+          files.forEach(function(value, index) {
             if (
               (value.type == 'file' &&
                 allowedExt.includes(

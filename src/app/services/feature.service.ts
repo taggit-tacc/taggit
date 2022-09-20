@@ -267,8 +267,7 @@ export class FeatureService {
             tag.extra.push(nOption);
           }
         }
-      } // end of create
-      else {
+      } else {
         if (tag.feature === id && tag.groupName === group) {
           const index = tag.extra.findIndex(
             (item) =>

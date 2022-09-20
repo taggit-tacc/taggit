@@ -80,7 +80,7 @@ export class MapComponent implements OnInit {
       .pipe(filter((n) => n != null))
       .subscribe((next) => {
         this.activeFeature = next;
-        const bbox = turf.bbox(<AllGeoJSON>next);
+        const bbox = turf.bbox(<AllGeoJSON> next);
         this.map.fitBounds([
           [bbox[1], bbox[0]],
           [bbox[3], bbox[2]],
