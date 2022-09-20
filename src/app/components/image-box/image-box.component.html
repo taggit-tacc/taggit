@@ -1,6 +1,6 @@
 <div class="img-container">
   <img
-    [ngClass]="status ? 'img-selected' : 'img-unselected'"
+    [ngClass]="imageSelected"
     [src]="featureSource"
     (click)="imageSelect()"
     class="img-responsive img-target"
@@ -62,14 +62,14 @@
     </div>
 
     <ng-template #deleteImage>
-      <div *ngIf="tempGroup.length === 1">
+      <div *ngIf="selectedImages.length === 1">
         This image will be deleted from the current project. It will not be
         deleted from the Data Depot.
       </div>
 
-      <div *ngIf="tempGroup.length > 1">
-        {{ tempGroup.length }} images will be deleted from the current project.
-        They will not be deleted from the Data Depot.
+      <div *ngIf="selectedImages.length > 1">
+        {{ selectedImages.length }} images will be deleted from the current
+        project. They will not be deleted from the Data Depot.
       </div>
 
       <button
@@ -95,64 +95,58 @@
     <ng-template #addMoreToGroup>
       <mat-form-field appearance="fill">
         <mat-label>Groups</mat-label>
-        <mat-select matNativeControl required [(value)]="activeGroup">
-          <mat-option> None </mat-option>
-          <mat-option *ngFor="let group of groupList" [value]="group.name">
-            {{ group.name }}
+        <mat-select matNativeControl required [(value)]="groupToAdd">
+          <mat-option
+            *ngFor="let group of groups | keyvalue"
+            [value]="group.value"
+          >
+            {{ group.key }}
           </mat-option>
         </mat-select>
       </mat-form-field>
 
-      <!-- <select #selectGroup class="form-control" [value]="activeGroup"> -->
-      <!--	<option *ngFor="let group of groupList"> -->
-      <!--	  {{ group.name }} -->
-      <!--	</option> -->
-      <!-- </select> -->
-      <!-- <button mat-raised-button color="primary" matDialogClose (click)="selectGroupForm(selectGroup.value)">Add To Group</button> -->
       <p>
         <button
           mat-raised-button
           color="primary"
           matDialogClose
-          (click)="addGroups(activeGroup)"
-          [disabled]="!activeGroup"
+          (click)="addGroup(groupToAdd)"
+          [disabled]="!groupToAdd"
         >
           Add To Group
         </button>
         <button mat-button color="secondary" matDialogClose>Cancel</button>
       </p>
-
-      <!-- <button mat-raised-button color="primary" class="button" matDialogClose aria-label="Close modal" type="button"> -->
-      <!--	<span aria-hidden="true">&times;</span> -->
-      <!-- </button> -->
     </ng-template>
   </div>
 
   <div class="bottom-overlay">
-    <!-- <div class="color-container"> -->
-    <!-- TODO This should be an iff relationship -->
-    <div *ngIf="hasGroup && colors.length > 0">
-      <div *ngIf="colors.length < 5; else dotdot" class="group-tags">
+    <div
+      *ngIf="feature.properties.group && feature.properties.group.length > 0"
+    >
+      <div
+        *ngIf="feature.properties.group.length < 5; else dotdot"
+        class="group-tags"
+      >
         <div
-          *ngFor="let color of colors"
+          *ngFor="let group of feature.properties.group"
           class="center"
-          (mouseover)="getGroupNameFromColor(color)"
-          [matTooltip]="currentGroup"
+          (mouseover)="(group.name)"
+          [matTooltip]="group.name"
           matTooltipPosition="above"
         >
           <svg
             class="box"
             width="25px"
             height="75px"
-            (click)="deleteFromGroup(color)"
+            (click)="deleteFromGroup(feature, group)"
           >
-            <!-- <rect width="15px" height="15px" [style.fill]="color"/> -->
             <rect
               width="15px"
               height="15px"
               x="5"
               y="30"
-              [style.fill]="color"
+              [style.fill]="group.color"
             />
             <rect
               class="inner-del"
@@ -190,20 +184,20 @@
           style="display: flex; justify-content: center; align-items: center"
         >
           <div
-            *ngFor="let color of colors"
+            *ngFor="let group of feature.properties.group"
             class="center-temp"
             style="display: flex"
-            (mouseover)="getGroupNameFromColor(color)"
-            [matTooltip]="currentGroup"
+            (mouseover)="(group.name)"
+            [matTooltip]="group.name"
             matTooltipPosition="right"
           >
             <svg
               style="padding: 1"
-              (click)="deleteFromGroup(color)"
+              (click)="deleteFromGroup(feature, group)"
               width="15px"
               height="15px"
             >
-              <rect width="15px" height="15px" [style.fill]="color" />
+              <rect width="15px" height="15px" [style.fill]="group.color" />
               <rect
                 class="inner-del-temp"
                 width="8px"
@@ -217,6 +211,5 @@
         </div>
       </ng-template>
     </div>
-    <!-- </div> -->
   </div>
 </div>

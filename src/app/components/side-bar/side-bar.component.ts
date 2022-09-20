@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { GroupsService } from '../../services/groups.service';
 
 @Component({
   selector: 'app-side-bar',
@@ -6,7 +7,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./side-bar.component.scss'],
 })
 export class SideBarComponent implements OnInit {
-  constructor() {}
+  showTagGenerator = false;
 
-  ngOnInit() {}
+  constructor(private groupsService: GroupsService) {}
+
+  ngOnInit() {
+    this.groupsService.showTagGenerator.subscribe((next) => {
+      this.showTagGenerator = next;
+    });
+  }
 }

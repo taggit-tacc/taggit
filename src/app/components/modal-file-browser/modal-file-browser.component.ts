@@ -212,13 +212,8 @@ export class ModalFileBrowserComponent implements OnInit {
       if (this.tapisFilesService.checkIfSelectable(file)) {
         this.addSelectedFile(file, index);
       } else {
-        // console.log("not selectable")
       }
     }
-    // here?
-    // else {
-    //   Signal Error!
-    // }
   }
 
   selectFilesShiftClick(index: number, file: RemoteFile) {
@@ -236,7 +231,6 @@ export class ModalFileBrowserComponent implements OnInit {
         this.selectedFiles.delete(file.path);
       } else {
         this.selectedFiles.set(file.path, file);
-        //   console.log(this.selectedFiles + "GOT HERE");
       }
     }
   }

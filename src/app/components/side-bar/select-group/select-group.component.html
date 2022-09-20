@@ -4,24 +4,24 @@
     <!-- TODO redundant functionality radio is just for style -->
     <form class="boxed">
       <div
-        *ngFor="let group of groupList"
-        (click)="selectGroupForm(group.name)"
+        *ngFor="let group of groups | keyvalue"
+        (click)="selectGroupForm(group.value)"
         class="box form"
       >
         <input
           type="radio"
-          [id]="group.name"
-          [value]="group.name"
+          [id]="group.key"
+          [value]="group.key"
           name="skills"
-          [checked]="isChecked(group.name)"
+          [checked]="isChecked(group.key)"
         />
         <label
           class="group-container"
           style="cursor: pointer"
-          [for]="group.name"
+          [for]="group.key"
         >
           <div class="name-group">
-            {{ group.name }}
+            {{ group.key }}
             <svg class="box" width="10px" height="10px">
               <rect width="10px" height="10px" style="fill: #ffffff" />
               <rect
@@ -29,12 +29,12 @@
                 height="8px"
                 x="1px"
                 y="1px"
-                [style.fill]="group.color"
+                [style.fill]="group.value.color"
               />
             </svg>
           </div>
           <div class="button-group">
-            <div (click)="deleteGroup(group.name)">
+            <div (click)="deleteGroup(group.value)">
               <i
                 class="fas fa-minus"
                 matTooltip="Delete"
@@ -42,7 +42,7 @@
               >
               </i>
             </div>
-            <div (click)="openRenameModal(renameModal, group.name)">
+            <div (click)="openRenameModal(renameModal, group.value)">
               <i
                 class="fas fa-edit"
                 matTooltip="Rename"
@@ -50,9 +50,9 @@
               >
               </i>
             </div>
-            <div (click)="openIconSelection(iconModal, group.name)">
+            <div (click)="openIconSelection(iconModal, group.value)">
               <span
-                class="fa {{ group.icon }}"
+                class="fa {{ group.value.icon }}"
                 matTooltip="icons"
                 matTooltipPosition="below"
               ></span>
@@ -80,19 +80,18 @@
         >
           Rename
         </button>
-        <!-- <button matDialogClose color="primary" mat-raised-button (click)="saveGroup(groupRename.value, currentIcon)">Rename</button> -->
         <button matDialogClose mat-button>Cancel</button>
       </div>
     </ng-template>
 
     <ng-template #iconModal>
       <div class="iconDropdown">
-        <select class="fa" [(ngModel)]="choice">
+        <select class="fa" [(ngModel)]="selectedIcon">
           <option
             class="fa"
-            *ngFor="let icons of iconList"
-            value="{{ icons.id }}"
-            [innerHTML]="icons.unicode"
+            *ngFor="let icon of iconList"
+            value="{{ icon.id }}"
+            [innerHTML]="icon.unicode"
           ></option>
         </select>
         <br />
@@ -102,11 +101,10 @@
             matDialogClose
             color="primary"
             mat-raised-button
-            (click)="saveIcon(choice)"
+            (click)="saveIcon(selectedIcon)"
           >
             Save
           </button>
-          <!-- <button matDialogClose color="primary" mat-raised-button (click)="saveGroup(selectedGroup, choice)">Save</button> -->
           <button matDialogClose mat-button>Cancel</button>
         </div>
       </div>

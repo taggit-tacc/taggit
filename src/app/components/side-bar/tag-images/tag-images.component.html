@@ -4,8 +4,8 @@
     <span>
       <span
         style="cursor: pointer"
-        (click)="createNewTag()"
-        matTooltip="Add New Tag"
+        (click)="showTagGenerator()"
+        matTooltip="Add New Tag Form"
         style="cursor: pointer; margin-right: 10px"
         matTooltipPosition="above"
       >
@@ -17,142 +17,72 @@
 
   <div *ngIf="showSubitem" class="subitem">
     <div class="subitem-scroll">
-      <div *ngFor="let tag of tagList">
-        <div *ngIf="tag.groupName == activeGroup">
-          <div *ngIf="tag.feature == activeFeatureId">
-            <div class="form-item-container">
-              <div class="name-group">{{ tag.label }} ({{ tag.type }})</div>
-
-              <div class="button-group">
-                <div (click)="deleteTag(tag)">
-                  <i
-                    class="fas fa-minus"
-                    matTooltip="Delete"
-                    matTooltipPosition="above"
-                    style="cursor: pointer"
-                  >
-                  </i>
-                </div>
-                <!-- delete button -->
-
-                <div (click)="openRenameOptionModal(renameFormItemModal)">
-                  <i
-                    class="fas fa-edit"
-                    matTooltip="Rename"
-                    matTooltipPosition="above"
-                    style="cursor: pointer"
-                  >
-                  </i>
-                </div>
-
-                <!-- <div *ngIf="tag.type != 'text'">
-
-						<div (click)="openOptionToggle(tag.label)">
-						  <i class="fas fa-ellipsis-h"
-							 style="cursor: pointer"
-							 matTooltip="More Options"
-							 matTooltipPosition="above">
-						  </i>
-						</div>
-	  
-					  </div> three dots -->
-
-                <ng-template #renameFormItemModal>
-                  <input
-                    matInput
-                    #formItemRename
-                    [(ngModel)]="newTagValue"
-                    value="{{ tag.label }}"
-                    placeholder="Rename Form Item"
-                    (keyup.enter)="renameTag(tag)"
-                  />
-                  <br />
-                  <br />
-                  <div class="button-group">
-                    <button
-                      matDialogClose
-                      mat-raised-button
-                      color="primary"
-                      (click)="renameTag(tag.label)"
-                    >
-                      Rename
-                    </button>
-                    <button matDialogClose mat-button>Cancel</button>
-                  </div>
-                </ng-template>
-                <!-- rename modal -->
-              </div>
-              <!-- button group -->
-            </div>
-            <!-- form-item-container -->
-
-            <div
-              *ngIf="tag.type != 'text' && openOption[tag.label]"
-              class="options-container"
-            >
-              <div
-                *ngFor="let opt of tag.options"
-                class="list-group list-suboptions"
+      <div *ngFor="let form of formList">
+        <div class="form-item-container">
+          <div class="name-group">{{ form.label }} ({{ form.type }})</div>
+          <div class="button-group">
+            <div (click)="deleteForm(form)">
+              <i
+                class="fas fa-minus"
+                matTooltip="Delete"
+                matTooltipPosition="above"
+                style="cursor: pointer"
               >
-                <div>
-                  {{ opt.label }}
-                </div>
-
-                <div class="button-group">
-                  <div (click)="formsService.deleteOpt(activeGroup, opt, tag)">
-                    <i
-                      class="fas fa-minus"
-                      style="cursor: pointer"
-                      matTooltip="Delete"
-                      matTooltipPosition="below"
-                    >
-                    </i>
-                  </div>
-                </div>
-                <!-- delete opt button -->
-
-                <div (click)="openRenameOptionModal(renameDeeperOptionModal)">
-                  <i
-                    class="fas fa-edit"
-                    matTooltip="Rename"
-                    style="cursor: pointer"
-                    matTooltipPosition="below"
-                  >
-                  </i>
-                </div>
-                <!-- rename opt button -->
-
-                <ng-template #renameDeeperOptionModal>
-                  <input
-                    matInput
-                    #optionDeeperRename
-                    [(ngModel)]="opt.label"
-                    placeholder="Rename Option"
-                  />
-                  <br />
-                  <br />
-                  <div class="button-group">
-                    <button matDialogClose mat-raised-button color="primary">
-                      Rename
-                    </button>
-                    <button matDialogClose mat-button>Cancel</button>
-                  </div>
-                </ng-template>
-                <!-- rename opt modal -->
-              </div>
-              <!-- opt loop-->
+              </i>
             </div>
-            <!-- opt container-->
-            <!-- <app-form-generator [field]="tagList"></app-form-generator> -->
-            <app-form-generator [field]="tag"></app-form-generator>
+            <!-- delete button -->
+
+            <div (click)="openRenameOptionModal(renameFormItemModal)">
+              <i
+                class="fas fa-edit"
+                matTooltip="Rename"
+                matTooltipPosition="above"
+                style="cursor: pointer"
+              >
+              </i>
+            </div>
+
+            <ng-template #renameFormItemModal>
+              <input
+                matInput
+                #formItemRename
+                [(ngModel)]="newTagValue"
+                value="{{ form.label }}"
+                placeholder="Rename Form Item"
+                (keyup.enter)="renameForm(form)"
+              />
+              <br />
+              <br />
+              <div class="button-group">
+                <button
+                  matDialogClose
+                  mat-raised-button
+                  color="primary"
+                  (click)="renameForm(form.label)"
+                >
+                  Rename
+                </button>
+                <button matDialogClose mat-button>Cancel</button>
+              </div>
+            </ng-template>
+            <!-- rename modal -->
           </div>
+          <!-- button group -->
         </div>
+        <!-- form-item-container -->
+        <app-form-generator
+          (newValue)="setValue($event)"
+          [field]="form"
+        ></app-form-generator>
+      </div>
+      <div *ngIf="formList && formList.length">
+        <button mat-raised-button color="primary" (click)="saveTags()">
+          Save
+        </button>
       </div>
     </div>
     <!-- subitem scroll -->
   </div>
   <!--subitem -->
-
-  <ng-template #elseBlock> No tag presets for this Group! </ng-template>
 </div>
 <!-- tag-forms -->

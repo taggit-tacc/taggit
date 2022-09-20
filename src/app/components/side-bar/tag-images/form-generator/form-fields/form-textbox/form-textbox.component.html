@@ -1,15 +1,10 @@
-<!--<div *ngIf="!field.multiline">
-  <input [attr.type]="field.type" class="form-control"  [id]="field.name" [name]="field.name" [(ngModel)]="note" (change)="updateNotes()">
-</div>
-Note! Right now, this tag is set to only use a text area, it seems like this component was set up to switch between the two when the imput
-became too large. However, how this was done isn't clear, and a text area just looks better, in my opinion-->
 <div>
   <textarea
     [id]="field.name"
     rows="9"
     class="form-control"
-    [placeholder]="notes"
-    [(ngModel)]="note"
-    (keyup)="updateNotes()"
+    [placeholder]="'notes'"
+    [(ngModel)]="value"
+    (keyup)="updateValue()"
   ></textarea>
 </div>

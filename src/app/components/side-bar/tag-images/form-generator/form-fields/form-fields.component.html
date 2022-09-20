@@ -29,12 +29,5 @@
       [field]="field"
       [form]="form"
     ></app-form-radio>
-    <!-- <app-form-file *ngSwitchCase="'file'" [field]="field" [form]="form"></app-form-file> -->
-    <div
-      class="alert alert-danger my-1 p-2 fadeInDown animated"
-      *ngIf="!isValid && isDirty"
-    >
-      {{ tag.label }} is required
-    </div>
   </div>
 </div>
