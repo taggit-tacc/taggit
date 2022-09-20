@@ -1,136 +1,133 @@
 :host {
   .img-container {
-	position: relative;
-	// width: 100%;
-	// height: 100%;
+    position: relative;
+    // width: 100%;
+    // height: 100%;
   }
 
   .img-container img {
-	object-fit: cover;
-	cursor: default;
-	width: 100%;
-	height: 100%;
-	transition: opacity .3s ease;
-	backface-visibility: hidden;
-	max-width: 100%;
-	max-height: 100%;
-	margin: 0 auto;
+    object-fit: cover;
+    cursor: default;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.3s ease;
+    backface-visibility: hidden;
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0 auto;
   }
 
-
   .top-overlay {
-	display: flex;
-	flex-direction: row;
-	transition: .3s ease;
-	opacity: 0;
-	position: absolute;
-	// TODO make it work with windows and transform;
-	right: 10px;
-	top: 10px;
-	cursor: pointer;
-	text-align: center;
-	// transform: translate(-50%, -50%);
-	// -ms-transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: row;
+    transition: 0.3s ease;
+    opacity: 0;
+    position: absolute;
+    // TODO make it work with windows and transform;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+    text-align: center;
+    // transform: translate(-50%, -50%);
+    // -ms-transform: translate(-50%, -50%);
   }
 
   .bottom-overlay {
-	display: flex;
-	flex-direction: row;
-	transition: .3s ease;
-	opacity: 1;
-	position: absolute;
-	// TODO make it work with windows and transform (or postcss prefix);
-	right: 10px;
-	bottom: 10px;
-	// cursor: pointer;
-	text-align: center;
-	// transform: translate(-50%, -50%);;
-	// -ms-transform: translate(-50%, -50%);;
+    display: flex;
+    flex-direction: row;
+    transition: 0.3s ease;
+    opacity: 1;
+    position: absolute;
+    // TODO make it work with windows and transform (or postcss prefix);
+    right: 10px;
+    bottom: 10px;
+    // cursor: pointer;
+    text-align: center;
+    // transform: translate(-50%, -50%);;
+    // -ms-transform: translate(-50%, -50%);;
   }
 
   .img-container:hover img {
-	opacity: 0.9;
+    opacity: 0.9;
   }
 
   .img-container:hover .top-overlay {
-	opacity: 0.9;
+    opacity: 0.9;
   }
 
   .img-container:hover .top-overlay:hover {
-	opacity: 1;
+    opacity: 1;
   }
 
   .image-option {
-	opacity: 0.9;
-	background-color: white;
-	display: flex;
-	color: black;
-	width: 40px;
-	height: 30px;
-	border-radius: 5px;
-	font-size: 16px;
-	margin: 3px;
-	justify-content: center;
-	align-items: center;
+    opacity: 0.9;
+    background-color: white;
+    display: flex;
+    color: black;
+    width: 40px;
+    height: 30px;
+    border-radius: 5px;
+    font-size: 16px;
+    margin: 3px;
+    justify-content: center;
+    align-items: center;
   }
 
   .image-option:hover {
-	opacity: 1;
+    opacity: 1;
   }
 
   .image-option .fas {
-	top: 5px;
+    top: 5px;
   }
 
   .img-selected {
-	border: solid #4FB876;
-	border-width: 5px;
+    border: solid #4fb876;
+    border-width: 5px;
   }
 
   .img-unselected {
-	border: solid #fff;
-	border-width: 5px;
+    border: solid #fff;
+    border-width: 5px;
   }
 
   .group-tags {
-	opacity: 0.9;
-	background-color: white;
-	display: flex;
-	flex-direction: row;
-	width: auto;
-	height: 30px;
-	border-radius: 5px;
-	padding: 5px;
-	justify-content: center;
-	align-items: center;
-	z-index: 999;
+    opacity: 0.9;
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    width: auto;
+    height: 30px;
+    border-radius: 5px;
+    padding: 5px;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
   }
 
   .center {
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	transition: .3s ease;
-	// cursor: pointer;
-	align-items: center;
-	.inner-del {
-	  opacity: 0;
-	  transition: .3s ease;
-	  cursor: pointer;
-	}
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    transition: 0.3s ease;
+    // cursor: pointer;
+    align-items: center;
+    .inner-del {
+      opacity: 0;
+      transition: 0.3s ease;
+      cursor: pointer;
+    }
   }
 
   .center:hover {
-	.inner-del  {
-	  opacity: 1;
-	}
+    .inner-del {
+      opacity: 1;
+    }
   }
-
 
   .box {
-	padding: 1px;
+    padding: 1px;
   }
-
 }
 
 .center-temp {
@@ -140,15 +137,15 @@
   // cursor: pointer;
   align-items: center;
   .inner-del-temp {
-	opacity: 0;
-	transition: .3s ease;
-	cursor: pointer;
+    opacity: 0;
+    transition: 0.3s ease;
+    cursor: pointer;
   }
 }
 
 .center-temp:hover {
-  .inner-del-temp  {
-	opacity: 0.5;
+  .inner-del-temp {
+    opacity: 0.5;
   }
 }
 
@@ -158,45 +155,45 @@
   max-height: 700px;
 
   .img-container {
-	overflow-y: scroll;
-	// overflow-x: hidden;
-	width: 100%;
-	height: 100%;
-	background-color: #e7e7e7;
+    overflow-y: scroll;
+    // overflow-x: hidden;
+    width: 100%;
+    height: 100%;
+    background-color: #e7e7e7;
   }
 
   .img-details {
-	// width: 100%;
-	// height: 100%;
-	// margin-right: 24px;
-	display: flex;
-	flex-direction: row;
-	margin-top: 24px;
-	background-color: #e7e7e7;
-	align-items: center;
-	text-align: center;
+    // width: 100%;
+    // height: 100%;
+    // margin-right: 24px;
+    display: flex;
+    flex-direction: row;
+    margin-top: 24px;
+    background-color: #e7e7e7;
+    align-items: center;
+    text-align: center;
   }
 
   .title {
-	background-color: #ccc;
-	padding: 5px;
+    background-color: #ccc;
+    padding: 5px;
   }
 
   .detail-container {
-	display: flex;
-	flex-grow: 1;
-	flex-direction: column;
-	padding: 5px;
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    padding: 5px;
   }
 
   .detail-contents {
-	display: flex;
-	flex-direction: row;
-	padding: 5px;
-	background-color: #fff;
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    background-color: #fff;
   }
 
   .detail-item {
-	padding: 5px;
+    padding: 5px;
   }
 }

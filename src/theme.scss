@@ -5,8 +5,4 @@ $theme-accent: mat-palette($mat-light-blue);
 $theme-warn: mat-palette($mat-deep-orange, A200);
 
 // create theme (use mat-dark-theme for themes with dark backgrounds)
-$theme: mat-light-theme(
-	$theme-primary,
-	$theme-accent,
-	$theme-warn
-);
+$theme: mat-light-theme($theme-primary, $theme-accent, $theme-warn);

@@ -8,17 +8,19 @@ import { FormGroup } from '@angular/forms';
   styleUrls: ['./form-file.component.scss'],
 })
 export class FormFileComponent {
-	@Input() field: any = {};
-	@Input() form: FormGroup;
-	get isValid() { return this.form.controls[this.field.name].valid; }
-	get isDirty() { return this.form.controls[this.field.name].dirty; }
+  @Input() field: any = {};
+  @Input() form: FormGroup;
+  get isValid() {
+    return this.form.controls[this.field.name].valid;
+  }
+  get isDirty() {
+    return this.form.controls[this.field.name].dirty;
+  }
 
-	constructor() {
+  constructor() {}
 
-	}
-
-	ngOnChange() {
-	  console.log(this.field.value);
-	  // this.field.value.
-	}
+  ngOnChange() {
+    console.log(this.field.value);
+    // this.field.value.
+  }
 }

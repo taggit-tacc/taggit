@@ -1,18 +1,18 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MapComponent } from './map.component';
-import {GeoDataService} from '../../services/geo-data.service';
-import {instance, mock, spy, when} from 'ts-mockito';
-import {ActivatedRoute, ParamMap} from '@angular/router';
-import {of} from 'rxjs';
-import {featureFixture} from '../../fixtures/feature.fixture';
-import {overlayFixture} from '../../fixtures/overlay.fixture';
-import {FeatureCollection} from '../../models/models';
+import { GeoDataService } from '../../services/geo-data.service';
+import { instance, mock, spy, when } from 'ts-mockito';
+import { ActivatedRoute, ParamMap } from '@angular/router';
+import { of } from 'rxjs';
+import { featureFixture } from '../../fixtures/feature.fixture';
+import { overlayFixture } from '../../fixtures/overlay.fixture';
+import { FeatureCollection } from '../../models/models';
 
 class MockActivatedRoute extends ActivatedRoute {
   constructor() {
     super();
-    this.queryParams = of({mapType: '5'});
+    this.queryParams = of({ mapType: '5' });
   }
 }
 
@@ -24,17 +24,18 @@ describe('MapComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MapComponent ],
+      declarations: [MapComponent],
       providers: [
         {
-          provide: GeoDataService, useFactory: () => instance(MockData)
+          provide: GeoDataService,
+          useFactory: () => instance(MockData),
         },
         {
-          provide: ActivatedRoute, useClass: MockActivatedRoute
-        }
-      ]
-    })
-    .compileComponents();
+          provide: ActivatedRoute,
+          useClass: MockActivatedRoute,
+        },
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

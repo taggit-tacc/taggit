@@ -8,18 +8,19 @@ import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 @Component({
   selector: 'app-modal-share-project',
   templateUrl: './modal-share-project.component.html',
-  styleUrls: ['./modal-share-project.component.scss']
+  styleUrls: ['./modal-share-project.component.scss'],
 })
 export class ModalShareProjectComponent implements OnInit {
-
   projShareForm: FormGroup;
   activeProj: Project;
   projectUsers;
-  onlyOne: boolean; // if only one user is present == TRUE 
+  onlyOne: boolean; // if only one user is present == TRUE
 
-  constructor(public dialogRef: MatDialogRef<ModalShareProjectComponent>,
-              private dialog: MatDialog,
-              private projectsService: ProjectsService) { }
+  constructor(
+    public dialogRef: MatDialogRef<ModalShareProjectComponent>,
+    private dialog: MatDialog,
+    private projectsService: ProjectsService
+  ) {}
 
   ngOnInit() {
     // creates new form control group to access input value
@@ -35,7 +36,7 @@ export class ModalShareProjectComponent implements OnInit {
     // retrieves all users currently registered to the active project
     this.projectsService.getProjectUsers(this.activeProj).subscribe((next) => {
       this.projectUsers = next;
-      this.onlyOne = (this.projectUsers.length == 1);
+      this.onlyOne = this.projectUsers.length == 1;
       console.log(this.onlyOne);
     });
   }
@@ -43,11 +44,14 @@ export class ModalShareProjectComponent implements OnInit {
   // closes modal without submitting anything
   close() {
     this.dialogRef.close();
-    }
+  }
 
   // shares project with specified user
   submit() {
-    this.projectsService.addUserToProject(this.activeProj, this.projShareForm.get('name').value);
+    this.projectsService.addUserToProject(
+      this.activeProj,
+      this.projShareForm.get('name').value
+    );
     this.dialogRef.close();
   }
 
@@ -56,5 +60,4 @@ export class ModalShareProjectComponent implements OnInit {
     this.projectsService.deleteUserFromProject(this.activeProj, user);
     this.dialogRef.close();
   }
-
 }
