@@ -11,10 +11,10 @@ import { GroupsService } from 'src/app/services/groups.service';
   templateUrl: './form-textbox.component.html',
 })
 export class FormTextBoxComponent {
-  @Input() field:any = {};
-  @Input() form:FormGroup;
-  note:string;
-  notes:string = "notes";
+  @Input() field: any = {};
+  @Input() form: FormGroup;
+  note: string;
+  notes = 'notes';
   private activeFeatureId$: Subscription;
   activeFeatureId: number;
 
@@ -25,8 +25,8 @@ export class FormTextBoxComponent {
   get isDirty() { return this.form.controls[this.field.name].dirty; }
 
   constructor(private formsService: FormsService,
-    private groupsService: GroupsService,
-    private featureService: FeatureService) { }
+              private groupsService: GroupsService,
+              private featureService: FeatureService) { }
 
   ngOnInit() {
     this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe((next) => {
@@ -37,15 +37,15 @@ export class FormTextBoxComponent {
       this.activeGroup = next;
     });
 
-    let index
-    this.formsService.getSelectedRadio().forEach(opt=> {
+    let index;
+    this.formsService.getSelectedRadio().forEach(opt => {
       // console.log(opt)
-      if(opt != undefined){
-        index = opt.findIndex(item => item.id === this.activeFeatureId && item.compID === 3&&item.groupName === this.activeGroup && item.label === this.form['label']);
+      if (opt != undefined) {
+        index = opt.findIndex(item => item.id === this.activeFeatureId && item.compID === 3 && item.groupName === this.activeGroup && item.label === this.form.label);
         // console.log(index)
-        if (index > -1){
+        if (index > -1) {
           // console.log(opt[index].option)
-          this.note = opt[index].option
+          this.note = opt[index].option;
         }
       }
       
@@ -58,8 +58,8 @@ export class FormTextBoxComponent {
     // }
   }
 
-  updateNotes(){ 
+  updateNotes() { 
     // console.log(this.form['label'])
     // console.log(this.form.name)
-    this.featureService.updateExtra(this.note, 3, this.activeFeatureId, this.activeGroup, this.form['label'], "text"); }
+    this.featureService.updateExtra(this.note, 3, this.activeFeatureId, this.activeGroup, this.form.label, 'text'); }
 }

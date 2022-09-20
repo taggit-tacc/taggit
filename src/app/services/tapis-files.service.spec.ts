@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 
 import { TapisFilesService } from './tapis-files.service';
-import {AgaveSystemsService} from "./agave-systems.service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {AgaveSystemsService} from './agave-systems.service';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 
 describe('AgaveFilesService', () => {
   beforeEach(() => TestBed.configureTestingModule({

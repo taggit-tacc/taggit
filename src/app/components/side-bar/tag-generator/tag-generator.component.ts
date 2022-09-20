@@ -21,7 +21,7 @@ export class TagGeneratorComponent implements OnInit {
   selectedGroup: string;
   showOpt: string;
   formType: string;
-  changed: boolean = false;
+  changed = false;
   labelFilter: string;
   formItemList: Array<any> = [];
   activeGroup: string;
@@ -31,14 +31,14 @@ export class TagGeneratorComponent implements OnInit {
   formRequired: boolean;
   openOption: any = {};
   enabledControls: Array<string> = [];
-  showSubitem: boolean = true;
+  showSubitem = true;
   activeFormList: Array<any>;
   groupList: Array<any>;
   groups$: Subscription;
   tempGroup: Array<Feature>;
   private selectedProject;
   newTag: object[] = [];
-  newGroup:object[] = [];
+  newGroup: object[] = [];
 
   constructor(
 	private formsService: FormsService,
@@ -74,16 +74,16 @@ export class TagGeneratorComponent implements OnInit {
 	this.formLabel = '';
 	this.formValue = '';
 	this.formRequired = false;
-	this.enabledControls = ["Text", "Checkbox", "Radio", "Dropdown", "Color"];
+	this.enabledControls = ['Text', 'Checkbox', 'Radio', 'Dropdown', 'Color'];
   }
 
-  inputFormLabel (event: any) {
+  inputFormLabel(event: any) {
 	this.formLabel = event.target.value;
   }
 
   addOptionItem(value: string) {
 	if (value) {
-	  let formWithValue = this.formOptions.filter(e => e.label == value);
+	  const formWithValue = this.formOptions.filter(e => e.label == value);
 	  if (formWithValue.length == 0 && value.length != 0) {
 		this.formOptions.push({
 		  key: value[0],
@@ -108,10 +108,10 @@ export class TagGeneratorComponent implements OnInit {
 
 
   renameOption(opt: any, label: string) {
-	if (this.showOpt == "show-option") {
-	  this.showOpt = "no-show-option";
+	if (this.showOpt == 'show-option') {
+	  this.showOpt = 'no-show-option';
 	} else {
-	  this.showOpt = "show-option";
+	  this.showOpt = 'show-option';
 	}
 
 	label = label.toLowerCase();
@@ -122,7 +122,7 @@ export class TagGeneratorComponent implements OnInit {
 	});
   }
 
-  selectInputForm (name: string) {
+  selectInputForm(name: string) {
 	this.formType = name;
 	this.formLabel = '';
 	this.formOptions = [];
@@ -137,43 +137,43 @@ export class TagGeneratorComponent implements OnInit {
   }
 
   addFormItem() {
-		//Assemble the new tag
-		let formItem: tags = {
+		// Assemble the new tag
+		const formItem: tags = {
 			type: this.formType,
 			groupName: this.activeGroup,
 			label: this.formLabel,
 			options: [],
 			feature: 0,
 			extra: []
-		}
+		};
 		this.openOption[this.formLabel] = false;
-		//Adds the options for drop down, checklist, and radio buttons
-		if (this.formType !== "text" && this.formOptions.length != 0) {
-			let myOpts = [];
+		// Adds the options for drop down, checklist, and radio buttons
+		if (this.formType !== 'text' && this.formOptions.length != 0) {
+			const myOpts = [];
 			for (const opt of this.formOptions) {
 			  myOpts.push({
 				key: opt[0],
 				label: opt,
-			  })
+			  });
 			}
 			formItem.options = this.formOptions;
 		  }
-	//Pass it to feature and form service to propogate to all features in a group
-	this.featureService.createTag(formItem, this.activeGroup, this.groupList)
+	// Pass it to feature and form service to propogate to all features in a group
+	 this.featureService.createTag(formItem, this.activeGroup, this.groupList);
 	// this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
 
-	//Reset user-defined fields to blank options
-	this.formLabel = '';
-	this.formOptions = [];
-	this.labelFilter = '';
-	this.changed = true;
-	//Navigate back to the display panel
-	this.groupsService.setActivePane("tagger");
-	this.router.navigateByUrl('/tagger', {skipLocationChange: true});
+	// Reset user-defined fields to blank options
+	 this.formLabel = '';
+	 this.formOptions = [];
+	 this.labelFilter = '';
+	 this.changed = true;
+	// Navigate back to the display panel
+	 this.groupsService.setActivePane('tagger');
+	 this.router.navigateByUrl('/tagger', {skipLocationChange: true});
    }
 
   cancelCreate() {
-	this.groupsService.setActivePane("tagger");
+	this.groupsService.setActivePane('tagger');
 	this.router.navigateByUrl('/tagger', {skipLocationChange: true});
   }
 

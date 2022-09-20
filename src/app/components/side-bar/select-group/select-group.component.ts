@@ -26,102 +26,102 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 
   selectedGroup: string;
   groupList: Array<any>;
-  showSidebar: boolean
+  showSidebar: boolean;
   activeGroup: string;
-  showSubitem: boolean = true;
+  showSubitem = true;
   
-  currentIcon: string = "fa-house-damage";
+  currentIcon = 'fa-house-damage';
   choice: string;
   tempGroup: Array<Feature>;
 
-  iconList: Array<any> = [{"id":"fa-house-damage",
-							"unicode": "&#xf6f1; house-damage"},
-							{"id":"fa-car",
-							"unicode": "&#xf1b9; car"},
-							{"id":"fa-tree",
-							"unicode": "&#xf1bb; tree"},
+  iconList: Array<any> = [{id: 'fa-house-damage',
+							unicode: '&#xf6f1; house-damage'},
+							{id: 'fa-car',
+							unicode: '&#xf1b9; car'},
+							{id: 'fa-tree',
+							unicode: '&#xf1bb; tree'},
 
-							{"id":"fa-school",
-							"unicode": "&#xf549; school"},
-							{"id":"fa-archway",
-							"unicode": "&#xf557; archway"},
-							{"id":"fa-building",
-							"unicode": "&#xf1ad; building"},
-							{"id":"fa-bus",
-							"unicode": "&#xf207; bus"},
-							{"id":"fa-church",
-							"unicode": "&#xf51d; church"},
+							{id: 'fa-school',
+							unicode: '&#xf549; school'},
+							{id: 'fa-archway',
+							unicode: '&#xf557; archway'},
+							{id: 'fa-building',
+							unicode: '&#xf1ad; building'},
+							{id: 'fa-bus',
+							unicode: '&#xf207; bus'},
+							{id: 'fa-church',
+							unicode: '&#xf51d; church'},
 
-							{"id":"fa-helicopter",
-							"unicode": "&#xf533; helicopter"},
-							{"id":"fa-hospital-alt",
-							"unicode": "&#xf47d; hospital"},
-							{"id":"fa-hotel",
-							"unicode": "&#xf594; hotel"},
-							{"id":"fa-igloo",
-							"unicode": "&#xf7ae; igloo"},
-							{"id":"fa-motorcycle",
-							"unicode": "&#xf21c; motorcycle"},
-							{"id":"fa-place-of-worship",
-							"unicode": "&#xf67f; place-of-worship"},
-							{"id":"fa-plane",
-							"unicode": "&#xf072; plane"},
-							{"id":"fa-school",
-							"unicode": "&#xf549; school"},
+							{id: 'fa-helicopter',
+							unicode: '&#xf533; helicopter'},
+							{id: 'fa-hospital-alt',
+							unicode: '&#xf47d; hospital'},
+							{id: 'fa-hotel',
+							unicode: '&#xf594; hotel'},
+							{id: 'fa-igloo',
+							unicode: '&#xf7ae; igloo'},
+							{id: 'fa-motorcycle',
+							unicode: '&#xf21c; motorcycle'},
+							{id: 'fa-place-of-worship',
+							unicode: '&#xf67f; place-of-worship'},
+							{id: 'fa-plane',
+							unicode: '&#xf072; plane'},
+							{id: 'fa-school',
+							unicode: '&#xf549; school'},
 
 
-							{"id":"fa-rocket",
-							"unicode": "&#xf135; rocket"},
-							{"id":"fa-ship",
-							"unicode": "&#xf21a; ship"},
-							{"id":"fa-shopping-cart",
-							"unicode": "&#xf07a; shopping-cart"},
-							{"id":"fa-shuttle-van",
-							"unicode": "&#xf5b6; shuttle-van"},
-							{"id":"fa-monument",
-							"unicode": "&#xf5a6; monument"},
-							{"id":"fa-store",
-							"unicode": "&#xf54e; store"},
+							{id: 'fa-rocket',
+							unicode: '&#xf135; rocket'},
+							{id: 'fa-ship',
+							unicode: '&#xf21a; ship'},
+							{id: 'fa-shopping-cart',
+							unicode: '&#xf07a; shopping-cart'},
+							{id: 'fa-shuttle-van',
+							unicode: '&#xf5b6; shuttle-van'},
+							{id: 'fa-monument',
+							unicode: '&#xf5a6; monument'},
+							{id: 'fa-store',
+							unicode: '&#xf54e; store'},
 
-							{"id":"fa-subway",
-							"unicode": "&#xf239; subway"},
-							{"id":"fa-taxi",
-							"unicode": "&#xf1ba; taxi"},
-							{"id":"fa-train",
-							"unicode": "&#xf238; train"},
-							{"id":"fa-truck",
-							"unicode": "&#xf0d1; truck"},
-							{"id":"fa-truck-pickup",
-							"unicode": "&#xf63c; truck-pickup"},
-							{"id":"fa-university",
-							"unicode": "&#xf19c; university"},
-							{"id":"fa-warehouse",
-							"unicode": "&#xf494; warehouse"},
-							{"id":"fa-bolt",
-							"unicode": "&#xf0e7; bolt"},
+							{id: 'fa-subway',
+							unicode: '&#xf239; subway'},
+							{id: 'fa-taxi',
+							unicode: '&#xf1ba; taxi'},
+							{id: 'fa-train',
+							unicode: '&#xf238; train'},
+							{id: 'fa-truck',
+							unicode: '&#xf0d1; truck'},
+							{id: 'fa-truck-pickup',
+							unicode: '&#xf63c; truck-pickup'},
+							{id: 'fa-university',
+							unicode: '&#xf19c; university'},
+							{id: 'fa-warehouse',
+							unicode: '&#xf494; warehouse'},
+							{id: 'fa-bolt',
+							unicode: '&#xf0e7; bolt'},
 						];
 
   constructor(private formsService: FormsService,
-			  private groupsService: GroupsService,
-			  private geoDataService: GeoDataService,
-			  private projectsService: ProjectsService,
-			  private dialog: MatDialog,
-			  private featureService: FeatureService) { }
+			           private groupsService: GroupsService,
+			           private geoDataService: GeoDataService,
+			           private projectsService: ProjectsService,
+			           private dialog: MatDialog,
+			           private featureService: FeatureService) { }
 
   ngOnInit() {
 	  this.groupsService.tempGroup.subscribe((next) => {
 		this.tempGroup = next;
 	  });
 
-	this.projectsService.activeProject.subscribe(next => {
+	  this.projectsService.activeProject.subscribe(next => {
 	  this.selectedProject = next;
 	});
 
-	this.groups$ = this.groupsService.groups.subscribe((next) => {
+	  this.groups$ = this.groupsService.groups.subscribe((next) => {
 	  this.groupList = next;
 	});
 
-	this.activeGroup$ = this.groupsService.activeGroup.subscribe((next) => {
+	  this.activeGroup$ = this.groupsService.activeGroup.subscribe((next) => {
 	  this.activeGroup = next;
 	});
   }
@@ -130,7 +130,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 	this.geoDataService.getFeatures(this.selectedProject.id);
 	this.groupsService.setActiveGroup(group);
 
-	let activeGroup = this.groupList.filter(what => what.name == this.activeGroup);
+	const activeGroup = this.groupList.filter(what => what.name == this.activeGroup);
 
 	if (activeGroup[0].features.length == 0) {
 	  this.groupsService.setFeatureImagesExist(false);
@@ -147,34 +147,34 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 
   deleteGroup(name: string) {
 
-	let data = this.formsService.getTags();
-	while(true){
+	const data = this.formsService.getTags();
+	while (true) {
 		const index = data.findIndex(item => item.groupName === name);
 		// delete this.exampleNote[index];
 		if (index > -1) {
 		data.splice(index, 1);
-		}else{
+		} else {
 			break;
 		}
 	}
 	
 
 	this.groupList.forEach(group => {
-		if (group.name == name){
+		if (group.name == name) {
 			this.tempGroup = group.features;
 			this.groupList = this.groupList.filter(e => e.name != name);
 		}
 	});
 
-	for (let feat of this.tempGroup){
+	for (const feat of this.tempGroup) {
 
-		let featProp = feat.properties;
+		const featProp = feat.properties;
 
 		featProp.group = featProp.group.filter(e => e.name != name);
 
-		featProp.tag = data
+		featProp.tag = data;
 	
-			this.geoDataService.updateFeatureProperty(this.selectedProject.id,
+		this.geoDataService.updateFeatureProperty(this.selectedProject.id,
 													Number(feat.id),
 													featProp);
 
@@ -194,9 +194,9 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 	this.dialog.open(template);
   }
 
-  openIconSelection(template: TemplateRef<any>, name:string){
+  openIconSelection(template: TemplateRef<any>, name: string) {
 	this.selectedGroup =  name;
-	//Set the default icon to be the group's icon
+	// Set the default icon to be the group's icon
 	this.groupList.forEach(e => {
 		if (e.name == this.activeGroup) {
 		  this.choice = e.icon;
@@ -205,7 +205,7 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 	this.dialog.open(template);
   }
 
-  saveIcon(icon: string){
+  saveIcon(icon: string) {
 	this.groupList.forEach(e => {
 	  if (e.name == this.activeGroup) {
 		e.icon = icon;
@@ -214,20 +214,20 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 	});
 	this.groupsService.addGroup(this.groupList);
 
-	let index = 0
-	for (let feat of this.tempGroup) {
-		let featProp = feat.properties;
-		 console.log(feat.id)		
-	this.groupsService.setActiveGroup(this.activeGroup);
-		this.formsService.saveStyles("default", Number(feat.id))
+	const index = 0;
+	for (const feat of this.tempGroup) {
+		const featProp = feat.properties;
+		console.log(feat.id);		
+	 this.groupsService.setActiveGroup(this.activeGroup);
+		this.formsService.saveStyles('default', Number(feat.id));
 	}
   }
 
   isChecked(name: string) {
 	if (this.activeGroup == name) {
-	  return "checked";
+	  return 'checked';
 	} else {
-	  return "";
+	  return '';
 	}
   }
 
@@ -238,25 +238,25 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
 		e.name = name;
 		this.tempGroup = e.features;
 	  }
-	this.dialog.closeAll()
+	  this.dialog.closeAll();
 	});
 	
 	this.groupsService.addGroup(this.groupList);
 
-	//Loops through every feature in tempGroup, trying to match them to the features in the group list
-	for (let feat of this.tempGroup) {
-		let featProp = feat.properties;
+	// Loops through every feature in tempGroup, trying to match them to the features in the group list
+	for (const feat of this.tempGroup) {
+		const featProp = feat.properties;
 		featProp.group.forEach(group => {
 			if ( group.name == this.selectedGroup ) {
-				group.name = name
+				group.name = name;
 			}
 		});
 
-		//Finds every tag with the old group name and changes it to the new name
-		try{
+		// Finds every tag with the old group name and changes it to the new name
+		try {
 			featProp.tag.forEach(tag => {
-				if( tag.groupName == this.selectedGroup ) {
-					tag.groupName = name
+				if ( tag.groupName == this.selectedGroup ) {
+					tag.groupName = name;
 				}
 			});
 		} catch {}

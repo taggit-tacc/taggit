@@ -52,7 +52,7 @@ import { TagImagesComponent } from './components/side-bar/tag-images/tag-images.
 import { ModalCreateProjectComponent } from './components/modal-create-project/modal-create-project.component';
 import { ModalCurrentProjectComponent } from './components/modal-current-project/modal-current-project.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatTreeModule} from '@angular/material/tree';
 import { MatProgressBar } from '@angular/material';
 import {MatSnackBarModule} from '@angular/material/snack-bar';

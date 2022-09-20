@@ -56,25 +56,25 @@ export class GroupsService {
 
   setGroupProperties(featureList: any): void {
 	// let tempGroupList = {};
-	let tempGroupList = {};
-	let tempFeatList = {};
-	for (let feat of featureList) {
+	const tempGroupList = {};
+	const tempFeatList = {};
+	for (const feat of featureList) {
 	  // Parses if group exists at all in server
 	  if (feat.properties.group) {
 		// Loops through all the groups
-		for (let group of feat.properties.group) {
+		for (const group of feat.properties.group) {
 		  // Adds new feature to group
 		  // if (!tempFeatList[group.name]) {
-		  //	tempFeatList[group.name] = [];
+		  // 	tempFeatList[group.name] = [];
 		  // }
 
 		  // if (!tempGroupList[group.name]) {
-		  //	tempGroupList[group.name] = [];
+		  // 	tempGroupList[group.name] = [];
 		  // }
 
 		  // TODO for some reason it's limiting itself to only one group per feature...
 
-		  //if it exist
+		  // if it exist
 		  if (!tempGroupList[group.name]) {
 
 			tempGroupList[group.name] = {
@@ -82,11 +82,11 @@ export class GroupsService {
 			  features: [],
 			  color: group.color,
 			  icon: group.icon
-			}
+			};
 		  }
 		//   console.log(tempGroupList[group.name].features)
-		  let index = tempGroupList[group.name].features.findIndex(item => (item == feat))
-		  if(index == -1){
+		  const index = tempGroupList[group.name].features.findIndex(item => (item == feat));
+		  if (index == -1) {
 		  tempGroupList[group.name].features.push(feat);
 		  }
 
@@ -127,7 +127,7 @@ export class GroupsService {
   }
 
   setItemsSelected(select: boolean): void {
-	this._itemsSelected.next(select)
+	this._itemsSelected.next(select);
   }
 
   // TODO Replace this with geo-data.service
@@ -154,8 +154,8 @@ export class GroupsService {
   }
 
   setTagFeatureGroup(groupName: string, featureId: number, payload: any): void {
-	let groupFeature : string = groupName + featureId;
-	let tagFeatureGroupValue : any = this._tagFeatureGroup.value;
+	const groupFeature: string = groupName + featureId;
+	let tagFeatureGroupValue: any = this._tagFeatureGroup.value;
 
 	if (tagFeatureGroupValue == null) {
 	  tagFeatureGroupValue = {};

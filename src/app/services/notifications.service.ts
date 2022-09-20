@@ -16,8 +16,8 @@ export class NotificationsService {
   public readonly  notifications: Observable<Array<INotification>> = this._notifications.asObservable();
 
   constructor(private toastr: ToastrService,
-    private http: HttpClient,
-    private authService: AuthService ) {
+              private http: HttpClient,
+              private authService: AuthService ) {
       if (this.authService.isLoggedIn()) {
       const timer = interval(this.TIMEOUT);
       timer.subscribe((next) => {
@@ -26,11 +26,11 @@ export class NotificationsService {
     }
   }
 
-  //Sends a request to GeoAPI to retrieve recent notifications
+  // Sends a request to GeoAPI to retrieve recent notifications
   getRecent(): void {
-    let baseUrl = environment.apiUrl + 'notifications/';
-    let now = new Date();
-    let then = new Date(now.getTime() - this.TIMEOUT);
+    const baseUrl = environment.apiUrl + 'notifications/';
+    const now = new Date();
+    const then = new Date(now.getTime() - this.TIMEOUT);
 
     this.http.get<Array<INotification>>(baseUrl + `?startDate=${then.toISOString()}`)
       .subscribe( (notes) => {
@@ -55,10 +55,10 @@ export class NotificationsService {
   }
 
   showImportErrorToast(message: string): void {
-    this.toastr.error(message + ", trying alternate method")
+    this.toastr.error(message + ', trying alternate method');
   }
 
-  showErrorToast(message:string): void {
+  showErrorToast(message: string): void {
     this.toastr.error(message);
   }
 

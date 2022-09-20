@@ -10,9 +10,9 @@ import { GroupsService } from 'src/app/services/groups.service';
   templateUrl: './form-radio.component.html',
 })
 export class FormRadioComponent {
-  @Input() field:any = {};
-  @Input() form:FormGroup;
-  @Input() label:String;
+  @Input() field: any = {};
+  @Input() form: FormGroup;
+  @Input() label: String;
   public chosenTag: string;
   private activeFeatureId$: Subscription;
   activeFeatureId: number;
@@ -21,8 +21,8 @@ export class FormRadioComponent {
   private activeGroup$: Subscription;
 
   constructor(private formsService: FormsService,
-    private groupsService: GroupsService,
-    private featureService: FeatureService) { }
+              private groupsService: GroupsService,
+              private featureService: FeatureService) { }
 
   ngOnInit() {
     this.activeFeatureId$ = this.groupsService.activeFeatureId.subscribe((next) => {
@@ -33,12 +33,12 @@ export class FormRadioComponent {
       this.activeGroup = next;
     });
 
-    let index
-    this.formsService.getSelectedRadio().forEach(opt=> {
-      if(opt != undefined){
-        index = opt.findIndex(item => item.id === this.activeFeatureId && item.compID == 0 && item.groupName === this.activeGroup && item.label === this.form['label']);
-        if (index > -1){
-          this.chosenTag = opt[index].option
+    let index;
+    this.formsService.getSelectedRadio().forEach(opt => {
+      if (opt != undefined) {
+        index = opt.findIndex(item => item.id === this.activeFeatureId && item.compID == 0 && item.groupName === this.activeGroup && item.label === this.form.label);
+        if (index > -1) {
+          this.chosenTag = opt[index].option;
         }}
       
       
@@ -52,5 +52,5 @@ export class FormRadioComponent {
   // }
   }
 
-  updateCheckedTag(){ this.featureService.updateExtra(this.chosenTag, 0, this.activeFeatureId, this.activeGroup,this.form['label'], "radio");}
+  updateCheckedTag() { this.featureService.updateExtra(this.chosenTag, 0, this.activeFeatureId, this.activeGroup, this.form.label, 'radio'); }
 }
