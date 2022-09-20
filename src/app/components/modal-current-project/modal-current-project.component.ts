@@ -10,15 +10,14 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dial
   templateUrl: './modal-current-project.component.html',
   styleUrls: ['./modal-current-project.component.scss']
 })
-export class ModalCurrentProjectComponent implements OnInit
-{
+export class ModalCurrentProjectComponent implements OnInit {
   projCreateForm: FormGroup;
   activeProject: Project;
 
   constructor(public dialogRef: MatDialogRef<ModalCurrentProjectComponent>,
-			  private dialog: MatDialog,
-			  private projectsService: ProjectsService,
-			  @Inject(MAT_DIALOG_DATA) public projData: any) { }
+			           private dialog: MatDialog,
+			           private projectsService: ProjectsService,
+			           @Inject(MAT_DIALOG_DATA) public projData: any) { }
 
   ngOnInit() {
 
@@ -38,16 +37,16 @@ export class ModalCurrentProjectComponent implements OnInit
 	this.dialogRef.close();
   }
 
-  delete(){
-    if(confirm("Are you sure you want to delete this project? This will also delete it from HazMapper, and anyone this project was shared with.")) {
+  delete() {
+    if (confirm('Are you sure you want to delete this project? This will also delete it from HazMapper, and anyone this project was shared with.')) {
       this.projectsService.delete(this.activeProject);
     }
     this.dialogRef.close();
   }
   
   update() {
-    //The project is being properly assembled, but the problem is that the returned project isn't updating.
-    //Do I need more data in my projects?
+    // The project is being properly assembled, but the problem is that the returned project isn't updating.
+    // Do I need more data in my projects?
     /*
       export interface Project {
       description: string;
@@ -72,7 +71,7 @@ export class ModalCurrentProjectComponent implements OnInit
     p.id = this.activeProject.id;
     p.uuid = this.activeProject.uuid;
     
-    projRqst.project = p
+    projRqst.project = p;
 
     this.projectsService.update(projRqst);
     this.dialogRef.close();

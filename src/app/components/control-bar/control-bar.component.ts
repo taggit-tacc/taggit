@@ -12,15 +12,15 @@ import {ModalCreateProjectComponent} from '../modal-create-project/modal-create-
 import {ModalShareProjectComponent} from '../modal-share-project/modal-share-project.component';
 import {interval, Observable, Subscription} from 'rxjs';
 import {RemoteFile} from 'ng-tapis';
-import {GroupsService} from "../../services/groups.service";
-import {FormsService} from "../../services/forms.service";
+import {GroupsService} from '../../services/groups.service';
+import {FormsService} from '../../services/forms.service';
 import {AuthenticatedUser, AuthService} from '../../services/authentication.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalCurrentProjectComponent } from '../modal-current-project/modal-current-project.component';
 import {AppEnvironment, environment} from '../../../environments/environment';
 import { feature } from '@turf/helpers';
-import { TapisFilesService } from '../../services/tapis-files.service'
+import { TapisFilesService } from '../../services/tapis-files.service';
 import { element } from 'protractor';
 import { consoleTestResultHandler } from 'tslint/lib/test';
 import { ScrollService } from 'src/app/services/scroll.service';
@@ -58,91 +58,92 @@ export class ControlBarComponent implements OnInit {
   activeGroup: string;
   activePane: string;
   hazMapperLink: string;
-  itemsSelected:boolean = false;
-  foundFilePaths = []
+  itemsSelected = false;
+  foundFilePaths = [];
 
   constructor(private projectsService: ProjectsService,
-			  private geoDataService: GeoDataService,
-			  private bsModalService: BsModalService,
-			  private groupsService: GroupsService,
-			  private formsService: FormsService,
-			  private authService: AuthService,
-			  private filesService: TapisFilesService,
-			  private router: Router,
-			  private dialog: MatDialog,
-			  private scrollService: ScrollService,
-			  private notificationsService: NotificationsService,
-			  private featureService: FeatureService) {}
+			           private geoDataService: GeoDataService,
+			           private bsModalService: BsModalService,
+			           private groupsService: GroupsService,
+			           private formsService: FormsService,
+			           private authService: AuthService,
+			           private filesService: TapisFilesService,
+			           private router: Router,
+			           private dialog: MatDialog,
+			           private scrollService: ScrollService,
+			           private notificationsService: NotificationsService,
+			           private featureService: FeatureService) {}
 
   ngOnInit() {
-	  this.filesService.getState()
+	  this.filesService.getState();
 
-	this.featureService.features$.subscribe( (fc: FeatureCollection) => {
-		this.features = fc
+	  this.featureService.features$.subscribe( (fc: FeatureCollection) => {
+		this.features = fc;
 		
 		if (this.features != undefined) {
 			this.featureList = this.features.features;
 			this.groupsService.setActiveProject(this.featureList[0]);
 	
 			// TODO This should activate persistence by looping through all features and creating new groups and
-			//Not sure about the above note, if anything needs to be done here, it seems like we have achieved persistance
+			// Not sure about the above note, if anything needs to be done here, it seems like we have achieved persistance
 			this.groupsService.setGroupProperties(this.featureList);
 		}
-	})
+	});
 
-	this.groupsService.activeGroup.subscribe((next) => {
+	  this.groupsService.activeGroup.subscribe((next) => {
 	  this.activeGroup = next;
 	});
 
-	this.groupsService.activePane.subscribe((next) => {
+	  this.groupsService.activePane.subscribe((next) => {
 	  this.activePane = next;
 	});
 
-	this.geoDataService.activeFeature.subscribe((next) => {
+	  this.geoDataService.activeFeature.subscribe((next) => {
 	  this.activeFeature = next;
-	  if (this.activeFeature)
+	  if (this.activeFeature) {
 		console.log(this.activeFeature.assets[0].path);
+			}
 	});
 
-	(this.notificationsService.notifications.subscribe(next => {
-		let hasSuccessNotification = next.some(note => note.status === 'success');
-		let hasFailureNotification = next.some(note => note.status === 'error');
+	  (this.notificationsService.notifications.subscribe(next => {
+		const hasSuccessNotification = next.some(note => note.status === 'success');
+		const hasFailureNotification = next.some(note => note.status === 'error');
 		if (hasSuccessNotification) {
 		  this.geoDataService.getFeatures(this.selectedProject.id);
-		  console.log("Features Got")
+		  console.log('Features Got');
 		}
 		if (hasFailureNotification) {
 			next.forEach(item => {
-				//Compiles a list of all necessary files to import via the alt method
-				//The substring from 0 to 16 contains the phrase "Error importing", everything after this is the file path
-				if( (item.message.substring(0,16) == "Error importing ") && !( this.foundFilePaths.some(filePath => filePath === item.message.substring(16)) ) ) {
-					let path = item.message.substring(16)
-					this.geoDataService.uploadNewFeature(this.selectedProject.id, this.createBlankFeature(), path)
-					this.foundFilePaths.push(path)
+				// Compiles a list of all necessary files to import via the alt method
+				// The substring from 0 to 16 contains the phrase "Error importing", everything after this is the file path
+				if ( (item.message.substring(0, 16) == 'Error importing ') && !( this.foundFilePaths.some(filePath => filePath === item.message.substring(16)) ) ) {
+					const path = item.message.substring(16);
+					this.geoDataService.uploadNewFeature(this.selectedProject.id, this.createBlankFeature(), path);
+					this.foundFilePaths.push(path);
 				}
 			});
 			this.geoDataService.getFeatures(this.selectedProject.id);
 		}
 	}));
 
-	this.authService.currentUser.subscribe(next => this.currentUser = next);
+	  this.authService.currentUser.subscribe(next => this.currentUser = next);
 
-	this.projectsService.getProjects();
-	this.projectsService.projects.subscribe( (projects) => {
+	  this.projectsService.getProjects();
+	  this.projectsService.projects.subscribe( (projects) => {
 	  this.projects = projects;
 
 	  if (this.projects.length) {
-		let lastProj
+		let lastProj;
 		try {
-			//restores view to the last visited project from local storage
-			lastProj = JSON.parse(window.localStorage.getItem("lastProj"))
-			console.log(lastProj)
+			// restores view to the last visited project from local storage
+			lastProj = JSON.parse(window.localStorage.getItem('lastProj'));
+			console.log(lastProj);
 		} catch (error) {
 			lastProj = this.projectsService.setActiveProject(this.projects[0]);
 		}
 
-		//If lastProj is null, then there is no project saved, or can be found, default to the first project in the list
-		if(lastProj == "none" || lastProj == null) {
+		// If lastProj is null, then there is no project saved, or can be found, default to the first project in the list
+		if (lastProj == 'none' || lastProj == null) {
 			lastProj = this.projects[0];
 		}
 
@@ -193,25 +194,25 @@ export class ControlBarComponent implements OnInit {
 
 	  this.groupsService.itemsSelected.subscribe((next) => {
 		this.itemsSelected = next;
-	  })
+	  });
 	});
 
-	this.projectsService.activeProject.subscribe(next => {
+	  this.projectsService.activeProject.subscribe(next => {
 	  this.selectedProject = next;
 	  this.getDataForProject(this.selectedProject);
-	  //retrieves uuid for project, formats result into a link to that Hazmapper map
-	  this.hazMapperLink = "https://hazmapper.tacc.utexas.edu/hazmapper/project/" + next.uuid
+	  // retrieves uuid for project, formats result into a link to that Hazmapper map
+	  this.hazMapperLink = 'https://hazmapper.tacc.utexas.edu/hazmapper/project/' + next.uuid;
 	});
 
-	this.geoDataService.mapMouseLocation.pipe(skip(1)).subscribe( (next) => {
+	  this.geoDataService.mapMouseLocation.pipe(skip(1)).subscribe( (next) => {
 	  this.mapMouseLocation = next;
 	});
 
 	// FIXME Maybe redundant //My advice, F*** around and find out -Ben
-	this.groupsService.setActiveFeatureNum(0);
+	  this.groupsService.setActiveFeatureNum(0);
   }
 
-  clearAll(){
+  clearAll() {
 	  this.groupsService.setUnselectAll(true);
 	  this.groupsService.setItemsSelected(false);
   }
@@ -224,9 +225,9 @@ export class ControlBarComponent implements OnInit {
 	option ? this.timerSubscription = this.timer.subscribe(() => { this.reloadFeatures(); }) : this.timerSubscription.unsubscribe();
   }
 
-  //Similar to setLiveRefresh, but it runs the time out once and then unsubscribes from the timer
+  // Similar to setLiveRefresh, but it runs the time out once and then unsubscribes from the timer
   startRefreshTimer(option: boolean) {
-	option ? this.timerSubscription = this.timer.subscribe(() => { this.reloadFeatures(); this.setLiveRefresh(false)}) : this.timerSubscription.unsubscribe();
+	option ? this.timerSubscription = this.timer.subscribe(() => { this.reloadFeatures(); this.setLiveRefresh(false); }) : this.timerSubscription.unsubscribe();
   }
 
   selectProject(p: Project): void {
@@ -241,36 +242,36 @@ export class ControlBarComponent implements OnInit {
   }
 
   openFilePicker() {
-	//Refreshes the list of found paths used in importing images without Geo tagging
-	this.foundFilePaths = []
+	// Refreshes the list of found paths used in importing images without Geo tagging
+	this.foundFilePaths = [];
 	const modal = this.dialog.open(ModalFileBrowserComponent);
 	modal.afterClosed().subscribe( (files: Array<RemoteFile>) => {
-		if (files != null) {this.geoDataService.importFileFromTapis(this.selectedProject.id, files);}
+		if (files != null) {this.geoDataService.importFileFromTapis(this.selectedProject.id, files); }
 	});
 }
 
-  //Creates a feature with a long/lat value of 0,0 and no associated image. Used in alternate image inport
-  //I think if we want a placeholder image, we can add it here.
+  // Creates a feature with a long/lat value of 0,0 and no associated image. Used in alternate image inport
+  // I think if we want a placeholder image, we can add it here.
   createBlankFeature() {
-	let blankFeature:Feature = {
-		"type": "Feature",
-		"geometry": {
-		  "type": "Point",
-		  "coordinates": [0, 0]
+	const blankFeature: Feature = {
+		type: 'Feature',
+		geometry: {
+		  type: 'Point',
+		  coordinates: [0, 0]
 		},
-		"properties": {
+		properties: {
 		}
-	  }
-	return blankFeature
+	  };
+	return blankFeature;
   }
 
-  openDownloadSelector(fileName:string){
+  openDownloadSelector(fileName: string) {
 	const modal = this.dialog.open(ModalDownloadSelectorComponent);
-	let path: Array<string>
+	let path: Array<string>;
 	modal.afterClosed().subscribe( (passbackData: Array<string>) => {
-		console.log(passbackData)
-		path = passbackData
-		this.saveFile(path[3] == ".json", true, path[0], path[1], path[2])
+		console.log(passbackData);
+		path = passbackData;
+		this.saveFile(path[3] == '.json', true, path[0], path[1], path[2]);
 	});
   }
 
@@ -279,23 +280,23 @@ export class ControlBarComponent implements OnInit {
 	  height: '400px',
 	  width: '600px',
 	});
-	this.dialog.afterAllClosed.subscribe((resp) =>{
-		//Close the sidebar and return to the gallery screen if the sidebar's open
-		if(this.showSidebar){
-			this.openSidebar()
+	this.dialog.afterAllClosed.subscribe((resp) => {
+		// Close the sidebar and return to the gallery screen if the sidebar's open
+		if (this.showSidebar) {
+			this.openSidebar();
 		}
-	})
+	});
   }
 
-  openShareProjectModal(){
+  openShareProjectModal() {
 	  this.dialog.open(ModalShareProjectComponent, {
 		  height: '400px',
 		  width: '600px',
-	  })
+	  });
   }
 
   openProjectModal(project) {
-	let modal = this.dialog.open(ModalCurrentProjectComponent, {
+	const modal = this.dialog.open(ModalCurrentProjectComponent, {
 	  height: '400px',
 	  width: '600px',
 	  data: {
@@ -307,11 +308,11 @@ export class ControlBarComponent implements OnInit {
 	});
 
 	modal.afterClosed().subscribe( (passbackData: Array<string>) => {
-		this.projectsService.setActiveProject(this.projects[0])
+		this.projectsService.setActiveProject(this.projects[0]);
 	});
 }
 
-  //Old function, aside from rewriting it for quality, most concerns here have been addressed. Also, it's not exactly broken... -Ben
+  // Old function, aside from rewriting it for quality, most concerns here have been addressed. Also, it's not exactly broken... -Ben
   addToGroupService(name: string) {
 	this.groupName = name;
 	this.groupsService.setActiveGroup(name);
@@ -319,53 +320,53 @@ export class ControlBarComponent implements OnInit {
 	if (this.groupList.length != 1000) {
 	  // TODO Make this better
 	  if (!name || 0 === name.length) {
-		console.log("Invalid Name");
+		console.log('Invalid Name');
 	  } else if (this.groupList.filter(e => e.name === name).length) {
-		console.log("Existing Name");
+		console.log('Existing Name');
 	  } else {
-		let myRandColor: string = this.getRandomColor();
+		const myRandColor: string = this.getRandomColor();
 		this.groupList.push({
-		  name: name,
+		  name,
 		  features: this.tempGroup,
 		  color: myRandColor,
-		  icon: "fa-house-damage"
+		  icon: 'fa-house-damage'
 		});
 		this.groupsService.addGroup(this.groupList);
 		this.formsService.addGroup(this.groupName);
 
-		console.log(this.groupList)
-		console.log(this.tempGroup)
+		console.log(this.groupList);
+		console.log(this.tempGroup);
 
 		// TODO make this work for persistence //We do currently have persistance, so make of this what you will -Ben
-		for (let feat of this.tempGroup) {
-		  let featProp = feat.properties;
-		  console.log(feat.properties)
+		for (const feat of this.tempGroup) {
+		  const featProp = feat.properties;
+		  console.log(feat.properties);
 
 		  if (featProp.group) {
-			console.log("nope");
+			console.log('nope');
 			featProp.group.push({
-			  name: name,
+			  name,
 			  color: myRandColor,
-			  icon: "fa-house-damage"
+			  icon: 'fa-house-damage'
 			});
 		  } else {
-			console.log("This is actually happening");
-			let featPropList = featProp.group = [];
+			console.log('This is actually happening');
+			const featPropList = featProp.group = [];
 			featPropList.push({
-			  name: name,
+			  name,
 			  color: myRandColor,
-			  icon: "fa-house-damage"
+			  icon: 'fa-house-damage'
 			});
 		  }
 
 		  this.geoDataService.updateFeatureProperty(this.selectedProject.id,
 													Number(feat.id),
 													featProp);
-		  console.log("In control-bar");
-		  console.log("Current feat: " + feat.id);
-		  console.log("featProp: what gets sent to server");
+		  console.log('In control-bar');
+		  console.log('Current feat: ' + feat.id);
+		  console.log('featProp: what gets sent to server');
 		  console.log(featProp);
-		  console.log("groupList: internal listing");
+		  console.log('groupList: internal listing');
 		}
 	  }
 	}
@@ -374,7 +375,7 @@ export class ControlBarComponent implements OnInit {
 	this.groupsService.addTempGroup(this.tempGroup);
 	this.groupsService.setUnselectAll(true);
 	this.groupsService.setShowGroup(false);
-	this.dialog.closeAll()
+	this.dialog.closeAll();
   }
 
   openAddGroupModal(template: TemplateRef<any>) {
@@ -382,16 +383,16 @@ export class ControlBarComponent implements OnInit {
   }
 
   openSidebar() {
-	if( !this.showSidebar) {
-		this.scrollService.setScrollPosition()
+	if ( !this.showSidebar) {
+		this.scrollService.setScrollPosition();
 	} else {
-		this.scrollService.setScrollRestored(true)
+		this.scrollService.setScrollRestored(true);
 	}
-	let showSidebar = !this.showSidebar;
-	let showGroup = false;
+	const showSidebar = !this.showSidebar;
+	const showGroup = false;
 	this.groupsService.setActiveGroup(this.groupList[0].name);
 
-	let activeGroup = this.groupList.filter(group => group.name == this.activeGroup);
+	const activeGroup = this.groupList.filter(group => group.name == this.activeGroup);
 
 
 	if (activeGroup[0].features.length == 0) {
@@ -413,8 +414,8 @@ export class ControlBarComponent implements OnInit {
   }
 
   // TODO Make it prettier
-  otherPath(dir: boolean) {	//Don't even ask, I don't know what we use this for... -Ben
-	let activeGroupObj = this.groupList.filter(realGroup => realGroup.name === this.activeGroup);
+  otherPath(dir: boolean) {	// Don't even ask, I don't know what we use this for... -Ben
+	const activeGroupObj = this.groupList.filter(realGroup => realGroup.name === this.activeGroup);
 
 	// right
 	if (dir) {
@@ -431,273 +432,273 @@ export class ControlBarComponent implements OnInit {
   }
 
   getRandomColor() {
-	var letters = '0123456789ABCDEF';
-	var color = '#';
-	for (var i = 0; i < 6; i++) {
+	const letters = '0123456789ABCDEF';
+	let color = '#';
+	for (let i = 0; i < 6; i++) {
 	  color += letters[Math.floor(Math.random() * 16)];
 	}
 	return color;
   }
 
   // TODO
-  //This is unused, but the paths are valid routes, mostly seen in the sidebar components.
-  //Tagger is the basic sidebar that appears when you oppen the taggit screen, Preset is for tag generation
+  // This is unused, but the paths are valid routes, mostly seen in the sidebar components.
+  // Tagger is the basic sidebar that appears when you oppen the taggit screen, Preset is for tag generation
   goToRoute() {
-	if (this.activePane == "preset") {
-	  this.groupsService.setActivePane("tagger");
+	if (this.activePane == 'preset') {
+	  this.groupsService.setActivePane('tagger');
 	  this.router.navigateByUrl('/tagger', {skipLocationChange: true});
 	} else {
-	  this.groupsService.setActivePane("preset");
+	  this.groupsService.setActivePane('preset');
 	  this.router.navigateByUrl('/preset', {skipLocationChange: true});
 	}
 	this.groupsService.setActiveGroup(this.activeGroup);
   }
 
   // TODO
-  //What there is TODO with this, I don't know. Probably nothing at all...
+  // What there is TODO with this, I don't know. Probably nothing at all...
   clearAndUnselect() {
 
   }
 
-  //saves project as a CSV file by first organizing a JSON or a CSV and converting it. Saves to either MyData or local
-  //I apologize in advance for this mess of a function -Ben
-  //This really needs to be split into something like 3 separate functions
-  saveFile(isJSON:Boolean, forExport:Boolean = false, systemID = "", path = "", fileName) {
-	  let CSVHolder = "FeatureID,longitude,latitude,src"
-	  let JSONHolder:String = ""
-	  let projID = ""
-	  let tagsPresent = true
-	  let headerComplete = false //If true, then the full csv header info has been compiled
-	  let headerTagOptions = 0 //Controls how many tagOption columns are in the final CSV
+  // saves project as a CSV file by first organizing a JSON or a CSV and converting it. Saves to either MyData or local
+  // I apologize in advance for this mess of a function -Ben
+  // This really needs to be split into something like 3 separate functions
+  saveFile(isJSON: Boolean, forExport: Boolean = false, systemID = '', path = '', fileName) {
+	  let CSVHolder = 'FeatureID,longitude,latitude,src';
+	  let JSONHolder: String = '';
+	  let projID = '';
+	  let tagsPresent = true;
+	  let headerComplete = false; // If true, then the full csv header info has been compiled
+	  let headerTagOptions = 0; // Controls how many tagOption columns are in the final CSV
 
 	  this.featureList.forEach(element => {
-			//Retrieves project ID for building a filename
-			projID = element.project_id
+			// Retrieves project ID for building a filename
+			projID = element.project_id;
 
-		  	//retrieves longitude and latitude values as an array
-			let coordinates = element.geometry['coordinates']
+		  	// retrieves longitude and latitude values as an array
+			const coordinates = element.geometry.coordinates;
 
-			//creates image source URL from environment and cleans up URL to a usable link
+			// creates image source URL from environment and cleans up URL to a usable link
 			let featureSource = environment.apiUrl + '/assets/' + element.assets[0].path;
 			featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
 
-			//Grabs group data
-			//Group data can be accessed from the feature, through the properties element
-			//If the image doesn't have a group, a placeholder is given
-			//NOTE: future group properties can be accessed in the same way
-			let group, styles, tag
+			// Grabs group data
+			// Group data can be accessed from the feature, through the properties element
+			// If the image doesn't have a group, a placeholder is given
+			// NOTE: future group properties can be accessed in the same way
+			let group, styles, tag;
 			try {
 				try {
-					group = element.properties['group']
+					group = element.properties.group;
 				} catch {
 					group = [{
-						"color": "#000000",
-						"name": "N/A",
-						"icon": "fa-house-damage"
-					}]
+						color: '#000000',
+						name: 'N/A',
+						icon: 'fa-house-damage'
+					}];
 				}
 
-				try{
-					styles = element.properties['style']
-				} catch{
-					styles = []
+				try {
+					styles = element.properties.style;
+				} catch {
+					styles = [];
 				}
 
-				try{
-					tag = element.properties['tag']
-				} catch{
-					tag = []
+				try {
+					tag = element.properties.tag;
+				} catch {
+					tag = [];
 				}
 
-				//If groups are present on the data, add header data
-				if( group.length > 0 && !headerComplete){
-					CSVHolder += ",groupName,groupColor,groupIcon"
+				// If groups are present on the data, add header data
+				if ( group.length > 0 && !headerComplete) {
+					CSVHolder += ',groupName,groupColor,groupIcon';
 				}
 
-				//Check if the tag var has any data, if so, add new lines to the header
+				// Check if the tag var has any data, if so, add new lines to the header
 				if ( tag != undefined && tagsPresent && !headerComplete) {
-					//Add a few more lines to the holder to accomodate tags
-					CSVHolder += ",Icon,Color,tagType,tagSelection"
+					// Add a few more lines to the holder to accomodate tags
+					CSVHolder += ',Icon,Color,tagType,tagSelection';
 					tag.forEach(tag => {
-						let tempTagOptionNum = 0
+						let tempTagOptionNum = 0;
 						tag.options.forEach(option => {
-							tempTagOptionNum++
+							tempTagOptionNum++;
 							if (tempTagOptionNum > headerTagOptions) {
-								CSVHolder += ",tagOption"
-								headerTagOptions = tempTagOptionNum
+								CSVHolder += ',tagOption';
+								headerTagOptions = tempTagOptionNum;
 							}
 						});
 					});
 					if (!headerComplete) {
-						CSVHolder += "\r\n"
-						tagsPresent = false
-						headerComplete = true
+						CSVHolder += '\r\n';
+						tagsPresent = false;
+						headerComplete = true;
 					}
-				} else if(!headerComplete) {
-					//If not, indent the last line.
-					CSVHolder +="\r\n"
-					headerComplete = true
+				} else if (!headerComplete) {
+					// If not, indent the last line.
+					CSVHolder += '\r\n';
+					headerComplete = true;
 				}
 
 			} catch (error) {}
 
 			if (isJSON) {
-				//Compile the data it into a JSON
-				JSONHolder += this.compileJSON(coordinates, element.id, featureSource, group, tag, styles) + ", \n"
+				// Compile the data it into a JSON
+				JSONHolder += this.compileJSON(coordinates, element.id, featureSource, group, tag, styles) + ', \n';
 			} else {
-				//Compiles the attributes into a CSV format				
-				//If there is no groups for the feature, output without group info
-				if( group == undefined ){
-					//Indents CSV header.
-					CSVHolder +="\r\n"
-					//Compiles data to a line of a CSV, and adds it to a growing full CSV file
-					//			  featureID			 Longitude				Latitude			   src
-					let tempCSV = element.id + "," + coordinates[0] + "," + coordinates[1] + "," + featureSource + "\r\n"
-					CSVHolder += tempCSV
+				// Compiles the attributes into a CSV format				
+				// If there is no groups for the feature, output without group info
+				if ( group == undefined ) {
+					// Indents CSV header.
+					CSVHolder += '\r\n';
+					// Compiles data to a line of a CSV, and adds it to a growing full CSV file
+					// 			  featureID			 Longitude				Latitude			   src
+					const tempCSV = element.id + ',' + coordinates[0] + ',' + coordinates[1] + ',' + featureSource + '\r\n';
+					CSVHolder += tempCSV;
 				} else {
 					group.forEach(group => {
-						console.log(group)
-						//If tags exist, try to add each tag to the CSV
+						console.log(group);
+						// If tags exist, try to add each tag to the CSV
 						if ( tag != undefined) {
-							try{
+							try {
 							tag.forEach(tag => {
-								//If the tag is in the group, compile a row
-								//TODO: If a group doesn't have a tag, it doesn't get printed at all
-								if(true){//(tag.groupName === group.name) {
+								// If the tag is in the group, compile a row
+								// TODO: If a group doesn't have a tag, it doesn't get printed at all
+								if (true) {// (tag.groupName === group.name) {
 									console.log(tag);
-									//			  featureID			 Longitude				Latitude			   src
-									let tempCSV = element.id + "," + coordinates[0] + "," + coordinates[1] + "," + featureSource + ","
-									//groupName			groupColor			groupIcon		   Icon					 Color
-									+ group.name+ "," + group.color + "," + group.icon + "," + styles.faIcon + "," + styles.color + ","
+									// 			  featureID			 Longitude				Latitude			   src
+									let tempCSV = element.id + ',' + coordinates[0] + ',' + coordinates[1] + ',' + featureSource + ','
+									// groupName			groupColor			groupIcon		   Icon					 Color
+									+ group.name + ',' + group.color + ',' + group.icon + ',' + styles.faIcon + ',' + styles.color + ','
 									// tagType			tagOption(This is repeated a lot)
-									+ tag.type + "," + tag.extra[0].option
+									+ tag.type + ',' + tag.extra[0].option;
 									tag.options.forEach(option => {
-										//Save each option in the tag to the CSV
-										//Adds just the label to the CSV, we can reconstruct the key from that.
-										tempCSV += "," + option.label
+										// Save each option in the tag to the CSV
+										// Adds just the label to the CSV, we can reconstruct the key from that.
+										tempCSV += ',' + option.label;
 									});
-									tempCSV += "\r\n"
-									//And adds it to a growing full CSV file
-									CSVHolder += tempCSV
+									tempCSV += '\r\n';
+									// And adds it to a growing full CSV file
+									CSVHolder += tempCSV;
 								}
 							});
-							} catch{
+							} catch {
 								try {
-									//If the above fails, attempt to construct a line with group data
-									//			  featureID			 Longitude				Latitude			   src
-									let tempCSV = element.id + "," + coordinates[0] + "," + coordinates[1] + "," + featureSource + ","
-									//groupName			groupColor			groupIcon
-									+ group.name+ "," + group.color + "," + group.icon + "\r\n"
-									CSVHolder += tempCSV
+									// If the above fails, attempt to construct a line with group data
+									// 			  featureID			 Longitude				Latitude			   src
+									const tempCSV = element.id + ',' + coordinates[0] + ',' + coordinates[1] + ',' + featureSource + ','
+									// groupName			groupColor			groupIcon
+									+ group.name + ',' + group.color + ',' + group.icon + '\r\n';
+									CSVHolder += tempCSV;
 									
 								} catch (error) {
-									//If all else fails, It writes no data on an error, so output the groupless data
-									//			  featureID			 Longitude				Latitude			   src
-									let tempCSV = element.id + "," + coordinates[0] + "," + coordinates[1] + "," + featureSource + "\r\n"
-									CSVHolder += tempCSV
+									// If all else fails, It writes no data on an error, so output the groupless data
+									// 			  featureID			 Longitude				Latitude			   src
+									const tempCSV = element.id + ',' + coordinates[0] + ',' + coordinates[1] + ',' + featureSource + '\r\n';
+									CSVHolder += tempCSV;
 								}
 							}
 						} else {
-							//Compiles data to a line of a CSV
-							//			  featureID			 Longitude				Latitude			   src
-							let tempCSV = element.id + "," + coordinates[0] + "," + coordinates[1] + "," + featureSource + ","
-							//groupName			groupColor			groupIcon
-							+ group.name+ "," + group.color + "," + group.icon + "\r\n"
-							//And adds it to a growing full CSV file
-							CSVHolder += tempCSV
+							// Compiles data to a line of a CSV
+							// 			  featureID			 Longitude				Latitude			   src
+							const tempCSV = element.id + ',' + coordinates[0] + ',' + coordinates[1] + ',' + featureSource + ','
+							// groupName			groupColor			groupIcon
+							+ group.name + ',' + group.color + ',' + group.icon + '\r\n';
+							// And adds it to a growing full CSV file
+							CSVHolder += tempCSV;
 						}
 					});
 				}
 			}
 	  });
-	  let content
-	  let extension
-	  //determine whether the file is wanted as a JSON or a CSV
-		if (isJSON) {
-			content = JSONHolder
-			extension = ".json"
+	  let content;
+	  let extension;
+	  // determine whether the file is wanted as a JSON or a CSV
+		 if (isJSON) {
+			content = JSONHolder;
+			extension = '.json';
 		} else {
-			content = CSVHolder
-			extension = ".csv"
+			content = CSVHolder;
+			extension = '.csv';
 		}
 
-		//If the function is marked for export to Design Safe, route through export, otherwise, download the file
-		if(forExport){
-			((fileName == "")? (fileName = projID + extension): (fileName += extension))
-			this.filesService.export(systemID, path, fileName, extension, content)
-		}else{
-			this.download(content,extension,projID)
+		// If the function is marked for export to Design Safe, route through export, otherwise, download the file
+		 if (forExport) {
+			((fileName == '') ? (fileName = projID + extension) : (fileName += extension));
+			this.filesService.export(systemID, path, fileName, extension, content);
+		} else {
+			this.download(content, extension, projID);
 		}
 
   }
 
-  	compileJSON(coordinates, featureID, featureSource:string, groups = [], tags = [], style){
-		let compiledJSON = ''
-	    let transferJSON
+  	compileJSON(coordinates, featureID, featureSource: string, groups = [], tags = [], style) {
+		let compiledJSON = '';
+	 let transferJSON;
 
-		//Add the most basic information to the compiled JSON
+		// Add the most basic information to the compiled JSON
 		transferJSON = {
-			"longitude": coordinates[0],
-			"latitude": coordinates[1],
-			"src": featureSource
-		}
-		compiledJSON += JSON.stringify(transferJSON)
+			longitude: coordinates[0],
+			latitude: coordinates[1],
+			src: featureSource
+		};
+		compiledJSON += JSON.stringify(transferJSON);
 
-		if( groups.length != 0 ){
+		if ( groups.length != 0 ) {
 			groups.forEach(group => {
-				//At this point, group info should be added, 
-				//If tags are set to a default value, there are none present, compile without tag information
+				// At this point, group info should be added, 
+				// If tags are set to a default value, there are none present, compile without tag information
 				transferJSON = {
-					"groupName": group.name,
-					"groupColor": group.color
-				}
-					compiledJSON += JSON.stringify(transferJSON)
-				if( tags.length > 0) { //Compile a JSON with full tag information
+					groupName: group.name,
+					groupColor: group.color
+				};
+				compiledJSON += JSON.stringify(transferJSON);
+				if ( tags.length > 0) { // Compile a JSON with full tag information
 					tags.forEach( tag => {
 						if ( tag.feature == featureID ) {
 							transferJSON = {
-								"icon": style.faIcon,
-								"icon color": style.color,
-								"tag name": tag.label,
-								"tag type": tag.type,
-								"tag selection": tag.extra[0].option,
-							}
-							compiledJSON += JSON.stringify(transferJSON)
+								icon: style.faIcon,
+								'icon color': style.color,
+								'tag name': tag.label,
+								'tag type': tag.type,
+								'tag selection': tag.extra[0].option,
+							};
+							compiledJSON += JSON.stringify(transferJSON);
 						}
 					});
 				}
 			});
 		}
-		//If the above failed, compile the minimum JSON
-		if( compiledJSON == "" ){
+		// If the above failed, compile the minimum JSON
+		if ( compiledJSON == '' ) {
 			transferJSON = {
-				"longitude": coordinates[0],
-				"latitude": coordinates[1],
-				"src": featureSource
-			}
-			compiledJSON += JSON.stringify(transferJSON)
+				longitude: coordinates[0],
+				latitude: coordinates[1],
+				src: featureSource
+			};
+			compiledJSON += JSON.stringify(transferJSON);
 		}
-		return compiledJSON
+		return compiledJSON;
 	}
 	
-	download(content, extension, projID){
-	  //Creates a download link in typescript through a blob
-		let blob = new Blob(['\ufeff' + content], {type: 'text/csv;charset=utf-8;' })
-		let download = document.createElement("a")
-		let url = URL.createObjectURL(blob)
-		let filename = "taggit-proj-" + projID
+	download(content, extension, projID) {
+	  // Creates a download link in typescript through a blob
+		const blob = new Blob(['\ufeff' + content], {type: 'text/csv;charset=utf-8;' });
+		const download = document.createElement('a');
+		const url = URL.createObjectURL(blob);
+		const filename = 'taggit-proj-' + projID;
 
-		//checks if the browser is Safari or otherwise, if so open download in new window
-		//Its a quirk of those browsers that they don't allow same-page downloads
-		if (navigator.userAgent.indexOf('Safari')!= -1 && navigator.userAgent.indexOf('Chrome') == -1) {
-			download.setAttribute("target", "_blank")
+		// checks if the browser is Safari or otherwise, if so open download in new window
+		// Its a quirk of those browsers that they don't allow same-page downloads
+		if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1) {
+			download.setAttribute('target', '_blank');
 		}
-		//Sets up the link, and simulates a click
-		download.setAttribute("href", url)
-		download.setAttribute("download", filename + extension)
-		download.style.visibility = "hidden"
-		document.body.appendChild(download)
-		download.click()
-		document.body.removeChild(download)
+		// Sets up the link, and simulates a click
+		download.setAttribute('href', url);
+		download.setAttribute('download', filename + extension);
+		download.style.visibility = 'hidden';
+		document.body.appendChild(download);
+		download.click();
+		document.body.removeChild(download);
   	}
 }

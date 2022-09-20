@@ -24,24 +24,24 @@ export class ProjectsService {
   public deletingProjects: Observable<Project[]> = this._deletingProjects.asObservable();
 
   constructor(private http: HttpClient,
-    private authService: AuthService,
-    private notificationsService: NotificationsService) { }
+              private authService: AuthService,
+              private notificationsService: NotificationsService) { }
 
-    testGeoApi():void {
+    testGeoApi(): void {
       const data = {
-        "name": "Awesome Project",
-      "description": "Cool project"
-      }
+        name: 'Awesome Project',
+      description: 'Cool project'
+      };
       const prom = this.http.post<Project>(`http://localhost:8888/projects/`, data).subscribe( resp => {
         this._projects.next([...this._projects.value, resp]);
       // Set the active project to the one just created?
-      this._activeProject.next(resp);
+        this._activeProject.next(resp);
       });
 
       this.http.get<Project[]>(`http://localhost:8888/projects/`).subscribe( resp => {
         this._projects.next(resp);
-        //DEBUG: outputs results of query
-        //console.log(this._projects.getValue())
+        // DEBUG: outputs results of query
+        // console.log(this._projects.getValue())
       });
     }
 
@@ -60,15 +60,15 @@ export class ProjectsService {
         : this._projects.next(myProjs);
     }
 
-  //Queries database for all user projects.
+  // Queries database for all user projects.
   getProjects(): void {
    this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe( resp => {
-     console.log(resp)
+     console.log(resp);
      this.updateProjectsList(resp);
-     //DEBUG: outputs results of query
-     //console.log(this._projects.getValue())
+     // DEBUG: outputs results of query
+     // console.log(this._projects.getValue())
    }, error => {
-    this.notificationsService.showErrorToast("Error importing files Design Safe, GeoAPI might be down")
+    this.notificationsService.showErrorToast('Error importing files Design Safe, GeoAPI might be down');
   });
   }
 
@@ -76,11 +76,11 @@ export class ProjectsService {
     const prom = this.http.post<Project>(environment.apiUrl + `/projects/`, data);
     prom.subscribe(proj => {
       // Spread operator, just pushes the new project into the array
-      //console.log(data)
+      // console.log(data)
       this._projects.next([...this._projects.value, proj]);
       
-      //Awkward as hell, but this ensures we actually transition to the newly created project
-	    //Without this, the screen flickers briefly to the new project, but ends up stuck on the old project
+      // Awkward as hell, but this ensures we actually transition to the newly created project
+	    // Without this, the screen flickers briefly to the new project, but ends up stuck on the old project
       this.setActiveProject(proj);
       this.setActiveProject(proj);
     });
@@ -88,17 +88,17 @@ export class ProjectsService {
   }
 
   setActiveProject(proj: Project): void {
-    //saves change as last visited project
-    window.localStorage.setItem("lastProj", JSON.stringify(proj))
+    // saves change as last visited project
+    window.localStorage.setItem('lastProj', JSON.stringify(proj));
     try {
       this._activeProject.next(proj);
     } catch (error) {
-      return error
+      return error;
     }
   }
 
   
-  update(data: ProjectRequest): void{
+  update(data: ProjectRequest): void {
     this.http.put<Project>(environment.apiUrl + `/projects/${data.project.id}/`, data).subscribe(
       (resp) => {
         this._activeProject.next(resp);
@@ -106,29 +106,29 @@ export class ProjectsService {
     );
   }
 
-  //Note: This will delete the project for everyone, if the project is shared.
-  delete(data: Project):void{
-    console.log("We are in the function...")
+  // Note: This will delete the project for everyone, if the project is shared.
+  delete(data: Project): void {
+    console.log('We are in the function...');
     this._deletingProjects.next([...this._deletingProjects.value, {...data, deleting: true}]);
     this.updateProjectsList();
 
     this.http.delete(environment.apiUrl  + `projects/${data.id}/`)
       .subscribe( (resp) => {
-        window.localStorage.setItem("lastProj", JSON.stringify("none"))
+        window.localStorage.setItem('lastProj', JSON.stringify('none'));
 
         this._deletingProjects.next(this._deletingProjects.value.filter(p => p.id !== data.id));
-        //These next two lines might be causing problems. Adding getProjects causes duplicates during project creation,
-        //So I'm thinking that calling these here might be the root of my delete woes, as they're restoring the project I just
-        //deleted...
+        // These next two lines might be causing problems. Adding getProjects causes duplicates during project creation,
+        // So I'm thinking that calling these here might be the root of my delete woes, as they're restoring the project I just
+        // deleted...
         this.updateProjectsList();
         this.getProjects();
-        //As elegant as a brick to the face, but this solves the delete issues...
-        window.localStorage.setItem("lastProj", JSON.stringify("none"))
+        // As elegant as a brick to the face, but this solves the delete issues...
+        window.localStorage.setItem('lastProj', JSON.stringify('none'));
         // this._projects.next([...this._projects.value]);
         // console.log(this._projects.value[0])
         // this._activeProject.next(this._projects.value[0]);
       }, error => {
-        window.localStorage.setItem("lastProj", JSON.stringify("none"))
+        window.localStorage.setItem('lastProj', JSON.stringify('none'));
         
         this._deletingProjects.next(this._deletingProjects.value.map(p => {
           return p.id === data.id
@@ -161,13 +161,13 @@ export class ProjectsService {
       });
   }
 
-  deleteUserFromProject(proj:Project, user:string): void {
+  deleteUserFromProject(proj: Project, user: string): void {
     this.http.delete(environment.apiUrl + `/projects/${proj.id}/users/${user}/`)
-    .subscribe((resp)=>{
+    .subscribe((resp) => {
       this.getProjectUsers(proj).subscribe();
-    },error =>{
-      //TODO: Create popup for an error message.
-      console.log(error)
-    })
+    }, error => {
+      // TODO: Create popup for an error message.
+      console.log(error);
+    });
   }
 }

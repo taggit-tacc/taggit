@@ -16,7 +16,7 @@ import { take } from 'rxjs/operators';
 })
 export class ModalFileBrowserComponent implements OnInit {
 
-  static limit = 200; //Limits maximum amount of files displayed
+  static limit = 200; // Limits maximum amount of files displayed
 
   @Output() currentPath: EventEmitter<string> = new EventEmitter<string>();
 
@@ -25,7 +25,7 @@ export class ModalFileBrowserComponent implements OnInit {
   private currentUser: AuthenticatedUser;
   public selectedPath;
   public filesList: Array<RemoteFile> = [];
-  public inProgress= true;
+  public inProgress = true;
   public retrievalError = false;
   public selectedFiles: Map<string, RemoteFile> = new Map();
   public onClose: Subject<Array<RemoteFile>> = new Subject<Array<RemoteFile>>();
@@ -35,19 +35,19 @@ export class ModalFileBrowserComponent implements OnInit {
   public communityDataSystem: SystemSummary;
   public publishedDataSystem: SystemSummary;
   public currentDirectory: RemoteFile;
-  private offset:number;
+  private offset: number;
   public firstFileIndex: number;
 
   constructor(private tapisFilesService: TapisFilesService,
 		  // private modalRef: BsModalRef,
-		  public dialogRef: MatDialogRef<ModalFileBrowserComponent>,
-		  private dialog: MatDialog,
-		  private authService: AuthService,
-		  private agaveSystemsService: AgaveSystemsService) { }
+		            public dialogRef: MatDialogRef<ModalFileBrowserComponent>,
+		            private dialog: MatDialog,
+		            private authService: AuthService,
+		            private agaveSystemsService: AgaveSystemsService) { }
 
   ngOnInit() {
-	//retrive state data
-	//this.tapisFilesService.getState()
+	// retrive state data
+	// this.tapisFilesService.getState()
 
 	// This finds all the projects, and file systems found from a user 
 	this.agaveSystemsService.list();
@@ -68,15 +68,15 @@ export class ModalFileBrowserComponent implements OnInit {
 	this.publishedDataSystem = systems.find( (sys) => sys.id === 'designsafe.storage.published');
 	
 	// This is where they choose which one they start with
-	this.selectedSystem = this.tapisFilesService.lastSystem
+	this.selectedSystem = this.tapisFilesService.lastSystem;
 
 	if (this.selectedSystem == null) {
-		this.selectedSystem = this.myDataSystem
-		this.tapisFilesService.lastSystem = this.myDataSystem
+		this.selectedSystem = this.myDataSystem;
+		this.tapisFilesService.lastSystem = this.myDataSystem;
 	}
 
-	//If the user has already navigated to a folder, restore those options
-	this.currentDirectory = this.tapisFilesService.lastFile
+	// If the user has already navigated to a folder, restore those options
+	this.currentDirectory = this.tapisFilesService.lastFile;
 
 	this.projects = projects;
 	this.currentUser = user;
@@ -85,11 +85,11 @@ export class ModalFileBrowserComponent implements OnInit {
 		type: 'dir',
 		path: this.currentUser.username
 	};
-	//If the user hasn't yet opened the file browser, set the last file to an init file.
+	// If the user hasn't yet opened the file browser, set the last file to an init file.
 	if ( this.tapisFilesService.noPreviousSelections) {
 		this.selectedSystem = this.myDataSystem;
-		this.tapisFilesService.lastFile = init
-		this.tapisFilesService.noPreviousSelections = false
+		this.tapisFilesService.lastFile = init;
+		this.tapisFilesService.noPreviousSelections = false;
 	}
 	this.browse(this.tapisFilesService.lastFile);
 	  });
@@ -104,21 +104,21 @@ export class ModalFileBrowserComponent implements OnInit {
 	  type: 'dir',
 	  path: pth
 	};
-	this.selectedSystem = system
-	this.tapisFilesService.lastSystem = this.selectedSystem
+	this.selectedSystem = system;
+	this.tapisFilesService.lastSystem = this.selectedSystem;
 	this.browse(init);
   }
 
 
   browse(file: RemoteFile) {
-	this.selectedPath = file.path
-	this.selectedSystem = this.selectedSystem //Self-assignment keeps the system name from disappearing while browsing subfolders
+	this.selectedPath = file.path;
+	this.selectedSystem = this.selectedSystem; // Self-assignment keeps the system name from disappearing while browsing subfolders
 	if (file.type !== 'dir') { return; }
 	this.currentDirectory = file;
-	this.tapisFilesService.lastFile = file //Updates the last directory visted
+	this.tapisFilesService.lastFile = file; // Updates the last directory visted
 	// this.selectedFiles.clear();
 	this.filesList = [];
-	this.offset = 0
+	this.offset = 0;
 	this.inProgress = false;
 	this.getFiles();
   }
@@ -131,13 +131,13 @@ export class ModalFileBrowserComponent implements OnInit {
 	  type: 'dir',
 	  path: pth
 	};
-	this.browse(init)
+	this.browse(init);
   }
 
   getFiles() {
-	let hasMoreFiles = (this.offset % ModalFileBrowserComponent.limit) === 0
+	const hasMoreFiles = (this.offset % ModalFileBrowserComponent.limit) === 0;
 
-	if (this.inProgress || !hasMoreFiles){
+	if (this.inProgress || !hasMoreFiles) {
 		return;
 	}
 
@@ -155,20 +155,20 @@ export class ModalFileBrowserComponent implements OnInit {
 			current.name = '..';
 			files.unshift(current);
 		  }
-		  const newFile = [];
-		  const allowedExt = this.allowedExtensions
-		  files.forEach(function (value, index) {
-          if ((value.type == 'file' && allowedExt.includes(value.path.split('.').pop().toLowerCase()) ) || value.type == 'dir'){
+		const newFile = [];
+		const allowedExt = this.allowedExtensions;
+		files.forEach(function(value, index) {
+          if ((value.type == 'file' && allowedExt.includes(value.path.split('.').pop().toLowerCase()) ) || value.type == 'dir') {
             newFile.push(value);
-          }})
+          }});
 
-		  this.inProgress = false;
-		  this.retrievalError = false;
-		  this.filesList = this.filesList.concat(newFile);
-		  this.offset = this.offset + files.length
+		this.inProgress = false;
+		this.retrievalError = false;
+		this.filesList = this.filesList.concat(newFile);
+		this.offset = this.offset + files.length;
 	},
 	error => {
-		//If retrieving the files from DesignSafe bugs out due to the site being down, this is where it ends up
+		// If retrieving the files from DesignSafe bugs out due to the site being down, this is where it ends up
 		this.retrievalError = true;
 		this.inProgress = false;
 	});
@@ -178,12 +178,10 @@ export class ModalFileBrowserComponent implements OnInit {
   select(event: any, file: RemoteFile, index: number) {
 	if (event.shiftKey) {
 		this.selectFilesShiftClick(index, file);
-	  }
-	else {
+	  } else {
 		if (this.tapisFilesService.checkIfSelectable(file)) {
 			this.addSelectedFile(file, index);
-		}
-		else{
+		} else {
 			// console.log("not selectable")
 	}
 	}
@@ -204,7 +202,7 @@ export class ModalFileBrowserComponent implements OnInit {
 		this.firstFileIndex = index;
 	  }
 
-	if(this.tapisFilesService.checkIfSelectable(file)){
+	if (this.tapisFilesService.checkIfSelectable(file)) {
 		if (this.selectedFiles.has(file.path)) {
 			this.selectedFiles.delete(file.path);
 		} else {
@@ -215,28 +213,28 @@ export class ModalFileBrowserComponent implements OnInit {
   }
 
   chooseFiles() {
-	this.tapisFilesService.saveState()
-	this.tapisFilesService.lastSystem = this.selectedSystem
+	this.tapisFilesService.saveState();
+	this.tapisFilesService.lastSystem = this.selectedSystem;
 	const tmp = Array.from(this.selectedFiles.values());
-	this.dialogRef.close(tmp)
+	this.dialogRef.close(tmp);
   }
 
   cancel() {
-	this.tapisFilesService.saveState()
-	this.tapisFilesService.lastSystem = this.selectedSystem
-	this.dialogRef.close()
+	this.tapisFilesService.saveState();
+	this.tapisFilesService.lastSystem = this.selectedSystem;
+	this.dialogRef.close();
   }
 
-  selectAll(){
-	  let indexTmp = -1
-	  let count = 0
-	  for(let file of this.filesList){
+  selectAll() {
+	  const indexTmp = -1;
+	  let count = 0;
+	  for (const file of this.filesList) {
 		if (! this.selectedFiles.has(file.path)) {
-			this.select("",file,indexTmp)
-			count += 1
+			this.select('', file, indexTmp);
+			count += 1;
 		}
 	  }
-	  if (count == 1){
+	  if (count == 1) {
 		this.selectedFiles.clear();
 	  }
   }
@@ -250,8 +248,8 @@ export class ModalFileBrowserComponent implements OnInit {
   }
 
   addRangeFiles(firstFileIndex: number, lastFileIndex: number, again: boolean) {
-    let maxIndex = Math.max(firstFileIndex, lastFileIndex);
-    let minIndex = Math.min(firstFileIndex, lastFileIndex);
+    const maxIndex = Math.max(firstFileIndex, lastFileIndex);
+    const minIndex = Math.min(firstFileIndex, lastFileIndex);
 
     for (let i = minIndex; i < maxIndex + 1; ++i) {
       this.addSelectedFile(this.filesList[i], -1);

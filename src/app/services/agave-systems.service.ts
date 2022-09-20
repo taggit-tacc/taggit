@@ -17,7 +17,7 @@ export class AgaveSystemsService {
 
   constructor(private tapis: ApiService) { }
 
-  //list() runs when the file browser is opened, retrieves all files in TACC for given user
+  // list() runs when the file browser is opened, retrieves all files in TACC for given user
   list() {
     this.tapis.systemsList({type: 'STORAGE'})
       .subscribe(resp => {

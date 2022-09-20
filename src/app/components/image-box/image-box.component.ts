@@ -2,8 +2,8 @@ import {Component, OnInit, EventEmitter, Input, TemplateRef} from '@angular/core
 import {Feature, Project} from '../../models/models';
 import {GeoDataService} from '../../services/geo-data.service';
 import {AppEnvironment, environment} from '../../../environments/environment';
-import {GroupsService} from "../../services/groups.service";
-import {ProjectsService} from "../../services/projects.service";
+import {GroupsService} from '../../services/groups.service';
+import {ProjectsService} from '../../services/projects.service';
 import { BsModalService } from 'ngx-foundation/modal';
 import { BsModalRef } from 'ngx-foundation/modal/bs-modal-ref.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -23,20 +23,20 @@ export class ImageBoxComponent implements OnInit {
   environment: AppEnvironment;
   featureSource: string;
   featurePath: string;
-  status: boolean = false; //Controls the whether or not an image box is selected or not
-  hasGroup: boolean = false;
+  status = false; // Controls the whether or not an image box is selected or not
+  hasGroup = false;
   colors: Array<string> = [];
   groupList: Array<any>;
   coordinates: Array<any>;
   containingGroupList: Array<any>;
-  currentGroup: string = "hello";
+  currentGroup = 'hello';
   tempGroup: Array<Feature>;
   modalRef: BsModalRef;
   activeGroup: string;
 
   public selectedProject: Project;
 
-  unselectAll: boolean = false;
+  unselectAll = false;
 
   tagList: tags[] = this.formsService.getTags();
 
@@ -44,26 +44,26 @@ export class ImageBoxComponent implements OnInit {
   imageCollection: any = {};
 
   constructor( private geoDataService: GeoDataService,
-			   private groupsService: GroupsService,
-			   private projectsService: ProjectsService,
-			   private modalService: BsModalService,
-			   private formsService: FormsService,
-			   private dialog: MatDialog,
-			   private scrollService: ScrollService,
-			   private featureService: FeatureService
-			 ){ }
+			            private groupsService: GroupsService,
+			            private projectsService: ProjectsService,
+			            private modalService: BsModalService,
+			            private formsService: FormsService,
+			            private dialog: MatDialog,
+			            private scrollService: ScrollService,
+			            private featureService: FeatureService
+			 ) { }
 
   ngOnInit() {
 	this.environment = environment;
-	let featureSource
-	if( this.feature.assets[0].path != "../../images/Image-not-found.png") {
+	let featureSource;
+	if ( this.feature.assets[0].path != '../../images/Image-not-found.png') {
 		featureSource = this.environment.apiUrl + '/assets/' + this.feature.assets[0].path;
 	} else {
-		featureSource = this.feature.assets[0].path
+		featureSource = this.feature.assets[0].path;
 	}
 	featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
 	this.featureSource = featureSource;
-	this.coordinates = this.feature.geometry['coordinates'];
+	this.coordinates = this.feature.geometry.coordinates;
 
 	this.projectsService.activeProject.subscribe(next => {
 	  this.selectedProject = next;
@@ -82,7 +82,7 @@ export class ImageBoxComponent implements OnInit {
 			if (c.id == this.feature.id) {
 			  if (!this.colors.includes(e.color)) {
 				this.colors.push(e.color);
-				//console.log(e.color);
+				// console.log(e.color);
 			  }
 			  this.hasGroup = true;
 			}
@@ -106,9 +106,9 @@ export class ImageBoxComponent implements OnInit {
 		this.status = false;
 	  }
 	});
-	let featurePath = this.feature.assets[0].display_path
-	featurePath = this.feature.assets[0].display_path
-	this.featurePath = featurePath
+	let featurePath = this.feature.assets[0].display_path;
+	featurePath = this.feature.assets[0].display_path;
+	this.featurePath = featurePath;
   }
 
   // click() {
@@ -134,11 +134,11 @@ export class ImageBoxComponent implements OnInit {
 	if (this.unselectAll == true) {
 	  this.unselectAll = false;
 	  this.groupsService.setUnselectAll(false);
-	  this.tempGroup = []
+	  this.tempGroup = [];
 	}
 	this.status = !this.status;
-	if(this.status) {
-		this.groupsService.setItemsSelected(this.status)
+	if (this.status) {
+		this.groupsService.setItemsSelected(this.status);
 	}
 
 	if (this.tempGroup.filter(v => v.assets[0].id == this.feature.assets[0].id).length > 0) {
@@ -160,9 +160,9 @@ export class ImageBoxComponent implements OnInit {
 
   }
 
-  imageSelectTrue(){
-	this.status = true
-	this.groupsService.setItemsSelected(this.status)
+  imageSelectTrue() {
+	this.status = true;
+	this.groupsService.setItemsSelected(this.status);
 	if (this.tempGroup.filter(v => v.assets[0].id == this.feature.assets[0].id).length > 0) {
 		this.tempGroup = this.tempGroup.filter(v => v.assets[0].id != this.feature.assets[0].id);
 	} else {
@@ -179,13 +179,13 @@ export class ImageBoxComponent implements OnInit {
   }
 
   imageDelete() {
-	const featureService = this.featureService
-	this.tempGroup.forEach(function (value) {
-		featureService.deleteFeature(value)
-	})
-	//Resets contents of temp group
-	this.groupsService.addTempGroup([])
-	this.scrollService.setScrollRestored(true)
+	const featureService = this.featureService;
+	this.tempGroup.forEach(function(value) {
+		featureService.deleteFeature(value);
+	});
+	// Resets contents of temp group
+	this.groupsService.addTempGroup([]);
+	this.scrollService.setScrollRestored(true);
   }
 
   openMoreGroupsModal(template: TemplateRef<any>) {
@@ -194,8 +194,8 @@ export class ImageBoxComponent implements OnInit {
   }
 
   openImageDeleteModal(template: TemplateRef<any>) {
-	this.imageSelectTrue()
-	this.scrollService.setScrollPosition()
+	this.imageSelectTrue();
+	this.scrollService.setScrollPosition();
 	// this.modalRef = this.modalService.show(template, {class: 'tiny'});
 	this.dialog.open(template);
   }
@@ -213,7 +213,7 @@ export class ImageBoxComponent implements OnInit {
 	  }
 	});
 
-	let featProp = this.feature.properties;
+	const featProp = this.feature.properties;
 
 	featProp.group = featProp.group.filter(e => e.color != color);
 
@@ -226,44 +226,44 @@ export class ImageBoxComponent implements OnInit {
   }
 
   openImageAddModal(template: TemplateRef<any>) {
-	this.imageSelectTrue()
-	this.scrollService.setScrollPosition()
+	this.imageSelectTrue();
+	this.scrollService.setScrollPosition();
 	// this.modalRef = this.modalService.show(template, {class: 'tiny'});
 	this.dialog.open(template);
   }
 
-  selectGroupForm (name: string, feat: Feature) {
-	let color = "";
-	let icon = ""
+  selectGroupForm(name: string, feat: Feature) {
+	let color = '';
+	let icon = '';
 	this.groupsService.setActiveFeatureNum(0);
 	this.groupList.forEach(e => {
 	  if (e.name == name) {
 		//   console.log(this.feature)
 		e.features.push(this.feature);
 		color = e.color;
-		icon = e.icon
+		icon = e.icon;
 	  }
 	});
 
-	let featProp = feat.properties;
+	const featProp = feat.properties;
 	if (featProp.group) {
-	  let featGroupList = featProp.group.map(e => {
+	  const featGroupList = featProp.group.map(e => {
 		return e.name;
 	  });
 
 	  if (!featGroupList.includes(name)) {
 		featProp.group.push({
-		  name: name,
-		  color: color,
-		  icon: icon,
+		  name,
+		  color,
+		  icon,
 		});
 	  }
 	} else {
 	  featProp.group = [];
 	  featProp.group.push({
-		name: name,
-		color: color,
-		icon: icon,
+		name,
+		color,
+		icon,
 	  });
 	}
 
@@ -273,9 +273,9 @@ export class ImageBoxComponent implements OnInit {
 		}
 		});
 	
-	for (let tag of this.tagList){
-		if (tag.feature === this.tempGroup[0].id && tag.groupName === name){
-			let formItem: tags = {
+	for (const tag of this.tagList) {
+		if (tag.feature === this.tempGroup[0].id && tag.groupName === name) {
+			const formItem: tags = {
 				type: tag.type,
 				groupName: name,
 				label: tag.label,
@@ -284,8 +284,8 @@ export class ImageBoxComponent implements OnInit {
 				options: tag.options,
 				feature: this.feature.id,
 				extra: []
-			}
-			this.formsService.saveTag(this.activeGroup, formItem, formItem.label)
+			};
+			this.formsService.saveTag(this.activeGroup, formItem, formItem.label);
 		}
 	}
 
@@ -294,18 +294,18 @@ export class ImageBoxComponent implements OnInit {
 											  featProp);
 
 	this.groupsService.addGroup(this.groupList);
-	//Yes, I know there are two identical lines here. It doesn't work unless it does it twice
-	//I don't know why that is, but if you can figure out a better way, go ahead.
+	// Yes, I know there are two identical lines here. It doesn't work unless it does it twice
+	// I don't know why that is, but if you can figure out a better way, go ahead.
 	this.geoDataService.getFeatures(Number(feat.project_id));
 	this.geoDataService.getFeatures(Number(feat.project_id));
   }
 
   addGroups(name: string) {
 	  this.tempGroup.forEach( (feat) => {
-		  this.selectGroupForm(name, feat)
-	  })
+		  this.selectGroupForm(name, feat);
+	  });
 	  this.groupsService.setUnselectAll(true);
-	  this.scrollService.setScrollRestored(true)
+	  this.scrollService.setScrollRestored(true);
 	}
 
   getGroupNameFromColor(color: string) {

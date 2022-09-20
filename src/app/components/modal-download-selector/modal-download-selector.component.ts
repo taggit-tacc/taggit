@@ -17,14 +17,14 @@ import { FormGroup, FormControl } from '@angular/forms';
 })
 export class ModalDownloadSelectorComponent implements OnInit {
 	
-  static limit = 200; //Limits maximum amount of files displayed
+  static limit = 200; // Limits maximum amount of files displayed
 
   @Output() currentPath: EventEmitter<string> = new EventEmitter<string>();
 
   private downloadSelectForm: FormGroup;
   private currentUser: AuthenticatedUser;
   public filesList: Array<RemoteFile> = [];
-  public inProgress= true;
+  public inProgress = true;
   public selectedFiles: Map<string, RemoteFile> = new Map();
   public onClose: Subject<Array<RemoteFile>> = new Subject<Array<RemoteFile>>();
   public projects: Array<SystemSummary>;
@@ -33,17 +33,17 @@ export class ModalDownloadSelectorComponent implements OnInit {
   public communityDataSystem: SystemSummary;
   public publishedDataSystem: SystemSummary;
   public currentDirectory: RemoteFile;
-  public passbackData: Array<string> = ["","","",""];
-  public fileName:string = "Custom File Name"
-  public fileExtension:string =".csv"
-  private offset:number;
+  public passbackData: Array<string> = ['', '', '', ''];
+  public fileName = 'Custom File Name';
+  public fileExtension = '.csv';
+  private offset: number;
 
   constructor(private tapisFilesService: TapisFilesService,
 		  // private modalRef: BsModalRef,
-		  public dialogRef: MatDialogRef<ModalDownloadSelectorComponent>,
-		  private dialog: MatDialog,
-		  private authService: AuthService,
-		  private agaveSystemsService: AgaveSystemsService) { }
+		            public dialogRef: MatDialogRef<ModalDownloadSelectorComponent>,
+		            private dialog: MatDialog,
+		            private authService: AuthService,
+		            private agaveSystemsService: AgaveSystemsService) { }
 
   ngOnInit() {
 
@@ -53,11 +53,11 @@ export class ModalDownloadSelectorComponent implements OnInit {
   });
 
 	  // This finds all the projects, and file systems found from a user 
-	this.agaveSystemsService.list();
+	 this.agaveSystemsService.list();
 
 	// TODO: change those hard coded systemIds to environment vars or some sort of config
 	// wait on the currentUser and systems to resolve
-	combineLatest([this.authService.currentUser, this.agaveSystemsService.systems, this.agaveSystemsService.projects])
+	 combineLatest([this.authService.currentUser, this.agaveSystemsService.systems, this.agaveSystemsService.projects])
 	
 	// This little thing helped me fix the problem on calling ngOnInit several times
 	.pipe(
@@ -102,15 +102,15 @@ export class ModalDownloadSelectorComponent implements OnInit {
 	this.currentDirectory = file;
 	// this.selectedFiles.clear();
 	this.filesList = [];
-	this.offset = 0
+	this.offset = 0;
 	this.inProgress = false;
 	this.getFiles();
   }
 
   getFiles() {
-	let hasMoreFiles = (this.offset % ModalDownloadSelectorComponent.limit) === 0
+	const hasMoreFiles = (this.offset % ModalDownloadSelectorComponent.limit) === 0;
 
-	if (this.inProgress || !hasMoreFiles){
+	if (this.inProgress || !hasMoreFiles) {
 		return;
 	}
 
@@ -125,20 +125,20 @@ export class ModalDownloadSelectorComponent implements OnInit {
 			// is always a reference to self '.' and replaces with '..'
 			const current = files.shift();
 			this.currentPath.next(current.path);
-      this.passbackData[1] = current.path;
+   this.passbackData[1] = current.path;
 			current.path = this.tapisFilesService.getParentPath(current.path);
 			current.name = '..';
 			files.unshift(current);
 		  }
-		  const newFile = [];
-		  files.forEach(function (value, index) {
-          if (value.type == 'file' || value.type == 'dir'){
+		const newFile = [];
+		files.forEach(function(value, index) {
+          if (value.type == 'file' || value.type == 'dir') {
             newFile.push(value);
-          }})
+          }});
 
-		  this.inProgress = false;
-		  this.filesList = this.filesList.concat(newFile);
-		  this.offset = this.offset + files.length
+		this.inProgress = false;
+		this.filesList = this.filesList.concat(newFile);
+		this.offset = this.offset + files.length;
 	},
 	error => {
 		this.inProgress = false;
@@ -146,21 +146,21 @@ export class ModalDownloadSelectorComponent implements OnInit {
   }
 
   chooseFiles() {
-  this.passbackData[0] = this.selectedSystem.id
+  this.passbackData[0] = this.selectedSystem.id;
  
-  //checks to see if the input was left unchanged
-  if( this.downloadSelectForm.dirty ) {
-    //if changed, enter name as specified
-    this.passbackData[2] = this.downloadSelectForm.get('Name').value
+  // checks to see if the input was left unchanged
+  if ( this.downloadSelectForm.dirty ) {
+    // if changed, enter name as specified
+    this.passbackData[2] = this.downloadSelectForm.get('Name').value;
   } else {
-    //if unchanged, enter filename as empty string
-    this.passbackData[2] = ""
+    // if unchanged, enter filename as empty string
+    this.passbackData[2] = '';
   }
-  this.passbackData[3] = this.fileExtension
-	this.dialogRef.close(this.passbackData)
+  this.passbackData[3] = this.fileExtension;
+	 this.dialogRef.close(this.passbackData);
   }
 
   cancel() {
-	this.dialogRef.close()
+	this.dialogRef.close();
   }
 }

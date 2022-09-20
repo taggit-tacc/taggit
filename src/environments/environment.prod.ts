@@ -1,4 +1,4 @@
-import { EnvironmentType } from "./environmentType";
+import { EnvironmentType } from './environmentType';
 
 export interface AppEnvironment {
   production: boolean;

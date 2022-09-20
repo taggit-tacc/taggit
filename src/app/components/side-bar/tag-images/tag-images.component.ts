@@ -25,12 +25,12 @@ export class TagImagesComponent implements OnInit {
   private activeGroup$: Subscription;
   private activeFeatureId$: Subscription;
   private groupList;
-  private selectedProject
+  private selectedProject;
   form: FormGroup;
-  showSubitem: boolean = true;
+  showSubitem = true;
   tagList: tags[] = [];
   newTag: tags[] = [];
-  newTagValue = ""
+  newTagValue = '';
   featureList: Array<any> = [];
   tempGroup: Array<Feature>;
 
@@ -68,16 +68,16 @@ export class TagImagesComponent implements OnInit {
 	  });
 	
 	this.featureService.tags$.subscribe( tags => {
-		this.tagList = tags
-	})
+		this.tagList = tags;
+	});
 
 	  // this is to get the list of tags so far
-	  for (let feat of this.featureList){
-		  if(feat.properties.tag != undefined){
+	for (const feat of this.featureList) {
+		  if (feat.properties.tag != undefined) {
 			  feat.properties.tag.forEach(tag => {
 				  const index = this.newTag.findIndex(item => item.groupName === tag.groupName  && item.label === tag.label && item.feature === tag.feature);
-					if(index == -1){
-						this.newTag.push(tag)
+					 if (index == -1) {
+						this.newTag.push(tag);
 					}
 			  });
 		  }
@@ -93,17 +93,17 @@ export class TagImagesComponent implements OnInit {
 	this.dialog.open(template);
   }
   
-  //Takes the name of the tag's group, and the tag itself to delete
-   deleteTag(tag: tags){
-	this.featureService.deleteTag(tag)  
+  // Takes the name of the tag's group, and the tag itself to delete
+   deleteTag(tag: tags) {
+	this.featureService.deleteTag(tag);  
    }
 
-  //submits a tag's name change to geoAPI
+  // submits a tag's name change to geoAPI
   renameTag(tag) {
-	  this.featureService.renameTag(tag, this.newTagValue)
-	  //Reset newTagValue for the next rename
-	  this.newTagValue = ''
-	  this.dialog.closeAll() //Ensures the window closes when using enter-submission
+	  this.featureService.renameTag(tag, this.newTagValue);
+	  // Reset newTagValue for the next rename
+	  this.newTagValue = '';
+	  this.dialog.closeAll(); // Ensures the window closes when using enter-submission
 	}
 
   openOptionToggle(label: string) {
@@ -115,7 +115,7 @@ export class TagImagesComponent implements OnInit {
   }
 
   createNewTag() {
-	this.groupsService.setActivePane("preset");
+	this.groupsService.setActivePane('preset');
 	this.router.navigateByUrl('/preset', {skipLocationChange: true});
   }
 
