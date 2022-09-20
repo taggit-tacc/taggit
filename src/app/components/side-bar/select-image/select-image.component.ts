@@ -1,158 +1,106 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import {FeatureCollection} from 'geojson';
-import { Project } from '../../../models/models';
+import { Component, OnInit } from '@angular/core';
+import { Project, TagGroup } from '../../../models/models';
 import { ProjectsService } from '../../../services/projects.service';
 import { GeoDataService } from '../../../services/geo-data.service';
 import { FormsService } from '../../../services/forms.service';
-import { GroupsService } from '../../../services/groups.service';
-import { Subscription } from 'rxjs';
 import { Feature } from '@turf/turf';
 
 @Component({
   selector: 'app-select-image',
   templateUrl: './select-image.component.html',
-  styleUrls: ['./select-image.component.scss']
+  styleUrls: ['./select-image.component.scss'],
 })
-
-export class SelectImageComponent implements OnInit, OnDestroy {
-  groups$: Subscription;
-  activeFeatureNum$: Subscription;
-  activeGroup$: Subscription;
-
-  public selectedProject: Project;
-  groupList: Array<any> = [];
-  activeGroup: string;
-  activeFeatureNum: number;
-  showSidebar: boolean;
+export class SelectImageComponent implements OnInit {
+  public activeProject: Project;
+  private groups: Map<string, TagGroup>;
+  activeGroup: TagGroup;
+  activeGroupFeature: Feature;
   showSubitem = true;
-  tempGroup: Array<Feature>;
+  groupsFeatures: Map<string, any>;
 
-  constructor(private formsService: FormsService,
-			           private groupsService: GroupsService,
-			           private geoDataService: GeoDataService,
-			           private projectsService: ProjectsService) {}
+  constructor(
+    private geoDataService: GeoDataService,
+    private projectsService: ProjectsService
+  ) {}
 
   ngOnInit() {
-	this.projectsService.activeProject.subscribe(next => {
-	  this.selectedProject = next;
-	});
+    this.projectsService.activeProject.subscribe((next) => {
+      this.activeProject = next;
+    });
 
-	this.groups$ = this.groupsService.groups.subscribe((next) => {
-	  this.groupList = next;
-	});
+    this.geoDataService.groups.subscribe((next) => {
+      this.groups = next;
+    });
 
-	this.activeFeatureNum$ = this.groupsService.activeFeatureNum.subscribe((next) => {
-	  this.activeFeatureNum = next;
-	});
+    this.geoDataService.activeGroup.subscribe((next) => {
+      this.activeGroup = next;
+    });
 
-	this.activeGroup$ = this.groupsService.activeGroup.subscribe((next) => {
-	  this.activeGroup = next;
-	});
+    this.geoDataService.activeGroupFeature.subscribe((next) => {
+      this.activeGroupFeature = next;
+    });
+
+    this.geoDataService.groupsFeatures.subscribe((next) => {
+      this.groupsFeatures = next;
+      if (next && this.activeGroup) {
+        const groupFeatures = this.groupsFeatures.get(this.activeGroup.name);
+        if (groupFeatures) {
+          if (!groupFeatures.some(f => f.id === this.activeGroupFeature.id)) {
+            this.geoDataService.setActiveGroupFeature(groupFeatures[0]);
+          }
+        } else {
+          const [nextGroup] = this.groups.values();
+          if (nextGroup) {
+            this.geoDataService.setActiveGroup(nextGroup);
+          } else {
+            this.geoDataService.setActiveGroup(null);
+          }
+        }
+      }
+    });
   }
 
   getActiveFeatures() {
-	const activeGroupObj = this.groupList.filter(realGroup => realGroup.name === this.activeGroup);
-	return activeGroupObj[0].features;
+    if (this.activeGroup) {
+      const groupFeatures = this.groupsFeatures.get(this.activeGroup.name);
+      const group = this.groups.get(this.activeGroup.name);
+      if (group) {
+        return groupFeatures;
+      } else {
+        const [nextGroup] = this.groups.values();
+        if (nextGroup) {
+          this.geoDataService.setActiveGroup(nextGroup);
+          return this.groupsFeatures.get(nextGroup.name);
+        } else {
+          return [];
+        }
+      }
+    } else {
+      return [];
+    }
   }
 
-  jumpToImage(asset: any) {
-	let index = 0;
-	this.groupList.forEach(e => {
-	  if (e.name == this.activeGroup) {
-		index = e.features.indexOf(asset);
-	  }
-	});
-	this.geoDataService.getFeatures(this.selectedProject.id);
-	this.groupsService.setActiveFeatureNum(index);
+  jumpToImage(feat: Feature) {
+    this.geoDataService.setActiveGroupFeature(feat);
   }
 
-  isActiveFeature(asset: any) {
-	let index = 0;
-	this.groupList.forEach(e => {
-	  if (e.name == this.activeGroup) {
-		index = e.features.indexOf(asset);
-	  }
-	});
-	return this.activeFeatureNum == index;
+  isActiveFeature(feature: Feature) {
+    return this.activeGroupFeature.id === feature.id;
   }
 
-  deleteGroup(name: string) {
-	
-	this.groupList.forEach(group => {
-		if (group.name == name) {
-			this.tempGroup = group.features;
-			this.groupList = this.groupList.filter(e => e.name != name);
-		}
-	});
-
-	for (const feat of this.tempGroup) {
-
-		const featProp = feat.properties;
-
-		featProp.group = featProp.group.filter(e => e.name != name);
-	
-		this.geoDataService.updateFeatureProperty(this.selectedProject.id,
-													Number(feat.id),
-													featProp);
-
-		this.groupsService.addGroup(this.groupList);
-	}
-
-	if (this.groupList.length <= 0) {
-	  this.showSidebar = false;
-	  this.groupsService.setShowSidebar(this.showSidebar);
-	} else {
-	  this.groupsService.setActiveGroup(this.groupList[0].name);
-	}
+  deleteFeature(feat: any) {
+    this.geoDataService.deleteGroupFeatures(
+      this.activeProject.id,
+      [feat],
+      this.groups.get(this.activeGroup.name)
+    );
   }
 
-  // Might move the guts of this method to either featureService or groupService and have it update the observable
-  // Delete asset removes the feature from the active group
-  deleteAsset(assetId: any) {
-	this.groupList.forEach(group => {
-	  if (group.name === this.activeGroup) {
-		this.tempGroup = group.features;
-		if (group.features.length == 1) {
-		  this.deleteGroup(group.name);
-		} else {
-		  group.features = group.features.filter(asset => asset.id != assetId);
-		}
-	  }
-	});
-
-	for (const feat of this.tempGroup) {
-
-	const featProp = feat.properties;
-	if (feat.id == assetId) {
-		featProp.group = featProp.group.filter(e => e.name != this.activeGroup);
-	}
-
-	this.geoDataService.updateFeatureProperty(this.selectedProject.id,
-											  Number(feat.id),
-											  featProp);
-	this.groupsService.addGroup(this.groupList);
-	}}
-
-  getAssetDisplay(asset: any) {
-	if (asset.assets[0].display_path) {
-	  return /[^/]*$/.exec(asset.assets[0].display_path)[0];
-	} else {
-	  const apath = /[^/]*$/.exec(asset.assets[0].path)[0];
-	  return apath.slice(0, 15) + '...';
-	}
-  }
-
-  ngOnDestroy() {
-	this.groups$.unsubscribe();
-	this.activeFeatureNum$.unsubscribe();
-	this.activeGroup$.unsubscribe();
+  getFeaturePath(feat: any) {
+    return feat.featureShortPath();
   }
 
   expandPanel() {
-	this.showSubitem = !this.showSubitem;
-	if (this.showSubitem) {
-
-	} else {
-	}
+    this.showSubitem = !this.showSubitem;
   }
 }

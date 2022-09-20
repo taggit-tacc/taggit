@@ -1,112 +1,63 @@
 <div *ngIf="loaded; else loader" id="loading-load">
   <div *ngIf="projectsExist; else noProjWarn" id="gallery-container">
-	<div *ngIf="imagesExist; else noImgWarn" id="gallery-container-container">
-	  <div [ngClass]="status ? 'success' : 'danger'"
-		   infiniteScroll
-		   [infiniteScrollDistance]="1"
-		   [infiniteScrollThrottle]="1500"
-		   (scrolled)="onScroll()"
-		   class="img-list-container"
-		   *ngIf="!showSidebar; else elseBlock">
-		<app-image-box
-		  *ngFor="let feat of featureListScroll"
-		  [feature]="feat">
-		</app-image-box>
-	  </div>
+    <div *ngIf="imagesExist; else noImgWarn" id="gallery-container-container">
+      <div [ngClass]="scrollStatus"
+        infiniteScroll
+        [infiniteScrollDistance]="1"
+        [infiniteScrollThrottle]="1500"
+        (scrolled)="onScroll()"
+        class="img-list-container"
+        *ngIf="!showTagger; else tagger">
+        <app-image-box
+          *ngFor="let feat of featureListScroll"
+          [feature]="feat">
+        </app-image-box>
+      </div>
 
-	  <ngx-spinner
-		bdOpacity = 0.9
-		bdColor = ""
-		size = "default"
-		color = "#3ADB76"
-		type = "line-scale-pulse-out"
-		id = "img-spin"
-		[fullScreen] = "false">
-	  </ngx-spinner>
-	  <ng-template #elseBlock>
-		<div *ngIf="groupExist; else noImgDisplay">
-		  <div class="imager">
-			<img class="view-image" [src]="getPath()">
-		  </div>
-		</div>
-		<ng-template #noImgDisplay> No Images exist for this Group </ng-template>
-		<!-- <div (click)="otherPath(1)">next</div> -->
-		<!-- <div (click)="otherPath(-1)">prev</div> -->
-
-
-		<!-- <img [src]="getPath()"> -->
-		<!-- <button class="button" (click)="otherPath(1)">next</button> -->
-		<!-- <button class="button" (click)="otherPath(-1)">prev</button> -->
-
-		<!-- <app-image-list> -->
-		  <!--   <\!-- *ngFor="let feat of features.features" -\-> -->
-			<!--   <\!-- [feature]="feat" -\-> -->
-
-			  <!--   <\!-- *ngFor="let feat of features.features" -\-> -->
-				<!--   <\!-- [feature]="features.features" -\-> -->
-				  <!--   <\!-- (clickRequest)="addGroupList($event)" -\-> -->
-					<!-- </app-image-list> -->
-
-	  </ng-template>
-	  <div *ngIf="showSidebar" class="side-bar-container">
-		<app-side-bar></app-side-bar>
-	  </div>
-	</div>
-	<ng-template #noImgWarn>
-	  <div id="no-img">
-		No images have been imported!<br>Please import images through the menu.
-	  </div>
-	</ng-template>
+      <ngx-spinner
+        bdOpacity = 0.9
+        bdColor = ""
+        size = "default"
+        color = "#3ADB76"
+        type = "line-scale-pulse-out"
+        id = "img-spin"
+        [fullScreen] = "false">
+      </ngx-spinner>
+      <ng-template #tagger>
+        <div>
+          <div class="imager">
+            <img class="view-image" [src]="getPath()">
+          </div>
+        </div>
+      </ng-template>
+      <div *ngIf="showTagger" class="side-bar-container">
+        <app-side-bar></app-side-bar>
+      </div>
+    </div>
+    <ng-template #noImgWarn>
+      <div id="no-img">
+        No images have been imported!<br>Please import images through the menu.
+      </div>
+    </ng-template>
   </div>
 
   <ng-template #noProjWarn>
-	<div id="no-proj">
-	  No project has been created!<br>Please create a project through the menu.
-	</div>
+    <div id="no-proj">
+      No project has been created!<br>Please create a project through the menu.
+    </div>
   </ng-template>
-
-  <!-- <div id="gallery-container"> -->
-	<!--   <div [ngClass]="status ? 'success' : 'danger'"> -->
-	  <!--	<div class="img-list-container" *ngIf="!showSidebar; else elseBlock"> -->
-		<!--	  <app-image-box -->
-		<!--		*ngFor="let feat of features.features" -->
-		<!--		[feature]="feat" -->
-		<!--		(clickRequest)="addGroupList($event)"> -->
-		  <!--	  </app-image-box> -->
-		<!--	</div> -->
-
-	  <!--	<ng-template #elseBlock> -->
-		<!--	  <app-image-list> -->
-		  <!--	  </app-image-list> -->
-		<!--	</ng-template> -->
-
-	  <!--   </div> -->
-	<!--   <div *ngIf="showSidebar" class="side-bar-container"> -->
-	  <!--	<app-side-bar></app-side-bar> -->
-	  <!--   </div> -->
-	<!-- </div> -->
 
 </div>
 
 <ng-template #loader>
   <div *ngIf="projectsExist; else createProj" id="loader">
-	Loading...
+    Loading...
   </div>
 
   <ng-template #createProj> 
-	<div id="new-proj" (click)="openCreateProjectModal()">
-		Start a new project
-	</div>
-</ng-template>
+    <div id="new-proj" (click)="openCreateProjectModal()">
+      Start a new project
+    </div>
+  </ng-template>
 
-
-  <!-- <ngx-spinner
-	bdOpacity = 0.9
-	bdColor = ""
-	size = "default"
-	color = "#3ADB76"
-	type = "line-scale-pulse-out"
-	id = "load-spin"
-	[fullScreen] = "false">
-  </ngx-spinner> -->
 </ng-template>

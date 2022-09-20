@@ -1,23 +1,33 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
-import {LatLng} from 'leaflet';
-import {AssetFilters, FeatureAsset, IFeatureAsset, IPointCloud, Overlay} from '../models/models';
-import { Feature, FeatureCollection} from '../models/models';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
+import { LatLng } from 'leaflet';
+import {
+  AssetFilters,
+  FeatureAsset,
+  IFeatureAsset,
+  IPointCloud,
+  Overlay,
+  TagGroup,
+  Tag,
+  TagValue,
+  GroupForm,
+} from '../models/models';
+import { Feature, FeatureCollection } from '../models/models';
 import { environment } from '../../environments/environment';
-import {Form} from '@angular/forms';
-import {take} from 'rxjs/operators';
+import { Form } from '@angular/forms';
+import { take } from 'rxjs/operators';
 import * as querystring from 'querystring';
-import {RemoteFile} from 'ng-tapis';
+import { RemoteFile } from 'ng-tapis';
 import { NotificationsService } from './notifications.service';
 import { ScrollService } from './scroll.service';
+import { getRandomColor } from '../utils/randomColor';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GeoDataService {
-
-
   // TODO: clean this up and put the observables up here. Also look into Replay/Behavior
   // TODO: Go over this and remove all unused functions, a lot of this was copy/pasted over from Hazmapper without a second thought
   private _features: BehaviorSubject<FeatureCollection>;
@@ -27,125 +37,238 @@ export class GeoDataService {
   private _basemap: BehaviorSubject<any>;
   private _overlays: BehaviorSubject<any>;
   private _activeOverlay: BehaviorSubject<any>;
-  private _pointClouds: BehaviorSubject<Array<IPointCloud>> = new BehaviorSubject<Array<IPointCloud>>(null);
-  public readonly pointClouds: Observable<Array<IPointCloud>> = this._pointClouds.asObservable();
+  private _pointClouds: BehaviorSubject<Array<IPointCloud>> =
+    new BehaviorSubject<Array<IPointCloud>>(null);
+  public readonly pointClouds: Observable<Array<IPointCloud>> =
+    this._pointClouds.asObservable();
   private fileList: Array<RemoteFile>;
 
   private _loaded: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public loaded: Observable<boolean> = this._loaded.asObservable();
 
-  constructor(private http: HttpClient,
-	             private notificationsService: NotificationsService,
-	             private scrollService: ScrollService) {
-	this._features = new BehaviorSubject<FeatureCollection>({type: 'FeatureCollection', features: []});
-	this.features$ = this._features.asObservable();
-	this._activeFeature = new BehaviorSubject<any>(null);
-	this._mapMouseLocation = new BehaviorSubject<any>(null);
+  private _activeGroupId: BehaviorSubject<number> = new BehaviorSubject(null);
+  public activeGroupId: Observable<number> = this._activeGroupId.asObservable();
 
-	// For the style of the basemap, defaults to OpenStreetmap
-	this._basemap = new BehaviorSubject<any>('roads');
+  private _activeGroup: BehaviorSubject<TagGroup> = new BehaviorSubject(null);
+  public activeGroup: Observable<TagGroup> = this._activeGroup.asObservable();
 
-	// Holds all of the overlays on a project
-	this._overlays = new BehaviorSubject<any>(null);
-	this._activeOverlay = new BehaviorSubject<any>(null);
+  private _activeGroupFeature: BehaviorSubject<any> = new BehaviorSubject<any>(
+    null
+  );
+  public activeGroupFeature: Observable<any> =
+    this._activeGroupFeature.asObservable();
+
+  private _groups: BehaviorSubject<Map<string, TagGroup>> = new BehaviorSubject(
+    null
+  );
+  public groups: Observable<Map<string, TagGroup>> =
+    this._groups.asObservable();
+
+  private _groupsFeatures: BehaviorSubject<Map<string, Feature[]>> =
+    new BehaviorSubject(null);
+  public groupsFeatures: Observable<Map<string, Feature[]>> =
+    this._groupsFeatures.asObservable();
+
+  constructor(
+    private http: HttpClient,
+    private notificationsService: NotificationsService,
+    private scrollService: ScrollService
+  ) {
+    this._features = new BehaviorSubject<FeatureCollection>({
+      type: 'FeatureCollection',
+      features: [],
+    });
+    this.features$ = this._features.asObservable();
+    this._activeFeature = new BehaviorSubject<any>(null);
+    this._mapMouseLocation = new BehaviorSubject<any>(null);
+
+    // For the style of the basemap, defaults to OpenStreetmap
+    this._basemap = new BehaviorSubject<any>('roads');
+
+    // Holds all of the overlays on a project
+    this._overlays = new BehaviorSubject<any>(null);
+    this._activeOverlay = new BehaviorSubject<any>(null);
   }
 
-  getFeatures(projectId: number, query: AssetFilters = new AssetFilters(), restoreScroll = false): void {
-	const qstring: string = querystring.stringify(query.toJson());
-	this.http.get<FeatureCollection>(environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring)
-	  .subscribe( (fc: FeatureCollection) => {
-		fc.features = fc.features.map( (feat: Feature) => new Feature(feat));
-		this._features.next(fc);
-		// this._loaded.next(false);
-		this._loaded.next(true);
+  getFeature(
+    projectId: number,
+    feature: Feature
+  ): Observable<FeatureCollection> {
+    return this.http.get<FeatureCollection>(
+      environment.apiUrl + `/projects/${projectId}/features/${feature.id}/`
+    );
+  }
 
-		if ( restoreScroll ) {
-			this.scrollService.setScrollRestored(true);
-		}
-	  });
+  getFeatures(
+    projectId: number,
+    query: AssetFilters = new AssetFilters(),
+    restoreScroll = false
+  ): void {
+    const qstring: string = querystring.stringify(query.toJson());
+    this.http
+      .get<FeatureCollection>(
+        environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring
+      )
+      .subscribe((fc: FeatureCollection) => {
+        fc.features = fc.features.map((feat: Feature) => new Feature(feat));
+        this.getGroups(fc.features);
+        this._features.next(fc);
+        this._loaded.next(true);
+
+        if (restoreScroll) {
+          this.scrollService.setScrollRestored(true);
+        }
+      });
   }
 
   deleteFeature(feature: Feature) {
-	this.http.delete(environment.apiUrl + `projects/${feature.project_id}/features/${feature.id}/`)
-	  .subscribe( (resp) => {
-		this.getFeatures(feature.project_id, new AssetFilters(), true);
-	  });
+    this.http
+      .delete(
+        environment.apiUrl +
+          `projects/${feature.project_id}/features/${feature.id}/`
+      )
+      .subscribe((resp) => {
+        this.getFeatures(feature.project_id, new AssetFilters(), true);
+      });
   }
 
   getPointClouds(projectId: number) {
-	this.http.get<Array<IPointCloud>>(environment.apiUrl + `/projects/${projectId}/point-cloud/`)
-	  .subscribe( (resp ) => {
-	// console.log(resp);
-	this._pointClouds.next(resp);
-	  });
+    this.http
+      .get<Array<IPointCloud>>(
+        environment.apiUrl + `/projects/${projectId}/point-cloud/`
+      )
+      .subscribe((resp) => {
+        this._pointClouds.next(resp);
+      });
+  }
+
+  setActiveGroup(group: TagGroup): void {
+    this._activeGroup.next(group);
+    if (group) {
+      const groupFeatures = this._groupsFeatures.value.get(group.name);
+      if (!this._activeGroupFeature.value || !groupFeatures.some(gf => this._activeGroupFeature.value.id === gf.id)) {
+        this.setActiveGroupFeature(groupFeatures[0]);
+      } 
+    } else {
+      this.setActiveGroupFeature(null);
+    }
+  }
+
+  setActiveGroupFeature(feat: any): void {
+    this._activeGroupFeature.next(feat);
   }
 
   addFeature(feat: Feature): void {
-	this.features$.pipe(take(1)).subscribe( (current: FeatureCollection) => {
-	  current.features.push(feat);
-	  this._features.next(current);
-	});
+    this.features$.pipe(take(1)).subscribe((current: FeatureCollection) => {
+      current.features.push(feat);
+      this._features.next(current);
+    });
   }
 
-  addPointCloud(projectId: number, title: string, conversionParams: string): void {
-	const payload = {
-	  description: title,
-	  conversion_parameters: conversionParams
-	};
-	this.http.post(environment.apiUrl + `/projects/${projectId}/point-cloud/`, payload)
-	  .subscribe( (resp) => {
-	this.getPointClouds(projectId);
-	  }, error => {
-	// TODO: notification
-	  });
+  addPointCloud(
+    projectId: number,
+    title: string,
+    conversionParams: string
+  ): void {
+    const payload = {
+      description: title,
+      conversion_parameters: conversionParams,
+    };
+    this.http
+      .post(environment.apiUrl + `/projects/${projectId}/point-cloud/`, payload)
+      .subscribe(
+        (resp) => {
+          this.getPointClouds(projectId);
+        },
+        (error) => {
+          // TODO: notification
+        }
+      );
   }
 
-  updateFeatureProperty(projectId: number, featureId: number, groupData: any): void {
-	this.http.post(environment.apiUrl + `projects/${projectId}/features/${featureId}/properties/`, groupData)
-	  .subscribe( (resp) => {
-	  }, error => {
-	  });
+  updateFeatureProperty(
+    projectId: number,
+    featureId: string | number,
+    groupData: any
+  ): void {
+    this.http
+      .post(
+        environment.apiUrl +
+          `projects/${projectId}/features/${featureId}/properties/`,
+        groupData
+      )
+      .subscribe(
+        // TODO: getFeatures() here
+        (resp) => {
+          this.getFeatures(projectId);
+        },
+        (error) => {}
+      );
   }
 
-  updateFeatureStyle(projectId: number, featureId: number, groupData: any): void {
-	this.http.post(environment.apiUrl + `/projects/${projectId}/features/${featureId}/styles/`, groupData)
-	  .subscribe( (resp) => {
-	  }, error => {
-	  });
+  updateFeatureStyle(
+    projectId: number,
+    featureId: string | number,
+    groupData: any
+  ): void {
+    this.http
+      .post(
+        environment.apiUrl +
+          `/projects/${projectId}/features/${featureId}/styles/`,
+        groupData
+      )
+      .subscribe(
+        (resp) => {},
+        (error) => {}
+      );
   }
 
   deletePointCloud(pc: IPointCloud): void {
-	console.log(pc);
-	this.http.delete(environment.apiUrl + `/projects/${pc.project_id}/point-cloud/${pc.id}/`)
-	  .subscribe( (resp) => {
-	this.getPointClouds(pc.project_id);
-	  });
+    this.http
+      .delete(
+        environment.apiUrl + `/projects/${pc.project_id}/point-cloud/${pc.id}/`
+      )
+      .subscribe((resp) => {
+        this.getPointClouds(pc.project_id);
+      });
   }
 
   addFileToPointCloud(pc: IPointCloud, file: File) {
-	const form = new FormData();
-	form.append('file', file);
-	console.log(pc);
-	this.http.post(environment.apiUrl + `/projects/${pc.project_id}/point-cloud/${pc.id}/`, form)
-	  .subscribe( (resp) => {
-	console.log(resp);
-	  });
+    const form = new FormData();
+    form.append('file', file);
+    this.http
+      .post(
+        environment.apiUrl + `/projects/${pc.project_id}/point-cloud/${pc.id}/`,
+        form
+      )
+      .subscribe((resp) => {
+        console.log(resp);
+      });
   }
 
   // This function updates the underlying observable, so changes naturally flow to feature service
   importFileFromTapis(projectId: number, files: Array<RemoteFile>): void {
+    const tmp = files.map((f) => ({ system: f.system, path: f.path }));
+    const payload = {
+      files: tmp,
+    };
+    this.fileList = tmp;
+    this.http
+      .post(
+        environment.apiUrl + `projects/${projectId}/features/files/import/`,
+        payload
+      )
 
-	const tmp = files.map( f => ({system: f.system, path: f.path}));
-	const payload = {
-	  files: tmp
-	};
-	this.fileList = tmp;
-	this.http.post(environment.apiUrl + `projects/${projectId}/features/files/import/`, payload)
-	  .subscribe( (resp) => {
-		this.notificationsService.showSuccessToast('Import started!');
-	  }, error => {
-		this.notificationsService.showImportErrorToast('Import failed! Try again?');
-	  });
+      .subscribe(
+        (resp) => {
+          this.notificationsService.showSuccessToast('Import started!');
+        },
+        (error) => {
+          this.notificationsService.showImportErrorToast(
+            'Import failed! Try again?'
+          );
+        }
+      );
   }
 
   // An alternate function for importing images with no GPS data. A feature is created elsewhere, and the image is added to the feature
@@ -154,150 +277,351 @@ export class GeoDataService {
   // features: A pre-created feature with user-defined or zeroed out gps data
   // file: A Tapis Remote File containing the image to be imported
   importImage(projectId: number, feature: Feature, path: string): void {
-	const featureId = feature.id;
-	let file;
-	this.fileList.forEach(remoteFile => {
-		if (remoteFile.path == path) {
-			file = remoteFile;
-		}
-	});
-	const payload = {system_id: file.system, path: file.path};
-	this.http.post(environment.apiUrl + `projects/${projectId}/features/${featureId}/assets/`, payload)
-	.subscribe( (resp) => {
-		this.notificationsService.showSuccessToast('Import started!');
-		// this.getFeatures(projectId)
-	});
+    const featureId = feature.id;
+    let file;
+    this.fileList.forEach((remoteFile) => {
+      if (remoteFile.path == path) {
+        file = remoteFile;
+      }
+    });
+    const payload = { system_id: file.system, path: file.path };
+    this.http
+      .post(
+        environment.apiUrl +
+          `projects/${projectId}/features/${featureId}/assets/`,
+        payload
+      )
+      .subscribe((resp) => {
+        this.notificationsService.showSuccessToast('Import started!');
+        // this.getFeatures(projectId)
+      });
   }
 
   // Creates a new feature from an uploaded locally created feature
   uploadNewFeature(projectId: number, feature: Feature, path: string): void {
-	const payload = feature;
-	let response;
-	// Calls the addFeatureAsset route in GeoAPI, resp is a list of features
-	this.http.post(environment.apiUrl + `projects/${projectId}/features/`, payload)
-	.subscribe( (resp) => {
-		// this.getFeatures(projectId)
-		response = new Feature(resp[0]);
-		this.importImage(projectId, response, path);
-	});
+    const payload = feature;
+    let response;
+    // Calls the addFeatureAsset route in GeoAPI, resp is a list of features
+    this.http
+      .post(environment.apiUrl + `projects/${projectId}/features/`, payload)
+      .subscribe((resp) => {
+        response = new Feature(resp[0]);
+        this.importImage(projectId, response, path);
+      });
   }
 
   downloadGeoJSON(projectId: number, query: AssetFilters = new AssetFilters()) {
-	const qstring: string = querystring.stringify(query.toJson());
-	const downloadLink = document.createElement('a');
+    const qstring: string = querystring.stringify(query.toJson());
+    const downloadLink = document.createElement('a');
 
-	this.http.get<FeatureCollection>(environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring)
-	  .subscribe( (resp) => {
-	const blob = new Blob([JSON.stringify(resp)], {type: 'application/json'});
-	downloadLink.href = URL.createObjectURL(blob);
-	downloadLink.setAttribute('download', 'hazmapper.json');
-	document.body.appendChild(downloadLink);
-	downloadLink.click();
-	document.body.removeChild(downloadLink);
-	  });
+    this.http
+      .get<FeatureCollection>(
+        environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring
+      )
+      .subscribe((resp) => {
+        const blob = new Blob([JSON.stringify(resp)], {
+          type: 'application/json',
+        });
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.setAttribute('download', 'hazmapper.json');
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      });
   }
 
   uploadFile(projectId: number, file: File): void {
-	const form: FormData = new FormData();
-	form.append('file', file, file.name);
-	this.http.post<Array<Feature>>(environment.apiUrl + `/projects/${projectId}/features/files/`, form)
-	  .subscribe( (feats) => {
-	feats.forEach( (feat) => {
-	  this.addFeature(new Feature(feat));
-	});
-	  }, error => {
-	// TODO: Add notification
-	  });
+    const form: FormData = new FormData();
+    form.append('file', file, file.name);
+    this.http
+      .post<Array<Feature>>(
+        environment.apiUrl + `/projects/${projectId}/features/files/`,
+        form
+      )
+      .subscribe(
+        (feats) => {
+          feats.forEach((feat) => {
+            this.addFeature(new Feature(feat));
+          });
+        },
+        (error) => {
+          // TODO: Add notification
+        }
+      );
   }
 
   uploadAssetFile(projectId: number, featureId: number, file: File): void {
-	const form: FormData = new FormData();
-	form.append('file', file, file.name);
-	this.http.post<Feature>(environment.apiUrl + `/api/projects/${projectId}/features/${featureId}/assets/`, form)
-	.subscribe( (feature) => {
-	  // TODO workaround to update activeFeature
-	  const f = this._activeFeature.getValue();
-	  if (f && f.id === featureId) {
-		this.activeFeature = new Feature(feature);
-		this.getFeatures(projectId);
-	  }
-	}, error => {
-	  // TODO: Add notification
-	});
+    const form: FormData = new FormData();
+    form.append('file', file, file.name);
+    this.http
+      .post<Feature>(
+        environment.apiUrl +
+          `/api/projects/${projectId}/features/${featureId}/assets/`,
+        form
+      )
+      .subscribe(
+        (feature) => {
+          // TODO workaround to update activeFeature
+          const f = this._activeFeature.getValue();
+          if (f && f.id === featureId) {
+            this.activeFeature = new Feature(feature);
+            this.getFeatures(projectId);
+          }
+        },
+        (error) => {
+          // TODO: Add notification
+        }
+      );
   }
 
   getOverlays(projectId: number): void {
-	this.http.get(environment.apiUrl + `/projects/${projectId}/overlays/`).subscribe( (ovs: Array<Overlay>) => {
-	  this._overlays.next(ovs);
-	});
+    this.http
+      .get(environment.apiUrl + `/projects/${projectId}/overlays/`)
+      .subscribe((ovs: Array<Overlay>) => {
+        this._overlays.next(ovs);
+      });
   }
 
-  addOverlay(projectId: number, file: File, label: string, minLat: number, maxLat: number, minLon: number, maxLon: number) {
-	const payload = new FormData();
-	payload.append('file', file);
-	payload.append('label', label);
-	payload.append('minLat', minLat.toFixed(6));
-	payload.append('maxLat', maxLat.toFixed(6));
-	payload.append('minLon', minLon.toFixed(6));
-	payload.append('maxLon', maxLon.toFixed(6));
+  addOverlay(
+    projectId: number,
+    file: File,
+    label: string,
+    minLat: number,
+    maxLat: number,
+    minLon: number,
+    maxLon: number
+  ) {
+    const payload = new FormData();
+    payload.append('file', file);
+    payload.append('label', label);
+    payload.append('minLat', minLat.toFixed(6));
+    payload.append('maxLat', maxLat.toFixed(6));
+    payload.append('minLon', minLon.toFixed(6));
+    payload.append('maxLon', maxLon.toFixed(6));
 
-	this.http.post(environment.apiUrl + `/projects/${projectId}/overlays/`, payload)
-	  .subscribe((resp) => {
-	this.getOverlays(projectId);
-	  });
+    this.http
+      .post(environment.apiUrl + `/projects/${projectId}/overlays/`, payload)
+      .subscribe((resp) => {
+        this.getOverlays(projectId);
+      });
+  }
+
+  // Call on getFeatures (each time feature update)
+  getGroups(featureList: Feature[]): void {
+    const groups = new Map<string, TagGroup>();
+    const groupsFeatures = new Map<string, Feature[]>();
+    featureList
+      .filter(
+        (feat: Feature) =>
+          feat.properties.group && feat.properties.group.length > 0
+      )
+      .forEach((feat: Feature) => {
+        feat.properties.group.forEach((group: TagGroup) => {
+          groupsFeatures.set(
+            group.name,
+            groupsFeatures.has(group.name)
+              ? [...groupsFeatures.get(group.name), feat]
+              : [feat]
+          );
+          groups.set(group.name, group);
+        });
+      });
+    this._groups.next(groups);
+    this._groupsFeatures.next(groupsFeatures);
+    const activeGroup = this._activeGroup.value;
+    if (activeGroup) {
+      this.setActiveGroup(groups.get(activeGroup.name));
+    }
+  }
+
+  getGroup(groupName: string) {
+    return this._groups.value.get(groupName);
+  }
+
+  getGroupFeatures(featureList: Feature[], group: TagGroup) {
+    return featureList.filter(
+      (feat: Feature) =>
+        feat.properties.group &&
+        feat.properties.group.length &&
+        feat.properties.group.some((grp: TagGroup) => grp.id === group.id)
+    );
+  }
+
+  private createGroup(
+    featureList: Feature[],
+    group: TagGroup // TODO: Generate group with new uuid and not with name
+  ): Feature[] {
+    return featureList.map((feat: Feature) => {
+      let groupProp = feat.properties.group ? feat.properties.group : [];
+      groupProp = groupProp.filter((grp: TagGroup) => grp.id !== group.id);
+      groupProp.push(group);
+      feat.properties.group = groupProp;
+
+      return feat;
+    });
+  }
+
+  private createGroupInFeature(
+    feature: Feature,
+    group: TagGroup // TODO: Generate group with new uuid and not with name
+  ): Feature {
+    if (feature.properties.group) {
+      feature.properties.group
+        .filter((grp: TagGroup) => grp.name !== group.name)
+        .push(group);
+    }
+    return feature;
+  }
+
+  private updateGroup(featureList: Feature[], group: TagGroup): Feature[] {
+    return this.getGroupFeatures(featureList, group).map(
+      (feat: Feature) => {
+        const groupProp = feat.properties.group.filter(
+          (grp: TagGroup) => grp.id !== group.id
+        );
+        groupProp.push(group);
+        feat.properties.group = groupProp;
+
+        return feat;
+      }
+    );
+  }
+
+  private deleteGroup(featureList: Feature[], group: TagGroup): Feature[] {
+    return this.getGroupFeatures(featureList, group).map(
+      (feat: Feature) => {
+        feat.properties.group = feat.properties.group.filter(
+          (grp: TagGroup) => grp.id !== group.id
+        );
+        return feat;
+      }
+    );
+  }
+
+  createNewGroup(
+    projectId: number,
+    featureList: Feature[],
+    name: string
+  ) {
+    const id = uuidv4();
+    const myRandColor: string = getRandomColor();
+    const group: TagGroup = {
+      id,
+      name,
+      color: myRandColor,
+      icon: 'fa-house-damage'
+    };
+    this.createGroupFeatures(projectId, featureList, group);
+    return group;
+  }
+
+  createGroupFeatures(
+    projectId: number,
+    featureList: Feature[],
+    group: TagGroup
+  ) {
+    this.createGroup(featureList, group).forEach((feat: Feature) => {
+      this.updateFeatureProperty(projectId, feat.id, feat.properties);
+    });
+  }
+
+  deleteGroupFeatures(
+    projectId: number,
+    featureList: Feature[],
+    group: TagGroup
+  ) {
+    this.deleteGroup(featureList, group).forEach((feat: Feature) => {
+      this.updateFeatureProperty(projectId, feat.id, feat.properties);
+    });
+  }
+
+  updateGroupFeatures(
+    projectId: number,
+    featureList: Feature[],
+    group: TagGroup
+  ) {
+    this.updateGroup(featureList, group).forEach((feat: Feature) => {
+      this.updateFeatureProperty(projectId, feat.id, feat.properties);
+    });
+  }
+
+  renameGroup(projectId: number, featureList: Feature[], group: TagGroup, name: string): void {
+    const renamedGroup = {
+      ...group,
+      name
+    };
+
+    this.updateGroupFeatures(
+      projectId,
+      featureList,
+      renamedGroup
+    );
+  }
+
+  reiconGroup(projectId: number, featureList: Feature[], group: TagGroup, icon: string): void {
+    const reiconedGroup = {
+      ...group,
+      icon
+    };
+
+    this.updateGroupFeatures(
+      projectId,
+      featureList,
+      reiconedGroup
+    );
+  }
+
+
+  getForms(groupName: string): GroupForm[] {
+    return this._groups.value.get(groupName).forms;
   }
 
   public get overlays(): Observable<Array<Overlay>> {
-	return this._overlays.asObservable();
+    return this._overlays.asObservable();
   }
 
   public get features(): Observable<FeatureCollection> {
-	return this._features.asObservable();
+    return this._features.asObservable();
   }
 
   public get activeFeature() {
-	return this._activeFeature.asObservable();
+    return this._activeFeature.asObservable();
   }
 
   // TODO: This is heinous
   public set activeFeature(f: any) {
-	if (f) {
-	  if (f === this._activeFeature.getValue()) {
-	this._activeFeature.next(null);
-	  } else {
-	this._activeFeature.next(f);
-	  }
-	} else {
-	  this._activeFeature.next(null);
-	}
-
+    if (f) {
+      if (f === this._activeFeature.getValue()) {
+        this._activeFeature.next(null);
+      } else {
+        this._activeFeature.next(f);
+      }
+    } else {
+      this._activeFeature.next(null);
+    }
   }
 
   public get activeOverlay(): Observable<Overlay> {
-	return this._activeOverlay.asObservable();
+    return this._activeOverlay.asObservable();
   }
 
   public set activeOverlay(ov) {
-	this._activeOverlay.next(ov);
+    this._activeOverlay.next(ov);
   }
 
-
   public get mapMouseLocation(): Observable<LatLng> {
-	return this._mapMouseLocation.asObservable();
+    return this._mapMouseLocation.asObservable();
   }
 
   public set mapMouseLocation(loc) {
-	this._mapMouseLocation.next(loc);
+    this._mapMouseLocation.next(loc);
   }
 
   public set basemap(bmap) {
-	this._basemap.next(bmap);
+    this._basemap.next(bmap);
   }
 
   public get basemap(): any {
-	return this._basemap.asObservable();
+    return this._basemap.asObservable();
   }
-
-
-
 }

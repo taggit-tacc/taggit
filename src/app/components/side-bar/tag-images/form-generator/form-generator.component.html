@@ -1,54 +1,24 @@
-<!-- <label for=""> -->
-<!--   Name: -->
-<!--   <\!-- {{field.label}} -\-> -->
-<!--   <input name="" [formControl]="name"/> -->
-<!-- </label> -->
-
-<!-- <div [formGroup]="form"> -->
 <div>
-  <!-- <label [attr.for]="field.label">{{field.label}}</label> -->
-
-  <div [ngSwitch]="field.type" class="form-controls">
+  <div [ngSwitch]="form.type" class="form-controls">
 	<ng-container *ngSwitchCase="'text'">
-	  	<app-form-textbox [field]="field.options" [form]="field"></app-form-textbox>
+	  	<app-form-textbox (formValue)="setValue($event)" [field]="form.options" [form]="form"></app-form-textbox>
 	</ng-container>
 
 	<ng-container *ngSwitchCase="'dropdown'">
-	  	<app-form-dropdown [field]="field.options" [form]="field"></app-form-dropdown>
+	  	<app-form-dropdown (formValue)="setValue($event)" [field]="form.options" [form]="form"></app-form-dropdown>
 	</ng-container>
 
 	<ng-container *ngSwitchCase="'radio'">
-	  <div *ngFor="let opt of field.options" [id]="field.label" class="input-group">	
-	  	<app-form-radio [field]="opt" [form]="field" label={{field.label}}></app-form-radio>
-	  </div>
+      <app-form-radio (formValue)="setValue($event)" [field]="opt" [form]="form" label={{form.label}}></app-form-radio>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'checkbox'">
+      <app-form-checkbox (formValue)="setValue($event)" [form]="form"></app-form-checkbox>
 	</ng-container>
 
-	<ng-container *ngSwitchCase="'checkbox'">
-	  <div *ngFor="let opt of field.options" [id]="field.label" class="input-group">
-		<app-form-checkbox [field]="opt" [form]="field"></app-form-checkbox>
-	  </div>
-	</ng-container>
-
-	<ng-container *ngSwitchCase="'color'">
-		<div *ngFor="let opt of field.options" [id]="field.label" class="input-group">
-			<app-form-color [field]="opt" [form]="field" label={{field.label}} [color]="colorArray[field.options.indexOf(opt)]"></app-form-color>
-		</div>
-	</ng-container>
+    <ng-container *ngSwitchCase="'color'">
+      <app-form-color (formValue)="setValue($event)" [field]="opt" [form]="form" label={{form.label}} [color]="colorArray[form.options.indexOf(opt)]"></app-form-color>
+    </ng-container>
 
   </div>
-
-  <!-- <div class="errorMessage" *ngIf="!isValid"></div> -->
 </div>
-
-
-
-
-
-
-
-<!-- <form (ngSubmit)="onSubmit.emit(this.form.value)" [formGroup]="form" class="form-horizontal"> -->
-<!--   <div *ngFor="let field of formsService.activeFormList | async"> -->
-<!--   <\!-- <div *ngFor="let field of fields"> -\-> -->
-<!--	<\!-- <app-form-fields [field]="field" [form]="form"></app-form-fields> -\-> -->
-<!--   </div> -->
-<!-- </form> -->

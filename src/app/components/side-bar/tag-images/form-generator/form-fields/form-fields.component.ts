@@ -1,25 +1,16 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { GroupForm } from 'src/app/models/models';
 
 @Component({
   selector: 'app-form-fields',
   templateUrl: './form-fields.component.html',
 })
 export class FormFieldsComponent implements OnInit {
-  @Input() field: any;
-  @Input() form: any;
+  field: any;
+  form: GroupForm;
 
-  get isValid() { return this.form.controls[this.field.name].valid; }
-  get isDirty() { return this.form.controls[this.field.name].dirty; }
+  constructor() {}
 
-  // get isValid() { return true }
-  // get isDirty() { return false }
-
-
-  constructor() { }
-
-  // This file and the HTML connected to this is useless so don't worry about it 
-  ngOnInit() {
-
-  }
-
+  // This file and the HTML connected to this is useless so don't worry about it
+  ngOnInit() {}
 }

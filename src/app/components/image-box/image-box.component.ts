@@ -1,319 +1,129 @@
-import {Component, OnInit, EventEmitter, Input, TemplateRef} from '@angular/core';
-import {Feature, Project} from '../../models/models';
-import {GeoDataService} from '../../services/geo-data.service';
-import {AppEnvironment, environment} from '../../../environments/environment';
-import {GroupsService} from '../../services/groups.service';
-import {ProjectsService} from '../../services/projects.service';
-import { BsModalService } from 'ngx-foundation/modal';
+import {
+  Component,
+  OnInit,
+  Input,
+  TemplateRef,
+} from '@angular/core';
+import { Feature, Project, TagGroup } from '../../models/models';
+import { GeoDataService } from '../../services/geo-data.service';
+import { AppEnvironment, environment } from '../../../environments/environment';
+import { GroupsService } from '../../services/groups.service';
+import { ProjectsService } from '../../services/projects.service';
 import { BsModalRef } from 'ngx-foundation/modal/bs-modal-ref.service';
 import { MatDialog } from '@angular/material/dialog';
-import { FormsService, tags } from 'src/app/services/forms.service';
 import { ScrollService } from 'src/app/services/scroll.service';
 import { FeatureService } from 'src/app/services/feature.service';
 
 @Component({
   selector: 'app-image-box',
   templateUrl: './image-box.component.html',
-  styleUrls: ['./image-box.component.scss']
+  styleUrls: ['./image-box.component.scss'],
 })
-
 export class ImageBoxComponent implements OnInit {
-  @Input() feature: Feature;
-  // @Output() clickRequest = new EventEmitter<Feature>();
+  @Input() feature: any;
   environment: AppEnvironment;
   featureSource: string;
   featurePath: string;
   status = false; // Controls the whether or not an image box is selected or not
+  imageSelected = 'img-unselected'; // Controls the whether or not an image box is selected or not
   hasGroup = false;
   colors: Array<string> = [];
-  groupList: Array<any>;
+  groups: Map<string, TagGroup>;
   coordinates: Array<any>;
   containingGroupList: Array<any>;
-  currentGroup = 'hello';
-  tempGroup: Array<Feature>;
+  selectedImages: Array<any>;
   modalRef: BsModalRef;
-  activeGroup: string;
+  groupToAdd: TagGroup;
 
-  public selectedProject: Project;
+  public activeProject: Project;
 
-  unselectAll = false;
-
-  tagList: tags[] = this.formsService.getTags();
-
-  // FIXME Bad
-  imageCollection: any = {};
-
-  constructor( private geoDataService: GeoDataService,
-			            private groupsService: GroupsService,
-			            private projectsService: ProjectsService,
-			            private modalService: BsModalService,
-			            private formsService: FormsService,
-			            private dialog: MatDialog,
-			            private scrollService: ScrollService,
-			            private featureService: FeatureService
-			 ) { }
+  constructor(
+    private geoDataService: GeoDataService,
+    private groupsService: GroupsService,
+    private projectsService: ProjectsService,
+    private dialog: MatDialog,
+    private scrollService: ScrollService,
+    private featureService: FeatureService
+  ) {}
 
   ngOnInit() {
-	this.environment = environment;
-	let featureSource;
-	if ( this.feature.assets[0].path != '../../images/Image-not-found.png') {
-		featureSource = this.environment.apiUrl + '/assets/' + this.feature.assets[0].path;
-	} else {
-		featureSource = this.feature.assets[0].path;
-	}
-	featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
-	this.featureSource = featureSource;
-	this.coordinates = this.feature.geometry.coordinates;
+    // TODO: put this in models
+    this.environment = environment;
+    let featureSource: string;
+    if (this.feature.assets[0].path != '../../images/Image-not-found.png') {
+      featureSource =
+        this.environment.apiUrl + '/assets/' + this.feature.assets[0].path;
+    } else {
+      featureSource = this.feature.assets[0].path;
+    }
+    featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
+    this.featureSource = featureSource;
+    this.coordinates = this.feature.geometry.coordinates;
 
-	this.projectsService.activeProject.subscribe(next => {
-	  this.selectedProject = next;
-	});
+    this.projectsService.activeProject.subscribe((next) => {
+      this.activeProject = next;
+    });
 
-	this.groupsService.groups.subscribe((next) => {
-	  this.groupList = next;
+    this.geoDataService.groups.subscribe((next) => {
+      this.groups = next;
+    });
 
-	  if (this.groupList != null && this.groupList.length > 0 && this.featureSource != null) {
-		// console.log(this.groupList)
-		
-		this.groupList.forEach(e => {
-			// console.log(e)
-			e.features.forEach(c => {
+    this.groupsService.selectedImages.subscribe((next) => {
+      this.selectedImages = next;
+      this.imageSelected = this.groupsService.imageSelected(this.feature)
+        ? 'img-selected'
+        : 'img-unselected';
+    });
 
-			if (c.id == this.feature.id) {
-			  if (!this.colors.includes(e.color)) {
-				this.colors.push(e.color);
-				// console.log(e.color);
-			  }
-			  this.hasGroup = true;
-			}
-		  });
-		});
-	  }
-	});
-
-	this.groupsService.tempGroup.subscribe((next) => {
-	  this.tempGroup = next;
-	});
-
-	this.groupsService.activeGroup.subscribe((next) => {
-	  this.activeGroup = next;
-	});
-
-
-	this.groupsService.unselectAll.subscribe((next) => {
-	  this.unselectAll = next;
-	  if (this.unselectAll == true) {
-		this.status = false;
-	  }
-	});
-	let featurePath = this.feature.assets[0].display_path;
-	featurePath = this.feature.assets[0].display_path;
-	this.featurePath = featurePath;
+    this.featurePath = this.feature.featurePath();
   }
-
-  // click() {
-  //   this.clickRequest.emit(this.feature);
-
-  // // imageSelect(event: any) {
-  // //   if (event.target.classList.contains('img-selected')) {
-  // //     this.renderer.removeClass(event.target, "img-selected");
-  // //     this.renderer.addClass(event.target, "img-unselected");
-  // //   } else {
-  // //     this.renderer.removeClass(event.target, "img-unselected");
-  // //     this.renderer.addClass(event.target, "img-selected");
-  // //   }
-  // // }
-
-  // }
-  // delete() {
-  //   this.geoDataService.deleteFeature(this.feature);
-  // }
-
 
   imageSelect() {
-	if (this.unselectAll == true) {
-	  this.unselectAll = false;
-	  this.groupsService.setUnselectAll(false);
-	  this.tempGroup = [];
-	}
-	this.status = !this.status;
-	if (this.status) {
-		this.groupsService.setItemsSelected(this.status);
-	}
-
-	if (this.tempGroup.filter(v => v.assets[0].id == this.feature.assets[0].id).length > 0) {
-	  this.tempGroup = this.tempGroup.filter(v => v.assets[0].id != this.feature.assets[0].id);
-	} else {
-	  this.tempGroup.push(this.feature);
-	}
-
-	this.groupsService.addTempGroup(this.tempGroup);
-	// console.log(this.tempGroup.filter(v => v.assets[0].id == feature.assets[0].id).length > 0)
-
-	// Hide group-bar
-	if (this.tempGroup.length == 0) {
-	  this.groupsService.setShowGroup(false);
-	  this.groupsService.setItemsSelected(false);
-	} else {
-	  this.groupsService.setShowGroup(true);
-	}
-
-  }
-
-  imageSelectTrue() {
-	this.status = true;
-	this.groupsService.setItemsSelected(this.status);
-	if (this.tempGroup.filter(v => v.assets[0].id == this.feature.assets[0].id).length > 0) {
-		this.tempGroup = this.tempGroup.filter(v => v.assets[0].id != this.feature.assets[0].id);
-	} else {
-		this.tempGroup.push(this.feature);
-	}
-  
-	this.groupsService.addTempGroup(this.tempGroup);
-	this.groupsService.setShowGroup(true);
+    this.groupsService.toggleImageSelect(this.feature);
   }
 
   imageZoom(template: TemplateRef<any>) {
-	// this.modalRef = this.modalService.show(template, {class: 'full'});
-	this.dialog.open(template);
+    this.dialog.open(template);
   }
 
   imageDelete() {
-	const featureService = this.featureService;
-	this.tempGroup.forEach(function(value) {
-		featureService.deleteFeature(value);
-	});
-	// Resets contents of temp group
-	this.groupsService.addTempGroup([]);
-	this.scrollService.setScrollRestored(true);
+    const featureService = this.featureService;
+    this.selectedImages.forEach(function(value) {
+      featureService.deleteFeature(value);
+    });
+    this.groupsService.unselectAllImages();
+    this.scrollService.setScrollRestored(true);
   }
 
   openMoreGroupsModal(template: TemplateRef<any>) {
-	// this.modalRef = this.modalService.show(template, {class: 'tiny'});
-	this.dialog.open(template);
+    this.dialog.open(template);
   }
 
   openImageDeleteModal(template: TemplateRef<any>) {
-	this.imageSelectTrue();
-	this.scrollService.setScrollPosition();
-	// this.modalRef = this.modalService.show(template, {class: 'tiny'});
-	this.dialog.open(template);
+    this.scrollService.setScrollPosition();
+    this.dialog.open(template);
   }
 
-  deleteFromGroup(color: string) {
-	// console.log(this.groupList);
-	this.groupList.forEach(e => {
-	  // When it is the sole feature
-	  if (e.features.length <= 1) {
-		this.groupList = this.groupList.filter(e => e.color != color);
-	  } else {
-		if (e.color == color) {
-		  e.features = e.features.filter(i => i.id != this.feature.id);
-		}
-	  }
-	});
-
-	const featProp = this.feature.properties;
-
-	featProp.group = featProp.group.filter(e => e.color != color);
-
-	this.geoDataService.updateFeatureProperty(this.selectedProject.id,
-											  Number(this.feature.id),
-											  featProp);
-
-	this.groupsService.addGroup(this.groupList);
-	this.colors = this.colors.filter(e => e != color);
+  deleteFromGroup(feature: Feature, group: TagGroup) {
+    this.geoDataService.deleteGroupFeatures(
+      this.activeProject.id,
+      [feature],
+      group
+    );
   }
 
   openImageAddModal(template: TemplateRef<any>) {
-	this.imageSelectTrue();
-	this.scrollService.setScrollPosition();
-	// this.modalRef = this.modalService.show(template, {class: 'tiny'});
-	this.dialog.open(template);
+    this.scrollService.setScrollPosition();
+    this.dialog.open(template);
   }
 
-  selectGroupForm(name: string, feat: Feature) {
-	let color = '';
-	let icon = '';
-	this.groupsService.setActiveFeatureNum(0);
-	this.groupList.forEach(e => {
-	  if (e.name == name) {
-		//   console.log(this.feature)
-		e.features.push(this.feature);
-		color = e.color;
-		icon = e.icon;
-	  }
-	});
-
-	const featProp = feat.properties;
-	if (featProp.group) {
-	  const featGroupList = featProp.group.map(e => {
-		return e.name;
-	  });
-
-	  if (!featGroupList.includes(name)) {
-		featProp.group.push({
-		  name,
-		  color,
-		  icon,
-		});
-	  }
-	} else {
-	  featProp.group = [];
-	  featProp.group.push({
-		name,
-		color,
-		icon,
-	  });
-	}
-
-	this.groupList.forEach(e => {
-		if (e.name == this.activeGroup) {
-			this.tempGroup = e.features;	
-		}
-		});
-	
-	for (const tag of this.tagList) {
-		if (tag.feature === this.tempGroup[0].id && tag.groupName === name) {
-			const formItem: tags = {
-				type: tag.type,
-				groupName: name,
-				label: tag.label,
-				// value: this.formValue,
-				// required: this.formRequired,
-				options: tag.options,
-				feature: this.feature.id,
-				extra: []
-			};
-			this.formsService.saveTag(this.activeGroup, formItem, formItem.label);
-		}
-	}
-
-	this.geoDataService.updateFeatureProperty(this.selectedProject.id,
-											  Number(feat.id),
-											  featProp);
-
-	this.groupsService.addGroup(this.groupList);
-	// Yes, I know there are two identical lines here. It doesn't work unless it does it twice
-	// I don't know why that is, but if you can figure out a better way, go ahead.
-	this.geoDataService.getFeatures(Number(feat.project_id));
-	this.geoDataService.getFeatures(Number(feat.project_id));
+  addGroup(group: TagGroup) {
+    this.geoDataService.createGroupFeatures(
+      this.activeProject.id,
+      this.selectedImages,
+      this.groups.get(group.name)
+    );
+    this.groupsService.unselectAllImages();
+    this.scrollService.setScrollRestored(true);
   }
-
-  addGroups(name: string) {
-	  this.tempGroup.forEach( (feat) => {
-		  this.selectGroupForm(name, feat);
-	  });
-	  this.groupsService.setUnselectAll(true);
-	  this.scrollService.setScrollRestored(true);
-	}
-
-  getGroupNameFromColor(color: string) {
-	this.groupList.forEach(e => {
-	  if (e.color == color) {
-		this.currentGroup = e.name;
-	  }
-	});
-  }
-
 }
