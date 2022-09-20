@@ -21,7 +21,7 @@ function createCircleMarker(feature: Feature, latlng: LatLng): CircleMarker {
 }
 
 function createImageMarker(feature: Feature, latlng: LatLng): Marker {
-  const divHtml = "<i class='fas fa-camera-retro fa-2x light-blue'></i>";
+  const divHtml = '<i class=\'fas fa-camera-retro fa-2x light-blue\'></i>';
   const ico = divIcon({ className: 'leaflet-fa-marker-icon', html: divHtml });
   return marker(latlng, { icon: ico });
 }
@@ -32,7 +32,7 @@ function createCollectionMarker(feature: Feature, latlng: LatLng): Marker {
   return marker(latlng, { icon: ico });
 }
 function createVideoMarker(feature: Feature, latlng: LatLng): Marker {
-  const divHtml = "<i class='fas fa-video fa-2x light-blue'></i>";
+  const divHtml = '<i class=\'fas fa-video fa-2x light-blue\'></i>';
   const ico = divIcon({ className: 'leaflet-fa-marker-icon', html: divHtml });
   return marker(latlng, { icon: ico });
 }
