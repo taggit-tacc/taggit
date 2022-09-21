@@ -10,7 +10,6 @@ import { GroupForm } from 'src/app/models/models';
 export class FormGeneratorComponent implements OnInit {
   constructor() {}
   @Input() form: GroupForm;
-  // form: GroupForm;
   newValue = new EventEmitter();
   checked = false;
   colorArray: Array<string> = [];
