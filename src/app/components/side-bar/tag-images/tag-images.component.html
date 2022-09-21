@@ -72,7 +72,7 @@
         <!-- form-item-container -->
         <app-form-generator
           (newValue)="setValue($event)"
-          [field]="form"
+          [form]="form"
         ></app-form-generator>
       </div>
       <div *ngIf="formList && formList.length">
