@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { GroupForm } from 'src/app/models/models';
 
@@ -10,7 +10,7 @@ import { GroupForm } from 'src/app/models/models';
 export class FormGeneratorComponent implements OnInit {
   constructor() {}
   @Input() form: GroupForm;
-  newValue = new EventEmitter();
+  @Output() newValue: EventEmitter<any> = new EventEmitter<any>();
   checked = false;
   colorArray: Array<string> = [];
   values = [];
