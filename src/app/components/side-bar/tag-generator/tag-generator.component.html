@@ -1,13 +1,6 @@
 <div class="create-prompt">
   <div class="subitem-title" (click)="expandPanel()">
     <span> Create Tag </span>
-    <!-- <span style="cursor: pointer" -->
-    <!--	  (click)="addFormItem(); clearLabel(); clearOption()" -->
-    <!--	  matTooltip="Add Form Item" -->
-    <!--	  style="cursor: pointer; margin-right: 20px" -->
-    <!--	  matTooltipPosition="above"> -->
-    <!--   <i class="fas fa-plus"></i> -->
-    <!-- </span> -->
   </div>
   <!-- subitem-title -->
 
@@ -34,41 +27,39 @@
       <!-- form-type-form -->
     </form>
 
-    <div *ngIf="formType == 'text'; else optionForms">
-      <div class="form-name">
-        <mat-form-field class="input-label-group">
-          <mat-label>Label</mat-label>
-          <input
-            matInput
-            placeholder="Label"
-            #labelValue
-            [(ngModel)]="labelFilter"
-            (keyup)="inputFormLabel($event)"
-            name="labelFilter"
-            class="tiny"
-            type="text"
-          />
-        </mat-form-field>
-      </div>
-      <!--form-name -->
-    </div>
-    <!-- formtype -->
+    <div class="form-name">
+      <mat-form-field class="input-label-group">
+        <mat-label>Label</mat-label>
+        <input
+          matInput
+          placeholder="Label"
+          #labelValue
+          [(ngModel)]="labelFilter"
+          (keyup)="inputFormLabel($event)"
+          name="labelFilter"
+          class="tiny"
+          type="text"
+        />
+      </mat-form-field>
 
-    <ng-template #optionForms>
-      <div class="form-name">
-        <mat-form-field class="input-label-group">
-          <mat-label>Label</mat-label>
-          <input
-            matInput
-            placeholder="Label"
-            #labelValue
-            [(ngModel)]="labelFilter"
-            (keyup)="inputFormLabel($event)"
-            name="labelFilter"
-            class="tiny"
-            type="text"
-          />
-        </mat-form-field>
+      <ng-container *ngIf="formType != 'text'">
+        <ng-container *ngIf="formType == 'color'">
+          <mat-form-field class="input-label-group">
+            <mat-label>Option Color</mat-label>
+            <input
+              matInput
+              #optionColorValue
+              placeholder="Option Color"
+              #labelValue
+              [(ngModel)]="optionColorFilter"
+              (change)="inputFormColor($event)"
+              name="optionColorilter"
+              class="tiny"
+              type="color"
+            />
+          </mat-form-field>
+        </ng-container>
+
         <mat-form-field class="input-label-group">
           <mat-label>Options</mat-label>
           <div class="input-group">
@@ -83,7 +74,9 @@
               (keyup.enter)="
                 addOptionItem(optionValue.value);
                 optionValue.value = '';
-                clearOption()
+                optionColorValue.value = '';
+                clearOption();
+                clearOptionColor()
               "
             />
           </div>
@@ -108,8 +101,20 @@
 
         <ul class="form-option-container">
           <li *ngFor="let opt of formOptions" class="list-group">
-            <div [className]="showOpt">
+            <div>
               {{ opt.label }}
+              <ng-container *ngIf="formType == 'color'">
+                <svg class="box" width="10px" height="10px">
+                  <rect width="10px" height="10px" style="fill: #ffffff" />
+                  <rect
+                    width="8px"
+                    height="8px"
+                    x="1px"
+                    y="1px"
+                    [style.fill]="opt.color"
+                  />
+                </svg>
+              </ng-container>
             </div>
             <!-- showopt -->
             <div class="button-group">
@@ -154,25 +159,14 @@
             <!-- button group -->
           </li>
         </ul>
-      </div>
-      <!-- form name -->
-    </ng-template>
-    <!-- form options -->
+      </ng-container>
+    </div>
+    <!-- form-name -->
 
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="addFormItem(); clearLabel(); clearOption()"
-    >
+    <button mat-raised-button color="primary" (click)="addFormItem()">
       Save
     </button>
-    <button
-      mat-button
-      color="primary"
-      (click)="cancelCreate(); clearLabel(); clearOption()"
-    >
-      Cancel
-    </button>
+    <button mat-button color="primary" (click)="cancelCreate()">Cancel</button>
   </div>
   <!-- subitem -->
 </div>

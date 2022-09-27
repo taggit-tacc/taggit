@@ -37,6 +37,45 @@ export interface Group {
 
 export class Group implements Group {}
 
+export interface TagGroup {
+  name: string;
+  id?: number;
+  color?: string;
+  icon?: string;
+  forms?: GroupForm[];
+}
+
+export class TagGroup implements TagGroup {}
+
+export interface GroupForm {
+  id?: string;
+  groupName?: string;
+  label?: string;
+  color?: string;
+  type?: string;
+  options?: Array<any>;
+}
+
+export class GroupForm implements GroupForm {}
+
+export interface Tag {
+  id?: string;
+  value?: any;
+}
+
+export class Tag implements Tag {}
+
+// NOTE: For geojson/tag
+export interface TagValue {
+  id: number;
+  featureId?: number;
+  tagId?: number;
+  groupId?: string;
+  value?: Array<any> | string | number;
+}
+
+export class TagValue implements TagValue {}
+
 export class AssetFilters {
   // bbox has the following format: [sw_lng, sw_lat, ne_lng, ne_lat], the same as leaflet
   bbox: Array<number> = [];
@@ -113,12 +152,12 @@ export class AuthToken {
 }
 
 export interface IFeatureAsset {
-  id: number;
-  path: string;
-  uuid: string;
-  feature_id: number;
-  asset_type: string;
-  display_path: string;
+  id?: number;
+  path?: string;
+  uuid?: string;
+  feature_id?: number;
+  asset_type?: string;
+  display_path?: string;
 }
 
 export class FeatureAsset implements IFeatureAsset {
@@ -165,6 +204,10 @@ export class FeatureCollection implements IFeatureCollection {
 
 export class Feature implements AppGeoJSONFeature {
   geometry: Geometry;
+  // Taggit specific:
+  // properties.tags: Tag[]
+  // properties.groups: Group[]
+  // properties.values: TagValue[]
   properties: GeoJsonProperties;
   id?: string | number;
   type: any;
@@ -182,9 +225,13 @@ export class Feature implements AppGeoJSONFeature {
     this.project_id = f.project_id;
   }
 
+  initialAsset?() {
+    return this.assets[0];
+  }
+
   featureType?(): string {
     if (this.assets && this.assets.length === 1) {
-      return this.assets[0].asset_type;
+      return this.initialAsset().asset_type;
     }
 
     if (this.assets && this.assets.length > 1) {
@@ -193,6 +240,29 @@ export class Feature implements AppGeoJSONFeature {
 
     if (!this.assets.length) {
       return this.geometry.type;
+    }
+  }
+
+  featurePath?(): string {
+    const initialAsset = this.initialAsset();
+    if (initialAsset.display_path) {
+      return initialAsset.display_path;
+    } else if (initialAsset.path) {
+      return initialAsset.path;
+    } else {
+      return this.id.toString();
+    }
+  }
+
+  featureShortPath?(): string {
+    const [initialAsset] = this.assets;
+    if (initialAsset.display_path) {
+      return /[^/]*$/.exec(initialAsset.display_path)[0];
+    } else if (initialAsset.path) {
+      const path = /[^/]*$/.exec(initialAsset.path)[0];
+      return path.slice(0, 15) + '...';
+    } else {
+      return this.id.toString();
     }
   }
 }

@@ -1,10 +1,17 @@
-import { AfterViewChecked, Component, OnInit, Renderer2 } from '@angular/core';
+import {
+  AfterViewChecked,
+  Component,
+  OnInit,
+  Renderer2,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { GeoDataService } from '../../services/geo-data.service';
 import {
   FeatureAsset,
   Feature,
   Project,
   FeatureCollection,
+  TagGroup,
 } from '../../models/models';
 import { AppEnvironment, environment } from '../../../environments/environment';
 import { ProjectsService } from '../../services/projects.service';
@@ -23,35 +30,31 @@ import { FeatureService } from 'src/app/services/feature.service';
 })
 export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   environment: AppEnvironment;
-  // features: FeatureCollection;
-  // FIXME feature collection giving me an error when trying to access assets
-  // features: any;
-  tempGroup: Array<Feature>;
-  groupList: Array<any>;
-  // showGroupBar: boolean;
 
   public projects: Project[];
-  showGroup: boolean;
   groupName: string;
-  showSidebar: boolean;
+  showTagger = false;
   scrolling = false;
-  status: boolean;
-  groupExist: boolean;
+  scrollStatus: string;
   imagesExist: boolean;
   projectsExist: boolean;
   featureList: Array<any> = [];
   featureListScroll: Array<any>;
   scrollSum = 15;
-  activeGroup: string;
+  activeGroup: TagGroup;
   activeFeature: Feature;
-  activeFeatureNum: number;
+  activeGroupFeature: Feature;
+  // activeFeatureNum: number;
   featurePath: string;
   loaded: boolean;
+  groupsFeatures: Map<string, any>;
+  groups: Map<string, any>;
 
   constructor(
     private geoDataService: GeoDataService,
     private projectsService: ProjectsService,
     private groupsService: GroupsService,
+    private readonly cdr: ChangeDetectorRef,
     private renderer: Renderer2,
     private spinner: NgxSpinnerService,
     private dialog: MatDialog,
@@ -63,14 +66,11 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
     if (this.scrollService.scrollRestored) {
       this.scrollService.scroll();
     }
+    this.cdr.detectChanges();
   }
 
   ngOnInit() {
     this.environment = environment;
-
-    // this.activeFeatureNum = 0;
-    // FIXME feature collection giving me an error when trying to access assets
-    // this.geoDataService.features.subscribe( (fc: FeatureCollection) => {
 
     this.geoDataService.loaded.subscribe(
       (e) => {
@@ -87,7 +87,9 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
           this.imagesExist = true;
           this.featureList = fc.features.filter((feature) => {
             try {
-              return feature.assets[0].asset_type === 'image';
+              return (
+                feature.initialAsset() && feature.featureType() === 'image'
+              );
             } catch (error) {
               // If a feature has no asset, it ends up in this catch
               console.error(error);
@@ -105,33 +107,6 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
       }
     });
 
-    /*
-	//I think doing a more natural refresh in here will cause a dynamic reload
-	this.geoDataService.features.subscribe( (fc: any) => {
-	  if (fc) {
-		if (fc.features.length > 0) {
-		  this.imagesExist = true;
-			this.featureList = fc.features.filter(feature => {
-			  try{
-				return feature.assets[0].asset_type === "image";
-		  	  } catch (error) {
-				//If a feature has no asset, it ends up in this catch
-			  	console.error(error)
-				//After outputting the error, add an "image not found" placeholder,
-				//Allowing users to still select their errored import
-				feature.assets.push({
-					"path": "../../images/Image-not-found.png"
-				})
-				return false
-		  	  }
-			});
-			this.featureListScroll = this.featureList.slice(0, this.scrollSum);
-		} else {
-		  this.imagesExist = false;
-		}
-	  }
-	});*/
-
     this.projectsService.projects.subscribe((projects) => {
       this.projects = projects;
       if (this.projects.length) {
@@ -141,75 +116,44 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
       }
     });
 
+    this.geoDataService.groupsFeatures.subscribe((next) => {
+      this.groupsFeatures = next;
+    });
+
+    this.geoDataService.groups.subscribe((next) => {
+      this.groups = next;
+    });
+
     this.geoDataService.activeFeature.subscribe((next) => {
       if (next) {
         this.activeFeature = next;
       }
     });
 
-    this.groupsService.groups.subscribe((next) => {
-      this.groupList = next;
-    });
-
-    this.groupsService.activeGroup.subscribe((next) => {
+    this.geoDataService.activeGroup.subscribe((next: TagGroup) => {
       this.activeGroup = next;
     });
 
-    this.groupsService.featureImagesExist.subscribe((next) => {
-      this.groupExist = next;
+    this.geoDataService.activeGroupFeature.subscribe((next) => {
+      this.activeGroupFeature = next;
     });
 
-    this.groupsService.tempGroup.subscribe((next) => {
-      this.tempGroup = next;
+    this.geoDataService.groups.subscribe((next) => {
+      this.groups = next;
     });
 
-    this.groupsService.showGroup.subscribe((next) => {
-      this.showGroup = next;
+    this.groupsService.showTagger.subscribe((next) => {
+      this.showTagger = next;
+      this.scrollStatus = next ? 'success' : 'danger';
     });
-
-    this.groupsService.activeFeatureNum.pipe(startWith(0)).subscribe((next) => {
-      this.activeFeatureNum = next;
-    });
-
-    this.groupsService.showSidebar.subscribe((next) => {
-      this.showSidebar = next;
-      // this.status = !this.status;
-      if (next) {
-        this.status = true;
-      } else {
-        this.status = false;
-      }
-    });
-
-    this.groupsService.setActiveFeatureNum(0);
   }
 
-  getPath(): string {
-    // let featureSource = this.environment.apiUrl + '/assets/' + this.activeFeature.assets[0].path;
-    const activeGroupObj = this.groupList.filter(
-      (realGroup) => realGroup.name === this.activeGroup
-    );
-    if (activeGroupObj[0] != undefined) {
-      if (
-        activeGroupObj[0].features[this.activeFeatureNum].assets[0].path ==
-        undefined
-      ) {
-        this.groupsService.setActiveFeatureNum(0);
-        // this.groupsService.setActiveFeatureNum(0);
-        if (activeGroupObj[0].features[this.activeFeatureNum] == undefined) {
-          this.groupsService.setActiveGroup(this.groupList[0].name);
-        }
-      }
-    }
-    let featureSource =
+  getPath() {
+    return (
       this.environment.apiUrl +
       '/assets/' +
-      activeGroupObj[0].features[this.activeFeatureNum].assets[0].path;
-    this.groupsService.setActiveFeatureId(
-      activeGroupObj[0].features[this.activeFeatureNum].id
+      this.activeGroupFeature.assets[0].path.replace(/([^:])(\/{2,})/g, '$1/')
     );
-    featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
-    return featureSource;
   }
 
   appendSum() {
@@ -238,12 +182,6 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
       this.appendSum();
       this.scrolling = true;
     }
-    // if (this.notscrolly && this.notEmptyPost) {
-    //   this.spinner.show();
-    //   this.notscrolly = false;
-    //   this.loadNextPost();
-    // }
-    // console.log('scrolled!!');
   }
 
   openCreateProjectModal() {
@@ -251,9 +189,5 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
       height: '400px',
       width: '600px',
     });
-
-    // modal.afterClosed().subscribe( (files: Array<RemoteFile>) => {
-    //   this.geoDataService.importFileFromTapis(this.selectedProject.id, files);
-    // });
   }
 }

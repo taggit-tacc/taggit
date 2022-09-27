@@ -55,8 +55,6 @@ export class ProjectsService {
       .get<Project[]>(`http://localhost:8888/projects/`)
       .subscribe((resp) => {
         this._projects.next(resp);
-        // DEBUG: outputs results of query
-        // console.log(this._projects.getValue())
       });
   }
 
@@ -79,10 +77,7 @@ export class ProjectsService {
   getProjects(): void {
     this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe(
       (resp) => {
-        console.log(resp);
         this.updateProjectsList(resp);
-        // DEBUG: outputs results of query
-        // console.log(this._projects.getValue())
       },
       (error) => {
         this.notificationsService.showErrorToast(
@@ -98,8 +93,6 @@ export class ProjectsService {
       data
     );
     prom.subscribe((proj) => {
-      // Spread operator, just pushes the new project into the array
-      // console.log(data)
       this._projects.next([...this._projects.value, proj]);
 
       // Awkward as hell, but this ensures we actually transition to the newly created project
@@ -130,7 +123,6 @@ export class ProjectsService {
 
   // Note: This will delete the project for everyone, if the project is shared.
   delete(data: Project): void {
-    console.log('We are in the function...');
     this._deletingProjects.next([
       ...this._deletingProjects.value,
       { ...data, deleting: true },
@@ -151,9 +143,6 @@ export class ProjectsService {
         this.getProjects();
         // As elegant as a brick to the face, but this solves the delete issues...
         window.localStorage.setItem('lastProj', JSON.stringify('none'));
-        // this._projects.next([...this._projects.value]);
-        // console.log(this._projects.value[0])
-        // this._activeProject.next(this._projects.value[0]);
       },
       (error) => {
         window.localStorage.setItem('lastProj', JSON.stringify('none'));

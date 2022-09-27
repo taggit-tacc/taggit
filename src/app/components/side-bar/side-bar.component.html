@@ -1,6 +1,7 @@
-<!-- <p>side-bar works!</p> -->
-<!-- <app-preset-generator></app-preset-generator> -->
-<!-- <app-tagger></app-tagger> -->
 <app-select-group></app-select-group>
 <app-select-image></app-select-image>
-<router-outlet></router-outlet>
+
+<app-tag-generator *ngIf="showTagGenerator; else tagImages"></app-tag-generator>
+<ng-template #tagImages>
+  <app-tag-images></app-tag-images>
+</ng-template>
