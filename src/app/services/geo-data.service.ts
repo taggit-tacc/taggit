@@ -201,7 +201,6 @@ export class GeoDataService {
         groupData
       )
       .subscribe(
-        // TODO: getFeatures() here
         (resp) => {
           this.getFeatures(projectId);
         },
@@ -464,18 +463,6 @@ export class GeoDataService {
     });
   }
 
-  private createGroupInFeature(
-    feature: Feature,
-    group: TagGroup // TODO: Generate group with new uuid and not with name
-  ): Feature {
-    if (feature.properties.group) {
-      feature.properties.group
-        .filter((grp: TagGroup) => grp.name !== group.name)
-        .push(group);
-    }
-    return feature;
-  }
-
   private updateGroup(featureList: Feature[], group: TagGroup): Feature[] {
     return this.getGroupFeatures(featureList, group).map((feat: Feature) => {
       const groupProp = feat.properties.group.filter(
@@ -566,10 +553,6 @@ export class GeoDataService {
     };
 
     this.updateGroupFeatures(projectId, featureList, reiconedGroup);
-  }
-
-  getForms(groupName: string): GroupForm[] {
-    return this._groups.value.get(groupName).forms;
   }
 
   public get overlays(): Observable<Array<Overlay>> {

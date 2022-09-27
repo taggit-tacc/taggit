@@ -88,7 +88,6 @@ export class FormsService {
   // Inputs:
   // color:string A 7 digit hexadecimal string (#RRGGBB) passed in from a color tag
   // This method accesses group services to retrive the current group's icon as well
-  // REDO: because it doesn't utilize hazmapper's styles properly
   saveStyles(
     projectId: number,
     selectedColor: string,

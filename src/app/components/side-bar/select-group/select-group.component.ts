@@ -99,10 +99,6 @@ export class SelectGroupComponent implements OnInit, OnDestroy {
     );
 
     this.dialog.closeAll();
-    // TODO: Update save styles
-    // for (let feat of this.tempGroup) {
-    //   this.formsService.saveStyles('default', Number(feat.id));
-    // }
   }
 
   isChecked(name: string) {
