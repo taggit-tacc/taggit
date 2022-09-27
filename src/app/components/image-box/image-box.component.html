@@ -1,159 +1,215 @@
 <div class="img-container">
-  <img [ngClass]="status ? 'img-selected' : 'img-unselected'"
-	   [src]="featureSource"
-	   (click)="imageSelect()"
-	   class="img-responsive img-target"
-	   title={{featurePath}}>
+  <img
+    [ngClass]="imageSelected"
+    [src]="featureSource"
+    (click)="imageSelect()"
+    class="img-responsive img-target"
+    title="{{ featurePath }}"
+  />
   <div class="top-overlay">
-	<div class="image-option"
-		 matTooltip="Zoom"
-		 matTooltipPosition="below"
-		 (click)="imageZoom(diffSizes)">
-	  <i class="fas fa-search-plus"></i>
-	</div>
+    <div
+      class="image-option"
+      matTooltip="Zoom"
+      matTooltipPosition="below"
+      (click)="imageZoom(diffSizes)"
+    >
+      <i class="fas fa-search-plus"></i>
+    </div>
 
-	<ng-template #diffSizes>
-	  <div class="zoom-content">
-		<div class="img-container">
-		  <img [src]="featureSource" title={{featurePath}}>
-		</div>
-		<div class="img-details">
-		  <div class="detail-container">
-			<div class="title">
-			  Coordinates
-			</div>
-			<div class="detail-contents">
-			  <div class="detail-item">
-				{{coordinates[0]}},
-			  </div>
-			  <div class="detail-item">
-				{{coordinates[1]}}
-			  </div>
-			</div>
-		  </div>
-		  <div class="detail-container">
-			<div class="title">
-			  Image Source
-			</div>
-			<div class="detail-contents">
-			  <div class="detail-item">
-				{{featurePath}}
-			  </div>
-			</div>
-		  </div>
-		</div>
-		<button mat-button class="close-button" matDialogClose aria-label="Close modal" type="button">
-		  <span aria-hidden="true">&times;</span>
-		</button>
-	  </div>
-	</ng-template>
+    <ng-template #diffSizes>
+      <div class="zoom-content">
+        <div class="img-container">
+          <img [src]="featureSource" title="{{ featurePath }}" />
+        </div>
+        <div class="img-details">
+          <div class="detail-container">
+            <div class="title">Coordinates</div>
+            <div class="detail-contents">
+              <div class="detail-item">{{ coordinates[0] }},</div>
+              <div class="detail-item">
+                {{ coordinates[1] }}
+              </div>
+            </div>
+          </div>
+          <div class="detail-container">
+            <div class="title">Image Source</div>
+            <div class="detail-contents">
+              <div class="detail-item">
+                {{ featurePath }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <button
+          mat-button
+          class="close-button"
+          matDialogClose
+          aria-label="Close modal"
+          type="button"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </ng-template>
 
-	<div class="image-option"
-		 matTooltip="Remove"
-		 matTooltipPosition="below"
-		 (click)="openImageDeleteModal(deleteImage)">
-	  <i class="fas fa-trash"></i>
-	</div>
+    <div
+      class="image-option"
+      matTooltip="Remove"
+      matTooltipPosition="below"
+      (click)="openImageDeleteModal(deleteImage)"
+    >
+      <i class="fas fa-trash"></i>
+    </div>
 
-	<ng-template #deleteImage>
-	  <div *ngIf="tempGroup.length === 1">
-	  This image will be deleted from the current project. It will not be deleted from the Data Depot.
-	  </div>
+    <ng-template #deleteImage>
+      <div *ngIf="selectedImages.length === 1">
+        This image will be deleted from the current project. It will not be
+        deleted from the Data Depot.
+      </div>
 
-	  <div *ngIf="tempGroup.length > 1">
-		{{tempGroup.length}} images will be deleted from the current project. They will not be deleted from the Data Depot.
-		</div>
+      <div *ngIf="selectedImages.length > 1">
+        {{ selectedImages.length }} images will be deleted from the current
+        project. They will not be deleted from the Data Depot.
+      </div>
 
-	  <button mat-raised-button color="primary" matDialogClose (click)="imageDelete()">Delete Image</button>
-	  <button mat-button matDialogClose>Cancel</button>
-	</ng-template>
+      <button
+        mat-raised-button
+        color="primary"
+        matDialogClose
+        (click)="imageDelete()"
+      >
+        Delete Image
+      </button>
+      <button mat-button matDialogClose>Cancel</button>
+    </ng-template>
 
-	<div class="image-option"
-		 matTooltip="Add To Group"
-		 matTooltipPosition="below"
-		 (click)="openImageAddModal(addMoreToGroup)">
-	  <i class="fas fa-plus"></i>
-	</div>
+    <div
+      class="image-option"
+      matTooltip="Add To Group"
+      matTooltipPosition="below"
+      (click)="openImageAddModal(addMoreToGroup)"
+    >
+      <i class="fas fa-plus"></i>
+    </div>
 
-	<ng-template #addMoreToGroup>
+    <ng-template #addMoreToGroup>
+      <mat-form-field appearance="fill">
+        <mat-label>Groups</mat-label>
+        <mat-select matNativeControl required [(value)]="groupToAdd">
+          <mat-option
+            *ngFor="let group of groups | keyvalue"
+            [value]="group.value"
+          >
+            {{ group.key }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-	  <mat-form-field appearance="fill">
-		<mat-label>Groups</mat-label>
-		<mat-select matNativeControl required [(value)]="activeGroup">
-		  <mat-option>
-			None
-		  </mat-option>
-		  <mat-option *ngFor="let group of groupList" [value]="group.name">
-			{{ group.name }}
-		  </mat-option>
-		</mat-select>
-	  </mat-form-field>
-
-	  <!-- <select #selectGroup class="form-control" [value]="activeGroup"> -->
-	  <!--	<option *ngFor="let group of groupList"> -->
-	  <!--	  {{ group.name }} -->
-	  <!--	</option> -->
-	  <!-- </select> -->
-	  <!-- <button mat-raised-button color="primary" matDialogClose (click)="selectGroupForm(selectGroup.value)">Add To Group</button> -->
-	  <p>
-		<button mat-raised-button color="primary" matDialogClose (click)="addGroups(activeGroup)" [disabled]="!activeGroup">Add To Group</button>
-		<button mat-button color="secondary" matDialogClose>Cancel</button>
-	  </p>
-
-	  <!-- <button mat-raised-button color="primary" class="button" matDialogClose aria-label="Close modal" type="button"> -->
-	  <!--	<span aria-hidden="true">&times;</span> -->
-	  <!-- </button> -->
-	</ng-template>
+      <p>
+        <button
+          mat-raised-button
+          color="primary"
+          matDialogClose
+          (click)="addGroup(groupToAdd)"
+          [disabled]="!groupToAdd"
+        >
+          Add To Group
+        </button>
+        <button mat-button color="secondary" matDialogClose>Cancel</button>
+      </p>
+    </ng-template>
   </div>
 
   <div class="bottom-overlay">
+    <div
+      *ngIf="feature.properties.group && feature.properties.group.length > 0"
+    >
+      <div
+        *ngIf="feature.properties.group.length < 5; else dotdot"
+        class="group-tags"
+      >
+        <div
+          *ngFor="let group of feature.properties.group"
+          class="center"
+          (mouseover)="(group.name)"
+          [matTooltip]="group.name"
+          matTooltipPosition="above"
+        >
+          <svg
+            class="box"
+            width="25px"
+            height="75px"
+            (click)="deleteFromGroup(feature, group)"
+          >
+            <rect
+              width="15px"
+              height="15px"
+              x="5"
+              y="30"
+              [style.fill]="group.color"
+            />
+            <rect
+              class="inner-del"
+              width="25px"
+              height="15px"
+              rx="3"
+              x="0"
+              y="0"
+              style="fill: #ffffff"
+            />
+            <rect
+              class="inner-del"
+              width="15px"
+              height="5px"
+              x="5"
+              y="5"
+              style="fill: #de6363"
+            />
+          </svg>
+        </div>
+      </div>
 
-	<!-- <div class="color-container"> -->
-	  <!-- TODO This should be an iff relationship -->
-	  <div *ngIf="hasGroup && colors.length > 0">
+      <ng-template #dotdot class="text">
+        <div
+          class="image-option"
+          (click)="openMoreGroupsModal(moreGroupsModal)"
+        >
+          <i class="fas fa-ellipsis-h"></i>
+        </div>
+      </ng-template>
 
-		<div *ngIf="colors.length < 5; else dotdot" class="group-tags">
-		  <div *ngFor="let color of colors"
-			   class="center"
-			   (mouseover)="getGroupNameFromColor(color)"
-			   [matTooltip]="currentGroup"
-			   matTooltipPosition="above">
-			<svg class="box" width="25px" height="75px" (click)="deleteFromGroup(color)">
-			  <!-- <rect width="15px" height="15px" [style.fill]="color"/> -->
-			  <rect width="15px" height="15px" x="5" y="30" [style.fill]="color"/>
-			  <rect class="inner-del" width="25px" height="15px" rx="3" x="0" y="0" style="fill: #ffffff"/>
-			  <rect  class="inner-del" width="15px" height="5px" x="5" y="5" style="fill: #DE6363"/>
-			</svg>
-		  </div>
-		</div>
-
-		<ng-template #dotdot class="text">
-		  <div class="image-option"
-			   (click)="openMoreGroupsModal(moreGroupsModal)">
-			<i class="fas fa-ellipsis-h"></i>
-		  </div>
-		</ng-template>
-
-		<!-- TODO Should close modal once zero groups -->
-		<ng-template #moreGroupsModal>
-		  <div style="display: flex; justify-content: center; align-items: center">
-			<div *ngFor="let color of colors"
-				 class="center-temp"
-				 style="display: flex"
-				 (mouseover)="getGroupNameFromColor(color)"
-				 [matTooltip]="currentGroup"
-				 matTooltipPosition="right">
-			  <svg style="padding: 1" (click)="deleteFromGroup(color)" width="15px" height="15px">
-				<rect width="15px" height="15px" [style.fill]="color"/>
-				<rect class="inner-del-temp" width="8px" height="4px" x="3.3" y="5.5" style="fill: #000"/>
-			  </svg>
-			</div>
-		  </div>
-		</ng-template>
-
-	  </div>
-	<!-- </div> -->
-
+      <!-- TODO Should close modal once zero groups -->
+      <ng-template #moreGroupsModal>
+        <div
+          style="display: flex; justify-content: center; align-items: center"
+        >
+          <div
+            *ngFor="let group of feature.properties.group"
+            class="center-temp"
+            style="display: flex"
+            (mouseover)="(group.name)"
+            [matTooltip]="group.name"
+            matTooltipPosition="right"
+          >
+            <svg
+              style="padding: 1"
+              (click)="deleteFromGroup(feature, group)"
+              width="15px"
+              height="15px"
+            >
+              <rect width="15px" height="15px" [style.fill]="group.color" />
+              <rect
+                class="inner-del-temp"
+                width="8px"
+                height="4px"
+                x="3.3"
+                y="5.5"
+                style="fill: #000"
+              />
+            </svg>
+          </div>
+        </div>
+      </ng-template>
+    </div>
   </div>
-
 </div>

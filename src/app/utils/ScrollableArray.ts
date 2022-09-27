@@ -1,4 +1,4 @@
-import {Subject} from 'rxjs';
+import { Subject } from 'rxjs';
 
 /**
  * Given an input array of type <T>, this class can be used for infinite scroll by
@@ -7,11 +7,10 @@ import {Subject} from 'rxjs';
  * is better for performance.
  */
 export class ScrollableArray<T> {
-
   private windowSize = 200;
   private fetchSize = 100;
   private content: Array<T> = [];
-  private startIdx  = 0;
+  private startIdx = 0;
   public readonly currentSelection: Subject<Array<T>> = new Subject();
 
   constructor(data: Array<T>) {
@@ -26,7 +25,9 @@ export class ScrollableArray<T> {
     this.content = data;
     this.startIdx = 0;
 
-    this.currentSelection.next(this.content.slice(this.startIdx, this.windowSize));
+    this.currentSelection.next(
+      this.content.slice(this.startIdx, this.windowSize)
+    );
   }
 
   setFetchSize(num: number) {
@@ -42,19 +43,30 @@ export class ScrollableArray<T> {
     if (idx >= 0) {
       // this.startIdx = idx;
       this.startIdx = Math.min(this.content.length - this.fetchSize, idx);
-      this.currentSelection.next(this.content.slice(this.startIdx, this.startIdx + this.windowSize));
+      this.currentSelection.next(
+        this.content.slice(this.startIdx, this.startIdx + this.windowSize)
+      );
     }
   }
 
   scrollUp() {
     this.startIdx = Math.max(0, this.startIdx - this.fetchSize);
-    const tmp = this.content.slice(this.startIdx, this.startIdx + this.windowSize);
-    this.currentSelection.next(tmp);  }
-
-  scrollDown() {
-    this.startIdx = Math.min(this.content.length - this.fetchSize, this.startIdx + this.fetchSize);
-    const tmp = this.content.slice(this.startIdx, this.startIdx + this.windowSize);
+    const tmp = this.content.slice(
+      this.startIdx,
+      this.startIdx + this.windowSize
+    );
     this.currentSelection.next(tmp);
   }
 
+  scrollDown() {
+    this.startIdx = Math.min(
+      this.content.length - this.fetchSize,
+      this.startIdx + this.fetchSize
+    );
+    const tmp = this.content.slice(
+      this.startIdx,
+      this.startIdx + this.windowSize
+    );
+    this.currentSelection.next(tmp);
+  }
 }

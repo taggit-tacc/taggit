@@ -1,13 +1,12 @@
-import {TestBed, async, ComponentFixture} from '@angular/core/testing';
+import { TestBed, async, ComponentFixture } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
-import {AuthService} from "./services/authentication.service";
-
+import { AuthService } from './services/authentication.service';
 
 class MockAuth {
-  setToken(){}
-  getUserInfo(){}
-  login(){}
+  setToken() {}
+  getUserInfo() {}
+  login() {}
 }
 
 describe('AppComponent', () => {
@@ -18,24 +17,21 @@ describe('AppComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule
-      ],
-      declarations: [
-        AppComponent
-      ],
+      imports: [RouterTestingModule],
+      declarations: [AppComponent],
       providers: [
         {
-          provide: AuthService, useClass: MockAuth
-        }
-      ]
+          provide: AuthService,
+          useClass: MockAuth,
+        },
+      ],
     }).compileComponents();
   }));
 
-  beforeEach(()=>{
+  beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);
     authMock = TestBed.get(AuthService);
-    spyOn(authMock, 'login')
+    spyOn(authMock, 'login');
   });
 
   it('should create the app', () => {
@@ -47,6 +43,4 @@ describe('AppComponent', () => {
     const app = fixture.debugElement.componentInstance;
     expect(app.title).toEqual('viewer');
   });
-
-
 });

@@ -1,6 +1,15 @@
-<div  class="form-check form-check">
+<div *ngFor="let opt of form.options" [id]="form.label" class="input-group">
+  <div class="form-check form-check">
     <label class="form-check-label">
-        <input class="form-check-input" type="checkbox" [checked]="isChecked" id="inlineCheckbox1" value={{field.label}} (change)="selected($event, field)" /> 
-            {{field.label}}
-        </label>
+      <input
+        class="form-check-input"
+        type="checkbox"
+        [checked]="isChecked(opt)"
+        id="inlineCheckbox1"
+        value="{{ opt.label }}"
+        (change)="selected($event, opt)"
+      />
+      {{ opt.label }}
+    </label>
+  </div>
 </div>

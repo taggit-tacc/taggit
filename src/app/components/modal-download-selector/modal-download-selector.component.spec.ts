@@ -8,9 +8,8 @@ describe('ModalDownloadSelectorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ModalDownloadSelectorComponent ]
-    })
-    .compileComponents();
+      declarations: [ModalDownloadSelectorComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

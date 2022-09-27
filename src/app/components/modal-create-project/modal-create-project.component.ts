@@ -9,44 +9,44 @@ import { Subject } from 'rxjs';
 @Component({
   selector: 'app-modal-create-project',
   templateUrl: './modal-create-project.component.html',
-  styleUrls: ['./modal-create-project.component.scss']
+  styleUrls: ['./modal-create-project.component.scss'],
 })
 export class ModalCreateProjectComponent implements OnInit {
-
   public readonly onClose: Subject<any> = new Subject<any>();
 
   projCreateForm: FormGroup;
 
-  constructor(public dialogRef: MatDialogRef<ModalCreateProjectComponent>,
-			  private dialog: MatDialog,
-			  private projectsService: ProjectsService) { }
+  constructor(
+    public dialogRef: MatDialogRef<ModalCreateProjectComponent>,
+    private dialog: MatDialog,
+    private projectsService: ProjectsService
+  ) {}
 
   ngOnInit() {
-	this.projCreateForm = new FormGroup( {
-	  name: new FormControl(''),
-	  description: new FormControl('')
-	});
+    this.projCreateForm = new FormGroup({
+      name: new FormControl(''),
+      description: new FormControl(''),
+    });
   }
 
   close(project: Project) {
-	this.dialogRef.close();
+    this.dialogRef.close();
   }
 
   submit() {
-	//Watch content we can set to false, for our project, we don't need this yet.
-	//Watch content refers to syncing files created in a folder with a hazmapper map
-	//Set observable to true, Hazmapper doesn't let users define that value for some reason.
-	const proj = new Project();
-	const projRqst = new ProjectRequest();
+    // Watch content we can set to false, for our project, we don't need this yet.
+    // Watch content refers to syncing files created in a folder with a hazmapper map
+    // Set observable to true, Hazmapper doesn't let users define that value for some reason.
+    const proj = new Project();
+    const projRqst = new ProjectRequest();
 
-	//Retrieve project name and description
-	proj.description = this.projCreateForm.get('description').value;
-	proj.name = this.projCreateForm.get('name').value;
+    // Retrieve project name and description
+    proj.description = this.projCreateForm.get('description').value;
+    proj.name = this.projCreateForm.get('name').value;
 
-	projRqst.project = proj
+    projRqst.project = proj;
 
-	this.projectsService.create(projRqst)
-	this.dialogRef.close();
+    this.projectsService.create(projRqst);
+    this.dialogRef.close();
   }
-
 }
