@@ -5,7 +5,6 @@ import { tap } from 'rxjs/operators';
 import { Project, IProjectUser, ProjectRequest } from '../models/models';
 import { environment } from '../../environments/environment';
 import { AuthService } from './authentication.service';
-import { validateBBox } from '@turf/helpers';
 import { NotificationsService } from './notifications.service';
 
 @Injectable({
