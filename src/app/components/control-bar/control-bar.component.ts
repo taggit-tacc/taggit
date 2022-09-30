@@ -172,7 +172,6 @@ export class ControlBarComponent implements OnInit {
       } catch (error) {
         // possible that lastProj item is null and not json
         lastProject = null;
-        console.log(window.localStorage.getItem('lastProj'));
       }
 
       if (projects.length) {
