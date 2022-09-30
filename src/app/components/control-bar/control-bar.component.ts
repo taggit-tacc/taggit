@@ -16,7 +16,7 @@ import { ModalFileBrowserComponent } from '../modal-file-browser/modal-file-brow
 import { ModalDownloadSelectorComponent } from '../modal-download-selector/modal-download-selector.component';
 import { ModalCreateProjectComponent } from '../modal-create-project/modal-create-project.component';
 import { ModalShareProjectComponent } from '../modal-share-project/modal-share-project.component';
-import { interval, Observable, Subscription, combineLatest } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { RemoteFile } from 'ng-tapis';
 import { GroupsService } from '../../services/groups.service';
 import { FormsService } from '../../services/forms.service';
@@ -27,11 +27,9 @@ import {
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalCurrentProjectComponent } from '../modal-current-project/modal-current-project.component';
-import { AppEnvironment, environment } from '../../../environments/environment';
-import { feature } from '@turf/helpers';
+import { environment } from '../../../environments/environment';
 import { TapisFilesService } from '../../services/tapis-files.service';
-import { element } from 'protractor';
-import { consoleTestResultHandler } from 'tslint/lib/test';
+
 import { ScrollService } from 'src/app/services/scroll.service';
 import { NotificationsService } from 'src/app/services/notifications.service';
 import { FeatureService } from 'src/app/services/feature.service';
