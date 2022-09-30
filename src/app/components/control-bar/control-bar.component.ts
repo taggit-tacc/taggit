@@ -214,7 +214,6 @@ export class ControlBarComponent implements OnInit {
 
   selectProject(p: Project): void {
     this.projectsService.setActiveProject(p);
-    this.getDataForProject(p);
   }
 
   getDataForProject(p: Project): void {
