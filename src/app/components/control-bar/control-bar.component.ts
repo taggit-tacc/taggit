@@ -165,24 +165,24 @@ export class ControlBarComponent implements OnInit {
     this.projectsService.projects.subscribe((projects) => {
       this.projects = projects;
 
-      if (this.projects.length) {
-        let lastProj;
-        // try {
-        //   //restores view to the last visited project from local storage
-        //   lastProj = JSON.parse(window.localStorage.getItem('lastProj'));
-        //   // console.log(lastProj);
-        // } catch (error) {
-        //   lastProj = this.projectsService.setActiveProject(this.projects[0]);
-        // }
+      // restores view to the last visited project from local storage
+      let lastProject = null;
+      try {
+        lastProject = JSON.parse(window.localStorage.getItem('lastProj'));
+      } catch (error) {
+        // possible that lastProj item is null and not json
+        lastProject = null;
+        console.log(window.localStorage.getItem('lastProj'));
+      }
 
-        lastProj = this.projectsService.setActiveProject(this.projects[0]);
-
-        // If lastProj is null, then there is no project saved, or can be found, default to the first project in the list
-        if (lastProj == 'none' || lastProj == null) {
-          lastProj = this.projects[0];
+      if (projects.length) {
+        const selectedLastProject = lastProject ? this.projects.find((prj) => prj.id === lastProject.id) : null;
+        if (selectedLastProject) {
+          this.projectsService.setActiveProject(selectedLastProject);
+        } else {
+          // default to the first project in the list
+          this.projectsService.setActiveProject(this.projects[0]);
         }
-
-        this.projectsService.setActiveProject(lastProj);
       }
 
       this.groupsService.selectedImages.subscribe((next) => {
