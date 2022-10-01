@@ -66,20 +66,16 @@ export class ProjectsService {
     );
   }
 
-  create(data: ProjectRequest): Observable<Project> {
-    const prom = this.http.post<Project>(
+  create(data: ProjectRequest) {
+    this.http.post<Project>(
       environment.apiUrl + `/projects/`,
       data
-    );
-    prom.subscribe((proj) => {
+    ).subscribe((proj) => {
+      // bug in geoapi where deletable is not returned in response so assuming its deletable
+      proj = {...proj, deletable: true};
+      this.setActiveProject(proj);
       this._projects.next([...this._projects.value, proj]);
-
-      // Awkward as hell, but this ensures we actually transition to the newly created project
-      // Without this, the screen flickers briefly to the new project, but ends up stuck on the old project
-      this.setActiveProject(proj);
-      this.setActiveProject(proj);
     });
-    return prom;
   }
 
   setActiveProject(proj: Project): void {
