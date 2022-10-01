@@ -55,12 +55,12 @@ export class ProjectsService {
   // Queries database for all user projects.
   getProjects(): void {
     this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe(
-      (resp) => {
-        this.updateProjectsList(resp);
+      (projects) => {
+        this._projects.next(projects);
       },
       (error) => {
         this.notificationsService.showErrorToast(
-          'Error importing files Design Safe, GeoAPI might be down'
+          'Error getting projects DesignSafe or GeoAPI might be down'
         );
       }
     );
