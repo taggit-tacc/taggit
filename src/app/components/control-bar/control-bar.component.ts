@@ -10,7 +10,7 @@ import { Feature, Project, TagGroup } from '../../models/models';
 import { FeatureCollection } from 'geojson';
 import { GeoDataService } from '../../services/geo-data.service';
 import { LatLng } from 'leaflet';
-import { skip, startWith } from 'rxjs/operators';
+import { skip } from 'rxjs/operators';
 import { BsModalRef, BsModalService } from 'ngx-foundation';
 import { ModalFileBrowserComponent } from '../modal-file-browser/modal-file-browser.component';
 import { ModalDownloadSelectorComponent } from '../modal-download-selector/modal-download-selector.component';
