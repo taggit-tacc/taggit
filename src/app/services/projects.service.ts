@@ -25,11 +25,6 @@ export class ProjectsService {
   public readonly projectUsers$: Observable<Array<IProjectUser>> =
     this._projectUsers.asObservable();
 
-  private _deletingProjects: BehaviorSubject<Project[]> = new BehaviorSubject<
-    Project[]
-  >([]);
-  public deletingProjects: Observable<Project[]> =
-    this._deletingProjects.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -55,21 +50,6 @@ export class ProjectsService {
       .subscribe((resp) => {
         this._projects.next(resp);
       });
-  }
-
-  updateProjectsList(resp: Project[] = []) {
-    const myProjs = resp.length !== 0 ? resp : this._projects.value;
-
-    this._deletingProjects.value.length !== 0
-      ? this._projects.next(
-          myProjs.map((p) => {
-            const deletingProj = this._deletingProjects.value.find(
-              (dp) => dp.id === p.id
-            );
-            return deletingProj ? deletingProj : p;
-          })
-        )
-      : this._projects.next(myProjs);
   }
 
   // Queries database for all user projects.
@@ -122,45 +102,16 @@ export class ProjectsService {
 
   // Note: This will delete the project for everyone, if the project is shared.
   delete(data: Project): void {
-    this._deletingProjects.next([
-      ...this._deletingProjects.value,
-      { ...data, deleting: true },
-    ]);
-    this.updateProjectsList();
-
     this.http.delete(environment.apiUrl + `projects/${data.id}/`).subscribe(
       (resp) => {
-        window.localStorage.setItem('lastProj', JSON.stringify('none'));
-
-        this._deletingProjects.next(
-          this._deletingProjects.value.filter((p) => p.id !== data.id)
-        );
-        // These next two lines might be causing problems. Adding getProjects causes duplicates during project creation,
-        // So I'm thinking that calling these here might be the root of my delete woes, as they're restoring the project I just
-        // deleted...
-        this.updateProjectsList();
+        window.localStorage.removeItem('lastProj');
         this.getProjects();
-        // As elegant as a brick to the face, but this solves the delete issues...
-        window.localStorage.setItem('lastProj', JSON.stringify('none'));
       },
       (error) => {
-        window.localStorage.setItem('lastProj', JSON.stringify('none'));
-
-        this._deletingProjects.next(
-          this._deletingProjects.value.map((p) => {
-            return p.id === data.id
-              ? { ...p, deleting: false, deletingFailed: true }
-              : p;
-          })
-        );
-        this.updateProjectsList();
-
-        this.getProjects();
-
         this.notificationsService.showErrorToast('Could not delete project!');
         console.error(error);
       }
-    ); // end of error
+    );
   }
 
   getProjectUsers(proj: Project): Observable<Array<IProjectUser>> {
