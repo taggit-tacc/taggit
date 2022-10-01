@@ -97,6 +97,7 @@ export class ProjectsService {
       .put<Project>(environment.apiUrl + `/projects/${data.project.id}/`, data)
       .subscribe((resp) => {
         this._activeProject.next(resp);
+        this.getProjects();
       });
   }
 
