@@ -281,10 +281,6 @@ export class ControlBarComponent implements OnInit {
         uuid: project.uuid,
       },
     });
-
-    modal.afterClosed().subscribe((passbackData: Array<string>) => {
-      this.projectsService.setActiveProject(this.projects[0]);
-    });
   }
 
   addGroup(name: string) {
