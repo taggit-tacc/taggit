@@ -95,7 +95,7 @@
     <ng-template #addMoreToGroup>
       <mat-form-field appearance="fill">
         <mat-label>Groups</mat-label>
-        <mat-select matNativeControl required [(value)]="groupToAdd">
+        <mat-select matNativeControl required (selectionChange)="changeGroupToAdd($event)">
           <mat-option
             *ngFor="let group of groups | keyvalue"
             [value]="group.value"

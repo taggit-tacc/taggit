@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 import { ProjectsService } from './projects.service';
-import { Feature } from '../models/models';
+import { Feature, TagGroup } from '../models/models';
 
 // Will inject Projects and GeoData Service to get properties of Feature
 @Injectable({
@@ -21,6 +21,9 @@ export class GroupsService {
     new BehaviorSubject<boolean>(false);
   public showTagGenerator: Observable<boolean> =
     this._showTagGenerator.asObservable();
+
+  private _groupToAdd: BehaviorSubject<TagGroup> = new BehaviorSubject(null);
+  public groupToAdd: Observable<TagGroup> = this._groupToAdd.asObservable();
 
   constructor() {}
 
@@ -44,6 +47,10 @@ export class GroupsService {
 
   setSelectedImages(selectedImages: any): void {
     this._selectedImages.next(selectedImages);
+  }
+
+  setGroupToAdd(group: TagGroup): void {
+    this._groupToAdd.next(group);
   }
 
   toggleTagger(): void {

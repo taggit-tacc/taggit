@@ -70,6 +70,10 @@ export class ImageBoxComponent implements OnInit {
         : 'img-unselected';
     });
 
+    this.groupsService.groupToAdd.subscribe((next) => {
+      this.groupToAdd = next;
+    });
+
     this.featurePath = this.feature.featurePath();
   }
 
@@ -83,7 +87,7 @@ export class ImageBoxComponent implements OnInit {
 
   imageDelete() {
     const featureService = this.featureService;
-    this.selectedImages.forEach(function(value) {
+    this.selectedImages.forEach(function (value) {
       featureService.deleteFeature(value);
     });
     this.groupsService.unselectAllImages();
@@ -110,6 +114,10 @@ export class ImageBoxComponent implements OnInit {
   openImageAddModal(template: TemplateRef<any>) {
     this.scrollService.setScrollPosition();
     this.dialog.open(template);
+  }
+
+  changeGroupToAdd(ev: any) {
+    this.groupsService.setGroupToAdd(ev.value);
   }
 
   addGroup(group: TagGroup) {
