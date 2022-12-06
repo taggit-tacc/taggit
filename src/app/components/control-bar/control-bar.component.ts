@@ -180,6 +180,8 @@ export class ControlBarComponent implements OnInit {
           // default to the first project in the list
           this.projectsService.setActiveProject(this.projects[0]);
         }
+      } else {
+        this.projectsService.setActiveProject(null);
       }
 
       this.groupsService.selectedImages.subscribe((next) => {
@@ -193,10 +195,12 @@ export class ControlBarComponent implements OnInit {
 
     this.projectsService.activeProject.subscribe((next) => {
       this.selectedProject = next;
-      this.getDataForProject(this.selectedProject);
-      // retrieves uuid for project, formats result into a link to that Hazmapper map
-      this.hazmapperLink =
-        'https://hazmapper.tacc.utexas.edu/hazmapper/project/' + next.uuid;
+      if (this.selectedProject) {
+        this.getDataForProject(this.selectedProject);
+        // retrieves uuid for project, formats result into a link to that Hazmapper map
+        this.hazmapperLink =
+          'https://hazmapper.tacc.utexas.edu/hazmapper/project/' + next.uuid;
+      }
     });
 
     this.geoDataService.mapMouseLocation.pipe(skip(1)).subscribe((next) => {
