@@ -22,7 +22,7 @@ export class GroupsService {
   public showTagGenerator: Observable<boolean> =
     this._showTagGenerator.asObservable();
 
-  private _groupToAdd: BehaviorSubject<TagGroup> = new BehaviorSubject(null);
+  private _groupToAdd: BehaviorSubject<TagGroup> = new BehaviorSubject({name: undefined});
   public groupToAdd: Observable<TagGroup> = this._groupToAdd.asObservable();
 
   constructor() {}

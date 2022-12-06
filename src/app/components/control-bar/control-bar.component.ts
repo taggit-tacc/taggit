@@ -66,6 +66,8 @@ export class ControlBarComponent implements OnInit {
   existingNameError = false;
   hazmapperLink: string;
   foundFilePaths = [];
+  groupToAdd: TagGroup;
+  public activeProject: Project;
 
   constructor(
     private projectsService: ProjectsService,
@@ -86,6 +88,11 @@ export class ControlBarComponent implements OnInit {
   ngOnInit() {
     this.filesService.getState();
 
+    this.groupsService.groupToAdd.subscribe((next) => {
+      console.log(next)
+      this.groupToAdd = next;
+    });
+
     this.featureService.features$.subscribe((fc: FeatureCollection) => {
       this.features = fc;
 
@@ -102,6 +109,10 @@ export class ControlBarComponent implements OnInit {
     this.geoDataService.groups.subscribe((next) => {
       this.groups = next;
       this.groupsExist = next && next.size ? true : false;
+    });
+
+    this.projectsService.activeProject.subscribe((next) => {
+      this.activeProject = next;
     });
 
     combineLatest(
@@ -211,8 +222,17 @@ export class ControlBarComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+
   clearAll() {
     this.groupsService.unselectAllImages();
+  }
+
+  compareGroup(a, b) {
+    return a.name === b.name;
+  }
+
+  changeGroupToAdd(ev: any) {
+    this.groupsService.setGroupToAdd(ev.value);
   }
 
   selectProject(p: Project): void {
@@ -312,6 +332,16 @@ export class ControlBarComponent implements OnInit {
     }
   }
 
+
+  addToGroup(group: TagGroup) {
+    this.geoDataService.createGroupFeatures(
+      this.activeProject.id,
+      this.selectedImages,
+      this.groups.get(group.name)
+    );
+    this.groupsService.unselectAllImages();
+    this.scrollService.setScrollRestored(true);
+  }
   openAddGroupModal(template: TemplateRef<any>) {
     this.dialog.open(template);
   }

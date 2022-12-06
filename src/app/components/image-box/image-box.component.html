@@ -56,7 +56,7 @@
       class="image-option"
       matTooltip="Remove"
       matTooltipPosition="below"
-      (click)="openImageDeleteModal(deleteImage)"
+      (click)="openPreserveScrollModal(deleteImage)"
     >
       <i class="fas fa-trash"></i>
     </div>
@@ -87,7 +87,7 @@
       class="image-option"
       matTooltip="Add To Group"
       matTooltipPosition="below"
-      (click)="openImageAddModal(addMoreToGroup)"
+      (click)="openPreserveScrollModal(addMoreToGroup)"
     >
       <i class="fas fa-plus"></i>
     </div>
@@ -95,7 +95,13 @@
     <ng-template #addMoreToGroup>
       <mat-form-field appearance="fill">
         <mat-label>Groups</mat-label>
-        <mat-select matNativeControl required (selectionChange)="changeGroupToAdd($event)">
+        <mat-select
+          matNativeControl
+          required
+          [value]="groupToAdd"
+          [compareWith]="compareGroup"
+          (selectionChange)="changeGroupToAdd($event)"
+        >
           <mat-option
             *ngFor="let group of groups | keyvalue"
             [value]="group.value"
@@ -172,7 +178,7 @@
       <ng-template #dotdot class="text">
         <div
           class="image-option"
-          (click)="openMoreGroupsModal(moreGroupsModal)"
+          (click)="openModal(moreGroupsModal)"
         >
           <i class="fas fa-ellipsis-h"></i>
         </div>

@@ -81,6 +81,10 @@ export class ImageBoxComponent implements OnInit {
     this.groupsService.toggleImageSelect(this.feature);
   }
 
+  compareGroup(a, b) {
+    return a.name === b.name;
+  }
+
   imageZoom(template: TemplateRef<any>) {
     this.dialog.open(template);
   }
@@ -94,11 +98,11 @@ export class ImageBoxComponent implements OnInit {
     this.scrollService.setScrollRestored(true);
   }
 
-  openMoreGroupsModal(template: TemplateRef<any>) {
+  openModal(template: TemplateRef<any>) {
     this.dialog.open(template);
   }
 
-  openImageDeleteModal(template: TemplateRef<any>) {
+  openPreserveScrollModal(template: TemplateRef<any>) {
     this.scrollService.setScrollPosition();
     this.dialog.open(template);
   }
@@ -123,7 +127,7 @@ export class ImageBoxComponent implements OnInit {
   addGroup(group: TagGroup) {
     this.geoDataService.createGroupFeatures(
       this.activeProject.id,
-      this.selectedImages,
+      [this.feature],
       this.groups.get(group.name)
     );
     this.groupsService.unselectAllImages();
