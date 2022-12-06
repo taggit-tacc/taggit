@@ -71,7 +71,7 @@ export class ProjectsService {
       environment.apiUrl + `/projects/`,
       data
     ).subscribe((proj) => {
-      // bug in geoapi where deletable is not returned in response so assuming its deletable
+      // Adding deletable attribute as missing from response https://jira.tacc.utexas.edu/browse/DES-2381
       proj = {...proj, deletable: true};
       this.setActiveProject(proj);
       this._projects.next([...this._projects.value, proj]);
