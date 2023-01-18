@@ -32,7 +32,7 @@
             </div>
             <!-- delete button -->
 
-            <div (click)="openRenameOptionModal(renameFormItemModal)">
+            <div (click)="openRenameModal(renameFormItemModal)">
               <i
                 class="fas fa-edit"
                 matTooltip="Rename"
@@ -46,7 +46,7 @@
               <input
                 matInput
                 #formItemRename
-                [(ngModel)]="newTagValue"
+                [(ngModel)]="tagName"
                 value="{{ form.label }}"
                 placeholder="Rename Form Item"
                 (keyup.enter)="renameForm(form)"
