@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { FormsService } from 'src/app/services/forms.service';
 import { Feature, Project, GroupForm, TagGroup } from 'src/app/models/models';
 import { GeoDataService } from 'src/app/services/geo-data.service';
+import { ProjectsService } from 'src/app/services/projects.service';
 
 @Component({
   selector: 'app-form-color',
@@ -18,11 +19,15 @@ export class FormColorComponent implements OnInit {
   @Input() label: String;
 
   public chosenTag: string;
+  public activeProject: Project;
+  public activeGroup: TagGroup;
+  public activeGroupFeature: Feature;
   public chosenColor = '#ffffff';
   value: any = {};
 
   constructor(
     private formsService: FormsService,
+    private projectsService: ProjectsService,
     private geoDataService: GeoDataService
   ) {}
 
@@ -32,18 +37,28 @@ export class FormColorComponent implements OnInit {
       this.chosenTag = this.value.label;
       this.formValue.emit({ id: this.form.id, value: this.value });
     });
+
+    this.projectsService.activeProject.subscribe((next) => {
+      this.activeProject = next;
+    });
+
+    this.geoDataService.activeGroup.subscribe((next: TagGroup) => {
+      this.activeGroup = next;
+    });
+
+    this.geoDataService.activeGroupFeature.subscribe((next) => {
+      this.activeGroupFeature = next;
+    });
   }
 
   updateCheckedTag() {
     this.value = this.form.options.find((opt) => opt.label === this.chosenTag);
-    // TODO: Move this to somewhere else?
-    // Objective is to save both tag and color
-    // this.formsService.saveStyles(
-    //   this.activeProject.id,
-    //   this.value.color,
-    //   this.activeGroup,
-    //   this.activeGroupFeature
-    // );
+    this.formsService.saveStyles(
+      this.activeProject.id,
+      [this.activeGroupFeature],
+      this.activeGroup,
+      this.value.color
+    );
     this.formValue.emit({ id: this.form.id, value: this.value });
   }
 }
