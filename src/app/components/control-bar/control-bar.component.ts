@@ -180,8 +180,6 @@ export class ControlBarComponent implements OnInit {
           // default to the first project in the list
           this.projectsService.setActiveProject(this.projects[0]);
         }
-      } else {
-        this.projectsService.setActiveProject(null);
       }
 
       this.groupsService.selectedImages.subscribe((next) => {
