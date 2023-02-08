@@ -1,7 +1,6 @@
 <h4>Current Gallery</h4>
 <form
   [formGroup]="projCreateForm"
-  (ngSubmit)="update()"
   id="current-project-form"
 >
   <mat-form-field>
@@ -45,6 +44,7 @@
       color="primary"
       class="button small align-right"
       type="submit"
+      (click)="update()"
       [disabled]="!projCreateForm.valid"
     >
       Update

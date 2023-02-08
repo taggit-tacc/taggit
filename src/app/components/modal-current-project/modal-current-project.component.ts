@@ -52,24 +52,6 @@ export class ModalCurrentProjectComponent implements OnInit {
   }
 
   update() {
-    // The project is being properly assembled, but the problem is that the returned project isn't updating.
-    // Do I need more data in my projects?
-    /*
-      export interface Project {
-      description: string;
-      id?: number;
-      name: string;
-      ds_id?: string;
-      title?: string;
-      uuid?: string;
-      public?: boolean;
-      system_file?: string;
-      system_id?: string;
-      system_path?: string;
-      deleting?: boolean;
-      deletingFailed?: boolean;
-    }
-     */
     const p = new Project();
     const projRqst = new ProjectRequest();
 

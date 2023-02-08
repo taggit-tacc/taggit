@@ -5,6 +5,7 @@ import { LatLng } from 'leaflet';
 import {
   AssetFilters,
   FeatureAsset,
+  FeatureStyles,
   IFeatureAsset,
   IPointCloud,
   Overlay,
@@ -109,16 +110,23 @@ export class GeoDataService {
       .get<FeatureCollection>(
         environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring
       )
-      .subscribe((fc: FeatureCollection) => {
-        fc.features = fc.features.map((feat: Feature) => new Feature(feat));
-        this.getGroups(fc.features);
-        this._features.next(fc);
-        this._loaded.next(true);
+      .subscribe(
+        (fc: FeatureCollection) => {
+          fc.features = fc.features.map((feat: Feature) => new Feature(feat));
+          this.getGroups(fc.features);
+          this._features.next(fc);
+          this._loaded.next(true);
 
-        if (restoreScroll) {
-          this.scrollService.setScrollRestored(true);
+          if (restoreScroll) {
+            this.scrollService.setScrollRestored(true);
+          }
+        },
+        (error) => {
+          this.notificationsService.showErrorToast(
+            'Failed to retrieve project data! Geoapi might be down.'
+          );
         }
-      });
+      );
   }
 
   deleteFeature(feature: Feature) {
@@ -184,7 +192,9 @@ export class GeoDataService {
           this.getPointClouds(projectId);
         },
         (error) => {
-          // TODO: notification
+          this.notificationsService.showErrorToast(
+            'Failed to update image property!'
+          );
         }
       );
   }
@@ -204,24 +214,35 @@ export class GeoDataService {
         (resp) => {
           this.getFeatures(projectId);
         },
-        (error) => {}
+        (error) => {
+          this.notificationsService.showErrorToast(
+            'Failed to save tag values!'
+          );
+        }
       );
   }
 
-  updateFeatureStyle(
+  // NOTE: unused for now
+  updateFeatureStyles(
     projectId: number,
     featureId: string | number,
-    groupData: any
+    styles: FeatureStyles
   ): void {
     this.http
       .post(
         environment.apiUrl +
           `/projects/${projectId}/features/${featureId}/styles/`,
-        groupData
+        styles
       )
       .subscribe(
-        (resp) => {},
-        (error) => {}
+        (resp) => {
+          this.getFeatures(projectId);
+        },
+        (error) => {
+          this.notificationsService.showErrorToast(
+            'Failed to update image style!'
+          );
+        }
       );
   }
 
@@ -451,25 +472,40 @@ export class GeoDataService {
 
   private createGroup(
     featureList: Feature[],
-    group: TagGroup // TODO: Generate group with new uuid and not with name
+    group: TagGroup,
+    style?: FeatureStyles
   ): Feature[] {
     return featureList.map((feat: Feature) => {
       let groupProp = feat.properties.group ? feat.properties.group : [];
       groupProp = groupProp.filter((grp: TagGroup) => grp.id !== group.id);
       groupProp.push(group);
       feat.properties.group = groupProp;
+      feat.properties.style = style
+        ? style
+        : feat.properties.style
+        ? feat.properties.style
+        : {};
 
       return feat;
     });
   }
 
-  private updateGroup(featureList: Feature[], group: TagGroup): Feature[] {
+  private updateGroup(
+    featureList: Feature[],
+    group: TagGroup,
+    style?: FeatureStyles
+  ): Feature[] {
     return this.getGroupFeatures(featureList, group).map((feat: Feature) => {
       const groupProp = feat.properties.group.filter(
         (grp: TagGroup) => grp.id !== group.id
       );
       groupProp.push(group);
       feat.properties.group = groupProp;
+      feat.properties.style = style
+        ? style
+        : feat.properties.style
+        ? feat.properties.style
+        : {};
 
       return feat;
     });
@@ -493,18 +529,29 @@ export class GeoDataService {
       color: myRandColor,
       icon: 'fa-house-damage',
     };
-    this.createGroupFeatures(projectId, featureList, group);
+    const style = {
+      color: myRandColor,
+      faIcon: 'fa-house-damage',
+    };
+    this.createGroupFeatures(projectId, featureList, group, style);
     return group;
   }
 
   createGroupFeatures(
     projectId: number,
     featureList: Feature[],
-    group: TagGroup
+    group: TagGroup,
+    style?: FeatureStyles
   ) {
-    this.createGroup(featureList, group).forEach((feat: Feature) => {
-      this.updateFeatureProperty(projectId, feat.id, feat.properties);
-    });
+    if (style) {
+      this.createGroup(featureList, group, style).forEach((feat: Feature) => {
+        this.updateFeatureProperty(projectId, feat.id, feat.properties);
+      });
+    } else {
+      this.createGroup(featureList, group).forEach((feat: Feature) => {
+        this.updateFeatureProperty(projectId, feat.id, feat.properties);
+      });
+    }
   }
 
   deleteGroupFeatures(
@@ -520,11 +567,18 @@ export class GeoDataService {
   updateGroupFeatures(
     projectId: number,
     featureList: Feature[],
-    group: TagGroup
+    group: TagGroup,
+    style?: FeatureStyles
   ) {
-    this.updateGroup(featureList, group).forEach((feat: Feature) => {
-      this.updateFeatureProperty(projectId, feat.id, feat.properties);
-    });
+    if (style) {
+      this.updateGroup(featureList, group, style).forEach((feat: Feature) => {
+        this.updateFeatureProperty(projectId, feat.id, feat.properties);
+      });
+    } else {
+      this.updateGroup(featureList, group).forEach((feat: Feature) => {
+        this.updateFeatureProperty(projectId, feat.id, feat.properties);
+      });
+    }
   }
 
   renameGroup(
@@ -552,7 +606,17 @@ export class GeoDataService {
       icon,
     };
 
-    this.updateGroupFeatures(projectId, featureList, reiconedGroup);
+    const reiconedStyle = {
+      faIcon: icon,
+      color: group.color ? group.color : '#00C8FF',
+    };
+
+    this.updateGroupFeatures(
+      projectId,
+      featureList,
+      reiconedGroup,
+      reiconedStyle
+    );
   }
 
   public get overlays(): Observable<Array<Overlay>> {

@@ -174,9 +174,13 @@ export class FeatureAsset implements IFeatureAsset {
   }
 }
 
-interface FeatureStyles {
-  [key: string]: string | number;
+export interface FeatureStyles {
+  // [key: string]?: string | number;
+  faIcon?: string;
+  color?: string;
 }
+
+export class FeatureStyles implements FeatureStyles {}
 
 export interface Overlay {
   id: number;
