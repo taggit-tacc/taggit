@@ -16,7 +16,6 @@ import { GroupsService } from '../../../services/groups.service';
 export class TagImagesComponent implements OnInit {
   private activeProject;
   payload: any;
-  selectedGroup: string;
   activeGroup: TagGroup;
   showSubitem = true;
   formList: GroupForm[] = [];
@@ -25,6 +24,7 @@ export class TagImagesComponent implements OnInit {
   groupsFeatures: Map<string, Feature[]>;
   activeGroupFeature: Feature;
   tagValues = [];
+  newTagValue = '';
 
   constructor(
     private groupsService: GroupsService,
@@ -57,8 +57,7 @@ export class TagImagesComponent implements OnInit {
     });
   }
 
-  openRenameModal(template: TemplateRef<any>, name: string) {
-    this.selectedGroup = name;
+  openRenameModal(template: TemplateRef<any>) {
     this.dialog.open(template);
   }
 
