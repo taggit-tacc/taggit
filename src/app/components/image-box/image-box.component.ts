@@ -70,11 +70,19 @@ export class ImageBoxComponent implements OnInit {
         : 'img-unselected';
     });
 
+    this.groupsService.groupToAdd.subscribe((next) => {
+      this.groupToAdd = next;
+    });
+
     this.featurePath = this.feature.featurePath();
   }
 
   imageSelect() {
     this.groupsService.toggleImageSelect(this.feature);
+  }
+
+  compareGroup(a, b) {
+    return a.name === b.name;
   }
 
   imageZoom(template: TemplateRef<any>) {
@@ -83,18 +91,18 @@ export class ImageBoxComponent implements OnInit {
 
   imageDelete() {
     const featureService = this.featureService;
-    this.selectedImages.forEach(function(value) {
+    this.selectedImages.forEach(function (value) {
       featureService.deleteFeature(value);
     });
     this.groupsService.unselectAllImages();
     this.scrollService.setScrollRestored(true);
   }
 
-  openMoreGroupsModal(template: TemplateRef<any>) {
+  openModal(template: TemplateRef<any>) {
     this.dialog.open(template);
   }
 
-  openImageDeleteModal(template: TemplateRef<any>) {
+  openPreserveScrollModal(template: TemplateRef<any>) {
     this.scrollService.setScrollPosition();
     this.dialog.open(template);
   }
@@ -112,10 +120,14 @@ export class ImageBoxComponent implements OnInit {
     this.dialog.open(template);
   }
 
+  changeGroupToAdd(ev: any) {
+    this.groupsService.setGroupToAdd(ev.value);
+  }
+
   addGroup(group: TagGroup) {
     this.geoDataService.createGroupFeatures(
       this.activeProject.id,
-      this.selectedImages,
+      [this.feature],
       this.groups.get(group.name)
     );
     this.groupsService.unselectAllImages();

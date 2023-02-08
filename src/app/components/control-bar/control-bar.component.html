@@ -94,11 +94,21 @@
 
     <button
       mat-raised-button
+      (click)="openAddGroupModal(addToGroupModal)"
+      *ngIf="selectedImages.length > 0 && groupsExist && !showTagger"
+      class="button-spacing"
+    >
+      Add To Group
+    </button>
+
+    <button
+      mat-raised-button
       (click)="openAddGroupModal(addGroupModal)"
       *ngIf="selectedImages.length > 0 && !showTagger"
     >
-      Add Group
+      Create Group
     </button>
+
 
     <ng-template #addGroupModal>
       <mat-form-field>
@@ -123,6 +133,39 @@
         Add Group
       </button>
       <button mat-button matDialogClose color="secondary">Cancel</button>
+    </ng-template>
+
+    <ng-template #addToGroupModal>
+      <mat-form-field appearance="fill">
+        <mat-label>Groups</mat-label>
+        <mat-select
+          matNativeControl
+          required
+          [value]="groupToAdd"
+          [compareWith]="compareGroup"
+          (selectionChange)="changeGroupToAdd($event)"
+        >
+          <mat-option
+            *ngFor="let group of groups | keyvalue"
+            [value]="group.value"
+          >
+            {{ group.key }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <p>
+        <button
+          mat-raised-button
+          color="primary"
+          matDialogClose
+          (click)="addToGroup(groupToAdd)"
+          [disabled]="!groupToAdd"
+        >
+          Add To Group
+        </button>
+        <button mat-button color="secondary" matDialogClose>Cancel</button>
+      </p>
     </ng-template>
   </div>
 
