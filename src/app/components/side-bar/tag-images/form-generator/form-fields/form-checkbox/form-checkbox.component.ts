@@ -14,7 +14,6 @@ import { GeoDataService } from 'src/app/services/geo-data.service';
   templateUrl: 'form-checkbox.component.html',
 })
 export class FormCheckBoxComponent {
-  @Output() formValue: EventEmitter<any> = new EventEmitter<any>();
   @Input() field: any;
   @Input() form: GroupForm;
   value: any[] = [];
@@ -34,7 +33,6 @@ export class FormCheckBoxComponent {
     this.geoDataService.activeGroupFeature.subscribe((next) => {
       this.activeGroupFeature = next;
       this.value = this.formsService.getTagValue(next, this.form);
-      this.formValue.emit({ id: this.form.id, value: this.value });
     });
 
     this.geoDataService.activeGroup.subscribe((next) => {
@@ -55,6 +53,9 @@ export class FormCheckBoxComponent {
     if (e.target.checked) {
       this.value.push(option);
     }
-    this.formValue.emit({ id: this.form.id, value: this.value });
+    this.geoDataService.setFeatureTag(this.activeGroupFeature.id, {
+      id: this.form.id,
+      value: this.value,
+    });
   }
 }

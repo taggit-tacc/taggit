@@ -70,15 +70,7 @@
           <!-- button group -->
         </div>
         <!-- form-item-container -->
-        <app-form-generator
-          (newValue)="setValue($event)"
-          [form]="form"
-        ></app-form-generator>
-      </div>
-      <div *ngIf="formList && formList.length">
-        <button mat-raised-button color="primary" (click)="saveTags()">
-          Save
-        </button>
+        <app-form-generator [form]="form"></app-form-generator>
       </div>
     </div>
     <!-- subitem scroll -->

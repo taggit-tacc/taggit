@@ -8,9 +8,8 @@ import { GroupForm } from 'src/app/models/models';
   styleUrls: ['./form-generator.component.scss'],
 })
 export class FormGeneratorComponent implements OnInit {
-  constructor() {}
+  constructor() { }
   @Input() form: GroupForm;
-  @Output() newValue: EventEmitter<any> = new EventEmitter<any>();
   checked = false;
   colorArray: Array<string> = [];
   values = [];
@@ -62,9 +61,5 @@ export class FormGeneratorComponent implements OnInit {
     }
     // Finally, pushes the color code for red onto the stack for the last entry
     this.colorArray.push('#FF0000');
-  }
-
-  setValue(formValue) {
-    this.newValue.emit(formValue);
   }
 }

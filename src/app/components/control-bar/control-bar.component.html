@@ -109,7 +109,6 @@
       Create Group
     </button>
 
-
     <ng-template #addGroupModal>
       <mat-form-field>
         <mat-label>Group Name</mat-label>
@@ -168,6 +167,16 @@
       </p>
     </ng-template>
   </div>
+
+  <button
+    *ngIf="showTagger && updatedTagValues.length > 0"
+    mat-raised-button
+    style="margin-left: 15px"
+    (click)="saveTags()"
+  >
+    <i class="fas fa-save"></i>
+    Save Tags
+  </button>
 
   <button
     *ngIf="groupsExist && !showTagger"

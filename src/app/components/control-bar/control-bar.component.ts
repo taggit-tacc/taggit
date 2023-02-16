@@ -67,6 +67,7 @@ export class ControlBarComponent implements OnInit {
   foundFilePaths = [];
   groupToAdd: TagGroup;
   public activeProject: Project;
+  updatedTagValues: any;
 
   constructor(
     private projectsService: ProjectsService,
@@ -88,8 +89,12 @@ export class ControlBarComponent implements OnInit {
     this.filesService.getState();
 
     this.groupsService.groupToAdd.subscribe((next) => {
-      console.log(next)
+      console.log(next);
       this.groupToAdd = next;
+    });
+
+    this.geoDataService.updatedTagFeatures.subscribe((next) => {
+      this.updatedTagValues = next;
     });
 
     this.featureService.features$.subscribe((fc: FeatureCollection) => {
@@ -185,7 +190,9 @@ export class ControlBarComponent implements OnInit {
       }
 
       if (projects.length) {
-        const selectedLastProject = lastProject ? this.projects.find((prj) => prj.id === lastProject.id) : null;
+        const selectedLastProject = lastProject
+          ? this.projects.find((prj) => prj.id === lastProject.id)
+          : null;
         if (selectedLastProject) {
           this.projectsService.setActiveProject(selectedLastProject);
         } else {
@@ -221,7 +228,6 @@ export class ControlBarComponent implements OnInit {
   ngAfterViewChecked() {
     this.cdr.detectChanges();
   }
-
 
   clearAll() {
     this.groupsService.unselectAllImages();
@@ -326,7 +332,6 @@ export class ControlBarComponent implements OnInit {
       this.groupsService.unselectAllImages();
     }
   }
-
 
   addToGroup(group: TagGroup) {
     this.geoDataService.createGroupFeatures(
@@ -506,5 +511,9 @@ export class ControlBarComponent implements OnInit {
     document.body.removeChild(download);
 
     window.URL.revokeObjectURL(url);
+  }
+
+  saveTags(ev) {
+    this.geoDataService.updateFeatureTags(this.activeProject.id);
   }
 }

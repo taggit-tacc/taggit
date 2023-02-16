@@ -10,10 +10,10 @@ import { GeoDataService } from 'src/app/services/geo-data.service';
   templateUrl: './form-textbox.component.html',
 })
 export class FormTextBoxComponent {
-  @Output() formValue: EventEmitter<any> = new EventEmitter<any>();
   @Input() field: any = {};
   @Input() form: GroupForm;
   value = '';
+  activeGroupFeature: any;
 
   constructor(
     private formsService: FormsService,
@@ -22,12 +22,15 @@ export class FormTextBoxComponent {
 
   ngOnInit() {
     this.geoDataService.activeGroupFeature.subscribe((next) => {
+      this.activeGroupFeature = next;
       this.value = this.formsService.getTagValue(next, this.form);
-      this.formValue.emit({ id: this.form.id, value: this.value });
     });
   }
 
   updateValue() {
-    this.formValue.emit({ id: this.form.id, value: this.value });
+    this.geoDataService.setFeatureTag(this.activeGroupFeature.id, {
+      id: this.form.id,
+      value: this.value,
+    });
   }
 }

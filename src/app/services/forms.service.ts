@@ -99,13 +99,6 @@ export class FormsService {
       color: color ? color : '#00C8FF',
       faIcon: icon ? icon : group.icon,
     };
-
-    this.geoDataService.updateGroupFeatures(
-      projectId,
-      featureList,
-      group,
-      style
-    );
   }
 
   updateTagValue(
@@ -131,12 +124,7 @@ export class FormsService {
     );
   }
 
-  updateTagValues(
-    activeProject: Project,
-    feature: Feature,
-    formList: GroupForm[],
-    newValues: any[]
-  ) {
+  updateTagValues(activeProject: Project, feature: Feature, newValues: any[]) {
     feature.properties.tags = newValues;
     this.geoDataService.updateFeatureProperty(
       activeProject.id,

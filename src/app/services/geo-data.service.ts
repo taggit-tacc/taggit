@@ -17,7 +17,7 @@ import {
 import { Feature, FeatureCollection } from '../models/models';
 import { environment } from '../../environments/environment';
 import { Form } from '@angular/forms';
-import { take } from 'rxjs/operators';
+import { take, first } from 'rxjs/operators';
 import * as querystring from 'querystring';
 import { RemoteFile } from 'ng-tapis';
 import { NotificationsService } from './notifications.service';
@@ -52,6 +52,15 @@ export class GeoDataService {
 
   private _activeGroup: BehaviorSubject<TagGroup> = new BehaviorSubject(null);
   public activeGroup: Observable<TagGroup> = this._activeGroup.asObservable();
+
+  private _updatedTagFeatures: BehaviorSubject<any[]> = new BehaviorSubject([]);
+  public updatedTagFeatures: Observable<any[]> =
+    this._updatedTagFeatures.asObservable();
+
+  private _loadingFeatureProperties: BehaviorSubject<boolean> =
+    new BehaviorSubject(false);
+  public loadingFeatureProperties: Observable<boolean> =
+    this._loadingFeatureProperties.asObservable();
 
   private _activeGroupFeature: BehaviorSubject<any> = new BehaviorSubject<any>(
     null
@@ -100,6 +109,46 @@ export class GeoDataService {
     );
   }
 
+  setFeatures(fc: FeatureCollection) {
+    fc.features = fc.features.map((feat: Feature) => new Feature(feat));
+    this.getGroups(fc.features);
+    this._features.next(fc);
+  }
+
+  setFeatureProperties(featureId: string | number, properties: any) {
+    this.features.pipe(first()).subscribe((fc) => {
+      fc.features = fc.features.map((feat: Feature) => {
+        if (feat.id === featureId) {
+          feat.properties = properties;
+        }
+        return feat;
+      });
+      this.setFeatures(fc);
+    });
+  }
+
+  updateFeatureTags(projectId) {
+    this._updatedTagFeatures.value.forEach((featureId) => {
+      const feature = this._features.value.features.find(
+        (f) => f.id == featureId
+      );
+      this.updateFeatureProperty(projectId, featureId, feature.properties);
+    });
+    this.resetUpdatedTagFeatures();
+  }
+
+  setFeatureStyles(featureId: string | number, styles: FeatureStyles) {
+    this.features.pipe(first()).subscribe((fc) => {
+      fc.features = fc.features.map((feat: Feature) => {
+        if (feat.id === featureId) {
+          feat.styles = styles;
+        }
+        return feat;
+      });
+      this.setFeatures(fc);
+    });
+  }
+
   getFeatures(
     projectId: number,
     query: AssetFilters = new AssetFilters(),
@@ -112,9 +161,7 @@ export class GeoDataService {
       )
       .subscribe(
         (fc: FeatureCollection) => {
-          fc.features = fc.features.map((feat: Feature) => new Feature(feat));
-          this.getGroups(fc.features);
-          this._features.next(fc);
+          this.setFeatures(fc);
           this._loaded.next(true);
 
           if (restoreScroll) {
@@ -165,6 +212,40 @@ export class GeoDataService {
     }
   }
 
+  setFeatureTag(featureId, updatedTag) {
+    const tagFeatures = this._updatedTagFeatures.value;
+    const fc = this._features.value;
+
+    fc.features.map((f) => {
+      if (featureId == f.id) {
+        if (f.properties.tags.some((t) => updatedTag.id == t.id)) {
+          f.properties.tags.map((t) => {
+            if (t.id == updatedTag.id) {
+              t.value = updatedTag.value;
+            }
+            return t;
+          });
+        } else {
+          f.properties.tags = f.properties.tags.length
+            ? [...f.properties.tags, updatedTag]
+            : [updatedTag];
+        }
+      }
+      return f;
+    });
+
+    if (!tagFeatures.includes(featureId)) {
+      tagFeatures.push(featureId);
+    }
+
+    this._updatedTagFeatures.next(tagFeatures);
+    this._features.next(fc);
+  }
+
+  resetUpdatedTagFeatures() {
+    this._updatedTagFeatures.next([]);
+  }
+
   setActiveGroupFeature(feat: any): void {
     this._activeGroupFeature.next(feat);
   }
@@ -204,6 +285,7 @@ export class GeoDataService {
     featureId: string | number,
     groupData: any
   ): void {
+    this._loadingFeatureProperties.next(true);
     this.http
       .post(
         environment.apiUrl +
@@ -212,7 +294,10 @@ export class GeoDataService {
       )
       .subscribe(
         (resp) => {
-          this.getFeatures(projectId);
+          this.features.pipe(first()).subscribe((fc) => {
+            this.setFeatureProperties(featureId, groupData);
+            this._loadingFeatureProperties.next(false);
+          });
         },
         (error) => {
           this.notificationsService.showErrorToast(
@@ -236,7 +321,9 @@ export class GeoDataService {
       )
       .subscribe(
         (resp) => {
-          this.getFeatures(projectId);
+          this.features.pipe(first()).subscribe((fc) => {
+            this.setFeatureStyles(featureId, styles);
+          });
         },
         (error) => {
           this.notificationsService.showErrorToast(

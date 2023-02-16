@@ -1,16 +1,11 @@
 <div>
   <div [ngSwitch]="form.type" class="form-controls">
     <ng-container *ngSwitchCase="'text'">
-      <app-form-textbox
-        (formValue)="setValue($event)"
-        [field]="form.options"
-        [form]="form"
-      ></app-form-textbox>
+      <app-form-textbox [field]="form.options" [form]="form"></app-form-textbox>
     </ng-container>
 
     <ng-container *ngSwitchCase="'dropdown'">
       <app-form-dropdown
-        (formValue)="setValue($event)"
         [field]="form.options"
         [form]="form"
       ></app-form-dropdown>
@@ -18,7 +13,6 @@
 
     <ng-container *ngSwitchCase="'radio'">
       <app-form-radio
-        (formValue)="setValue($event)"
         [field]="opt"
         [form]="form"
         label="{{ form.label }}"
@@ -26,15 +20,11 @@
     </ng-container>
 
     <ng-container *ngSwitchCase="'checkbox'">
-      <app-form-checkbox
-        (formValue)="setValue($event)"
-        [form]="form"
-      ></app-form-checkbox>
+      <app-form-checkbox [form]="form"></app-form-checkbox>
     </ng-container>
 
     <ng-container *ngSwitchCase="'color'">
       <app-form-color
-        (formValue)="setValue($event)"
         [field]="opt"
         [form]="form"
         label="{{ form.label }}"
