@@ -10,13 +10,13 @@ import { Feature, Project, TagGroup } from '../../models/models';
 import { FeatureCollection } from 'geojson';
 import { GeoDataService } from '../../services/geo-data.service';
 import { LatLng } from 'leaflet';
-import { skip, startWith } from 'rxjs/operators';
+import { skip } from 'rxjs/operators';
 import { BsModalRef, BsModalService } from 'ngx-foundation';
 import { ModalFileBrowserComponent } from '../modal-file-browser/modal-file-browser.component';
 import { ModalDownloadSelectorComponent } from '../modal-download-selector/modal-download-selector.component';
 import { ModalCreateProjectComponent } from '../modal-create-project/modal-create-project.component';
 import { ModalShareProjectComponent } from '../modal-share-project/modal-share-project.component';
-import { interval, Observable, Subscription, combineLatest } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { RemoteFile } from 'ng-tapis';
 import { GroupsService } from '../../services/groups.service';
 import { FormsService } from '../../services/forms.service';
@@ -27,11 +27,9 @@ import {
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalCurrentProjectComponent } from '../modal-current-project/modal-current-project.component';
-import { AppEnvironment, environment } from '../../../environments/environment';
-import { feature } from '@turf/helpers';
+import { environment } from '../../../environments/environment';
 import { TapisFilesService } from '../../services/tapis-files.service';
-import { element } from 'protractor';
-import { consoleTestResultHandler } from 'tslint/lib/test';
+
 import { ScrollService } from 'src/app/services/scroll.service';
 import { NotificationsService } from 'src/app/services/notifications.service';
 import { FeatureService } from 'src/app/services/feature.service';
@@ -66,6 +64,8 @@ export class ControlBarComponent implements OnInit {
   existingNameError = false;
   hazmapperLink: string;
   foundFilePaths = [];
+  groupToAdd: TagGroup;
+  public activeProject: Project;
 
   constructor(
     private projectsService: ProjectsService,
@@ -86,6 +86,11 @@ export class ControlBarComponent implements OnInit {
   ngOnInit() {
     this.filesService.getState();
 
+    this.groupsService.groupToAdd.subscribe((next) => {
+      console.log(next)
+      this.groupToAdd = next;
+    });
+
     this.featureService.features$.subscribe((fc: FeatureCollection) => {
       this.features = fc;
 
@@ -102,6 +107,10 @@ export class ControlBarComponent implements OnInit {
     this.geoDataService.groups.subscribe((next) => {
       this.groups = next;
       this.groupsExist = next && next.size ? true : false;
+    });
+
+    this.projectsService.activeProject.subscribe((next) => {
+      this.activeProject = next;
     });
 
     combineLatest(
@@ -165,24 +174,23 @@ export class ControlBarComponent implements OnInit {
     this.projectsService.projects.subscribe((projects) => {
       this.projects = projects;
 
-      if (this.projects.length) {
-        let lastProj;
-        // try {
-        //   //restores view to the last visited project from local storage
-        //   lastProj = JSON.parse(window.localStorage.getItem('lastProj'));
-        //   // console.log(lastProj);
-        // } catch (error) {
-        //   lastProj = this.projectsService.setActiveProject(this.projects[0]);
-        // }
+      // restores view to the last visited project from local storage
+      let lastProject = null;
+      try {
+        lastProject = JSON.parse(window.localStorage.getItem('lastProj'));
+      } catch (error) {
+        // possible that lastProj item is null and not json
+        lastProject = null;
+      }
 
-        lastProj = this.projectsService.setActiveProject(this.projects[0]);
-
-        // If lastProj is null, then there is no project saved, or can be found, default to the first project in the list
-        if (lastProj == 'none' || lastProj == null) {
-          lastProj = this.projects[0];
+      if (projects.length) {
+        const selectedLastProject = lastProject ? this.projects.find((prj) => prj.id === lastProject.id) : null;
+        if (selectedLastProject) {
+          this.projectsService.setActiveProject(selectedLastProject);
+        } else {
+          // default to the first project in the list
+          this.projectsService.setActiveProject(this.projects[0]);
         }
-
-        this.projectsService.setActiveProject(lastProj);
       }
 
       this.groupsService.selectedImages.subscribe((next) => {
@@ -196,10 +204,12 @@ export class ControlBarComponent implements OnInit {
 
     this.projectsService.activeProject.subscribe((next) => {
       this.selectedProject = next;
-      this.getDataForProject(this.selectedProject);
-      // retrieves uuid for project, formats result into a link to that Hazmapper map
-      this.hazmapperLink =
-        'https://hazmapper.tacc.utexas.edu/hazmapper/project/' + next.uuid;
+      if (this.selectedProject) {
+        this.getDataForProject(this.selectedProject);
+        // retrieves uuid for project, formats result into a link to that Hazmapper map
+        this.hazmapperLink =
+          'https://hazmapper.tacc.utexas.edu/hazmapper/project/' + next.uuid;
+      }
     });
 
     this.geoDataService.mapMouseLocation.pipe(skip(1)).subscribe((next) => {
@@ -211,13 +221,21 @@ export class ControlBarComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+
   clearAll() {
     this.groupsService.unselectAllImages();
   }
 
+  compareGroup(a, b) {
+    return a.name === b.name;
+  }
+
+  changeGroupToAdd(ev: any) {
+    this.groupsService.setGroupToAdd(ev.value);
+  }
+
   selectProject(p: Project): void {
     this.projectsService.setActiveProject(p);
-    this.getDataForProject(p);
   }
 
   getDataForProject(p: Project): void {
@@ -285,10 +303,6 @@ export class ControlBarComponent implements OnInit {
         uuid: project.uuid,
       },
     });
-
-    modal.afterClosed().subscribe((passbackData: Array<string>) => {
-      this.projectsService.setActiveProject(this.projects[0]);
-    });
   }
 
   addGroup(name: string) {
@@ -312,6 +326,16 @@ export class ControlBarComponent implements OnInit {
     }
   }
 
+
+  addToGroup(group: TagGroup) {
+    this.geoDataService.createGroupFeatures(
+      this.activeProject.id,
+      this.selectedImages,
+      this.groups.get(group.name)
+    );
+    this.groupsService.unselectAllImages();
+    this.scrollService.setScrollRestored(true);
+  }
   openAddGroupModal(template: TemplateRef<any>) {
     this.dialog.open(template);
   }

@@ -92,19 +92,22 @@ export class FormsService {
   // This method accesses group services to retrive the current group's icon as well
   saveStyles(
     projectId: number,
-    selectedColor: string,
+    featureList: Feature[],
     group: TagGroup,
-    feature: Feature
+    color?: string,
+    icon?: string
   ) {
-    group.color = this.checkDefault(selectedColor, feature);
-
     const style = {
-      faIcon: group.icon,
-      color: group.color,
+      color: color ? color : '#00C8FF',
+      faIcon: icon ? icon : group.icon,
     };
 
-    this.geoDataService.updateGroupFeatures(projectId, [feature], group);
-    this.geoDataService.updateFeatureStyle(projectId, feature.id, style);
+    this.geoDataService.updateGroupFeatures(
+      projectId,
+      featureList,
+      group,
+      style
+    );
   }
 
   updateTagValue(

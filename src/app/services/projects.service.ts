@@ -5,7 +5,6 @@ import { tap } from 'rxjs/operators';
 import { Project, IProjectUser, ProjectRequest } from '../models/models';
 import { environment } from '../../environments/environment';
 import { AuthService } from './authentication.service';
-import { validateBBox } from '@turf/helpers';
 import { NotificationsService } from './notifications.service';
 
 @Injectable({
@@ -26,11 +25,6 @@ export class ProjectsService {
   public readonly projectUsers$: Observable<Array<IProjectUser>> =
     this._projectUsers.asObservable();
 
-  private _deletingProjects: BehaviorSubject<Project[]> = new BehaviorSubject<
-    Project[]
-  >([]);
-  public deletingProjects: Observable<Project[]> =
-    this._deletingProjects.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -58,49 +52,30 @@ export class ProjectsService {
       });
   }
 
-  updateProjectsList(resp: Project[] = []) {
-    const myProjs = resp.length !== 0 ? resp : this._projects.value;
-
-    this._deletingProjects.value.length !== 0
-      ? this._projects.next(
-          myProjs.map((p) => {
-            const deletingProj = this._deletingProjects.value.find(
-              (dp) => dp.id === p.id
-            );
-            return deletingProj ? deletingProj : p;
-          })
-        )
-      : this._projects.next(myProjs);
-  }
-
   // Queries database for all user projects.
   getProjects(): void {
     this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe(
-      (resp) => {
-        this.updateProjectsList(resp);
+      (projects) => {
+        this._projects.next(projects);
       },
       (error) => {
         this.notificationsService.showErrorToast(
-          'Error importing files Design Safe, GeoAPI might be down'
+          'Error getting projects DesignSafe or GeoAPI might be down'
         );
       }
     );
   }
 
-  create(data: ProjectRequest): Observable<Project> {
-    const prom = this.http.post<Project>(
+  create(data: ProjectRequest) {
+    this.http.post<Project>(
       environment.apiUrl + `/projects/`,
       data
-    );
-    prom.subscribe((proj) => {
+    ).subscribe((proj) => {
+      // Adding deletable attribute as missing from response https://jira.tacc.utexas.edu/browse/DES-2381
+      proj = {...proj, deletable: true};
+      this.setActiveProject(proj);
       this._projects.next([...this._projects.value, proj]);
-
-      // Awkward as hell, but this ensures we actually transition to the newly created project
-      // Without this, the screen flickers briefly to the new project, but ends up stuck on the old project
-      this.setActiveProject(proj);
-      this.setActiveProject(proj);
     });
-    return prom;
   }
 
   setActiveProject(proj: Project): void {
@@ -118,50 +93,22 @@ export class ProjectsService {
       .put<Project>(environment.apiUrl + `/projects/${data.project.id}/`, data)
       .subscribe((resp) => {
         this._activeProject.next(resp);
+        this.getProjects();
       });
   }
 
   // Note: This will delete the project for everyone, if the project is shared.
   delete(data: Project): void {
-    this._deletingProjects.next([
-      ...this._deletingProjects.value,
-      { ...data, deleting: true },
-    ]);
-    this.updateProjectsList();
-
     this.http.delete(environment.apiUrl + `projects/${data.id}/`).subscribe(
       (resp) => {
-        window.localStorage.setItem('lastProj', JSON.stringify('none'));
-
-        this._deletingProjects.next(
-          this._deletingProjects.value.filter((p) => p.id !== data.id)
-        );
-        // These next two lines might be causing problems. Adding getProjects causes duplicates during project creation,
-        // So I'm thinking that calling these here might be the root of my delete woes, as they're restoring the project I just
-        // deleted...
-        this.updateProjectsList();
+        window.localStorage.removeItem('lastProj');
         this.getProjects();
-        // As elegant as a brick to the face, but this solves the delete issues...
-        window.localStorage.setItem('lastProj', JSON.stringify('none'));
       },
       (error) => {
-        window.localStorage.setItem('lastProj', JSON.stringify('none'));
-
-        this._deletingProjects.next(
-          this._deletingProjects.value.map((p) => {
-            return p.id === data.id
-              ? { ...p, deleting: false, deletingFailed: true }
-              : p;
-          })
-        );
-        this.updateProjectsList();
-
-        this.getProjects();
-
         this.notificationsService.showErrorToast('Could not delete project!');
         console.error(error);
       }
-    ); // end of error
+    );
   }
 
   getProjectUsers(proj: Project): Observable<Array<IProjectUser>> {
