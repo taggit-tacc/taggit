@@ -219,7 +219,9 @@ export class GeoDataService {
     const fc = this._features.value;
 
     fc.features.map((f) => {
-      f.properties.tags = f.properties.tags ? f.properties.tags : [];
+      if (!f.properties.tags) {
+        f.properties.tags = [];
+      }
 
       if (featureId == f.id) {
         if (f.properties.tags.some((t) => updatedTag.id == t.id)) {
@@ -567,7 +569,10 @@ export class GeoDataService {
     style?: FeatureStyles
   ): Feature[] {
     return featureList.map((feat: Feature) => {
-      let groupProp = feat.properties.group ? feat.properties.group : [];
+      let groupProp = feat.properties.group;
+      if (!groupProp) {
+        groupProp = []
+      }
       groupProp = groupProp.filter((grp: TagGroup) => grp.id !== group.id);
       groupProp.push(group);
       feat.properties.group = groupProp;
