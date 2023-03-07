@@ -58,7 +58,7 @@ export class FormColorComponent implements OnInit {
       this.value.color
     );
 
-    this.geoDataService.setFeatureTag(this.activeGroupFeature.id, {
+    this.geoDataService.setTagFeaturesQueue(this.activeGroupFeature.id, {
       id: this.form.id,
       value: this.value,
     });

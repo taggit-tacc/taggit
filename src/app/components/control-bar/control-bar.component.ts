@@ -67,7 +67,7 @@ export class ControlBarComponent implements OnInit {
   foundFilePaths = [];
   groupToAdd: TagGroup;
   public activeProject: Project;
-  updatedTagValues: any;
+  tagFeaturesQueue: any;
 
   constructor(
     private projectsService: ProjectsService,
@@ -93,8 +93,8 @@ export class ControlBarComponent implements OnInit {
       this.groupToAdd = next;
     });
 
-    this.geoDataService.updatedTagFeatures.subscribe((next) => {
-      this.updatedTagValues = next;
+    this.geoDataService.tagFeaturesQueue.subscribe((next) => {
+      this.tagFeaturesQueue = next;
     });
 
     this.featureService.features$.subscribe((fc: FeatureCollection) => {
@@ -514,6 +514,6 @@ export class ControlBarComponent implements OnInit {
   }
 
   saveTags(ev) {
-    this.geoDataService.updateFeatureTags(this.activeProject.id);
+    this.geoDataService.updateTagFeaturesQueue(this.activeProject.id);
   }
 }

@@ -169,7 +169,7 @@
   </div>
 
   <button
-    *ngIf="showTagger && updatedTagValues.length > 0"
+    *ngIf="showTagger && tagFeaturesQueue.length > 0"
     mat-raised-button
     style="margin-left: 15px"
     (click)="saveTags()"

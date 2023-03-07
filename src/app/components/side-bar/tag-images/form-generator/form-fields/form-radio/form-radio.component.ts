@@ -27,7 +27,7 @@ export class FormRadioComponent {
   }
 
   updateCheckedTag() {
-    this.geoDataService.setFeatureTag(this.activeGroupFeature.id, {
+    this.geoDataService.setTagFeaturesQueue(this.activeGroupFeature.id, {
       id: this.form.id,
       value: this.value,
     });

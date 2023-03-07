@@ -53,9 +53,9 @@ export class GeoDataService {
   private _activeGroup: BehaviorSubject<TagGroup> = new BehaviorSubject(null);
   public activeGroup: Observable<TagGroup> = this._activeGroup.asObservable();
 
-  private _updatedTagFeatures: BehaviorSubject<any[]> = new BehaviorSubject([]);
-  public updatedTagFeatures: Observable<any[]> =
-    this._updatedTagFeatures.asObservable();
+  private _tagFeaturesQueue: BehaviorSubject<any[]> = new BehaviorSubject([]);
+  public tagFeaturesQueue: Observable<any[]> =
+    this._tagFeaturesQueue.asObservable();
 
   private _loadingFeatureProperties: BehaviorSubject<boolean> =
     new BehaviorSubject(false);
@@ -127,14 +127,14 @@ export class GeoDataService {
     });
   }
 
-  updateFeatureTags(projectId) {
-    this._updatedTagFeatures.value.forEach((featureId) => {
+  updateTagFeaturesQueue(projectId) {
+    this._tagFeaturesQueue.value.forEach((featureId) => {
       const feature = this._features.value.features.find(
         (f) => f.id == featureId
       );
       this.updateFeatureProperty(projectId, featureId, feature.properties);
     });
-    this.resetUpdatedTagFeatures();
+    this.resetTagFeaturesQueue();
   }
 
   setFeatureStyles(featureId: string | number, styles: FeatureStyles) {
@@ -212,8 +212,11 @@ export class GeoDataService {
     }
   }
 
-  setFeatureTag(featureId, updatedTag) {
-    const tagFeatures = this._updatedTagFeatures.value;
+  // NOTE: Tag features queue is the local change to tags before posting it 
+  // to geoapi to persist.
+  setTagFeaturesQueue(featureId, updatedTag) {
+    console.log(updatedTag);
+    const tagFeatures = this._tagFeaturesQueue.value;
     const fc = this._features.value;
 
     fc.features.map((f) => {
@@ -238,12 +241,12 @@ export class GeoDataService {
       tagFeatures.push(featureId);
     }
 
-    this._updatedTagFeatures.next(tagFeatures);
+    this._tagFeaturesQueue.next(tagFeatures);
     this._features.next(fc);
   }
 
-  resetUpdatedTagFeatures() {
-    this._updatedTagFeatures.next([]);
+  resetTagFeaturesQueue() {
+    this._tagFeaturesQueue.next([]);
   }
 
   setActiveGroupFeature(feat: any): void {
