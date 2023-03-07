@@ -42,11 +42,13 @@ export class FormsService {
   ): void {
     const taggedGroup: TagGroup = {
       ...activeGroup,
-      forms: [
-        ...activeGroup.forms.filter((form) => form.id !== targetForm.id),
-        { ...targetForm, label: newName },
-      ],
-    };
+      forms: activeGroup.forms.map((form) => {
+        if (form.id == targetForm.id) {
+          form.label = newName;
+        }
+        return form;
+      })
+    }
 
     this.geoDataService.updateGroupFeatures(
       projectId,
