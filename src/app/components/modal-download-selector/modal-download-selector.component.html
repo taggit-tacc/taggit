@@ -53,7 +53,7 @@
   <div>
     <small
       ><em>
-        If no filename is specified, it will default to the Gallery ID number.
+        If no filename is specified, it will default to taggit-proj-GALLERYNAME.
       </em></small
     >
   </div>
@@ -63,15 +63,16 @@
       matInput
       type="text"
       formControlName="Name"
-      appearance="filled"
+      appearance="fill"
+      placeholder="Custom File Name"
       required="false"
     />
   </mat-form-field>
 </form>
 <span class="radio-box">
   <mat-radio-group [(ngModel)]="fileExtension">
-    <mat-radio-button value=".csv">.csv</mat-radio-button>
-    <mat-radio-button value=".json">.json</mat-radio-button>
+    <mat-radio-button value="CSV">CSV Files</mat-radio-button>
+    <mat-radio-button value="JSON">JSON File</mat-radio-button>
   </mat-radio-group>
 </span>
 

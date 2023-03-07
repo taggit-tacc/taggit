@@ -271,12 +271,17 @@ export class ControlBarComponent implements OnInit {
   }
 
   openDownloadSelector(fileName: string) {
-    const modal = this.dialog.open(ModalDownloadSelectorComponent);
-    let path: Array<string>;
-    modal.afterClosed().subscribe((passbackData: Array<string>) => {
-      path = passbackData;
-      this.saveFile(path[3] == '.json', true, path[0], path[1], path[2]);
-    });
+
+    if (this.groups.size === 0) {
+      this.notificationsService.showErrorToast('No groups have been created for this gallery. Please create at least one group.');
+    } else {
+      const modal = this.dialog.open(ModalDownloadSelectorComponent);
+      let path: Array<string>;
+      modal.afterClosed().subscribe((passbackData: Array<string>) => {
+        path = passbackData;
+        this.saveFile(path[3] == 'JSON', true, path[0], path[1], path[2]);
+      });
+    }
   }
 
   openCreateProjectModal() {
@@ -399,6 +404,7 @@ export class ControlBarComponent implements OnInit {
       groupFeatures.forEach((groupFeature) => {
         let featureSource =
           environment.apiUrl + '/assets/' + groupFeature.assets[0].path;
+
         featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
         const coordinates = groupFeature.geometry.coordinates;
         const tags = groupFeature.properties.tags;
@@ -439,48 +445,52 @@ export class ControlBarComponent implements OnInit {
     forExport: Boolean = false,
     systemID = '',
     path = '',
-    fileName
+    fileName = ''
   ) {
-    const exportList = this.exportList();
-    const filename = 'taggit-proj-' + this.selectedProject.name;
-    if (isJSON) {
-      const content = JSON.stringify(exportList);
-      const blob = new Blob(['\ufeff' + content], {
-        type: 'text/json;charset=utf-8;',
-      });
-      if (forExport) {
-        this.filesService.export(systemID, path, fileName, '.json', blob);
-      } else {
-        this.download(blob, '.json', filename);
-      }
+    if (this.groups.size === 0) {
+      this.notificationsService.showErrorToast('No groups have been created for this gallery. Please create at least one group.');
     } else {
-      const csvFiles = exportList.map((exportItem) => {
-        const csvRows = [];
-        const headers = this.getCSVHeaders(exportItem.features);
-        csvRows.push(headers.join(','));
+      const exportList = this.exportList();
+      const filename = fileName ? fileName : 'taggit-proj-' + this.selectedProject.name;
+      if (isJSON) {
+        const content = JSON.stringify(exportList);
+        const blob = new Blob(['\ufeff' + content], {
+          type: 'text/json;charset=utf-8;',
+        });
+        if (forExport) {
+          this.filesService.export(systemID, path, filename, '.json', blob);
+        } else {
+          this.download(blob, '.json', filename);
+        }
+      } else {
+        const csvFiles = exportList.map((exportItem) => {
+          const csvRows = [];
+          const headers = this.getCSVHeaders(exportItem.features);
+          csvRows.push(headers.join(','));
 
-        exportItem.features.forEach((ef) => {
-          const values = headers.map((header) =>
-            ef[header] ? ef[header] : ''
-          );
-          csvRows.push(values.join(','));
+          exportItem.features.forEach((ef) => {
+            const values = headers.map((header) =>
+              ef[header] ? ef[header] : ''
+            );
+            csvRows.push(values.join(','));
+          });
+
+          return csvRows.join('\n');
         });
 
-        return csvRows.join('\n');
-      });
+        const zip = new JSZip();
+        csvFiles.forEach((csv, i) => {
+          zip.file(`group-${i}.csv`, csv);
+        });
 
-      const zip = new JSZip();
-      csvFiles.forEach((csv, i) => {
-        zip.file(`group-${i}.csv`, csv);
-      });
-
-      zip.generateAsync({ type: 'blob' }).then((content) => {
-        if (forExport) {
-          this.filesService.export(systemID, path, fileName, '.zip', content);
-        } else {
-          this.download(content, '.zip', filename);
-        }
-      });
+        zip.generateAsync({ type: 'blob' }).then((content) => {
+          if (forExport) {
+            this.filesService.export(systemID, path, filename, '.zip', content);
+          } else {
+            this.download(content, '.zip', filename);
+          }
+        });
+      }
     }
   }
 
