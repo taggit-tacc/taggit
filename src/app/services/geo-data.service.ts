@@ -569,10 +569,7 @@ export class GeoDataService {
     style?: FeatureStyles
   ): Feature[] {
     return featureList.map((feat: Feature) => {
-      let groupProp = feat.properties.group;
-      if (!groupProp) {
-        groupProp = []
-      }
+      let groupProp = feat.properties.group ? feat.properties.group : [];
       groupProp = groupProp.filter((grp: TagGroup) => grp.id !== group.id);
       groupProp.push(group);
       feat.properties.group = groupProp;
