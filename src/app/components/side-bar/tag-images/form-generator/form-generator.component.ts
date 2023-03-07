@@ -17,7 +17,9 @@ export class FormGeneratorComponent implements OnInit {
   name = new FormControl('');
 
   ngOnInit() {
-    this.generateColors();
+    if (this.form.type == 'color' && this.form.options) {
+      this.generateColors();
+    }
   }
 
   // Generates a key:value list of colors ranging from green (#00FF00) to red (#FF0000) based on passed in info
