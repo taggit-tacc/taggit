@@ -215,11 +215,12 @@ export class GeoDataService {
   // NOTE: Tag features queue is the local change to tags before posting it 
   // to geoapi to persist.
   setTagFeaturesQueue(featureId, updatedTag) {
-    console.log(updatedTag);
     const tagFeatures = this._tagFeaturesQueue.value;
     const fc = this._features.value;
 
     fc.features.map((f) => {
+      f.properties.tags = f.properties.tags ? f.properties.tags : [];
+
       if (featureId == f.id) {
         if (f.properties.tags.some((t) => updatedTag.id == t.id)) {
           f.properties.tags.map((t) => {
