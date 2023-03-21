@@ -128,14 +128,14 @@
 
   <div class="bottom-overlay">
     <div
-      *ngIf="feature.properties.group && feature.properties.group.length > 0"
+      *ngIf="feature.properties.taggit.group && feature.properties.taggit.group.length > 0"
     >
       <div
-        *ngIf="feature.properties.group.length < 5; else dotdot"
+        *ngIf="feature.properties.taggit.group.length < 5; else dotdot"
         class="group-tags"
       >
         <div
-          *ngFor="let group of feature.properties.group"
+          *ngFor="let group of feature.properties.taggit.group"
           class="center"
           (mouseover)="(group.name)"
           [matTooltip]="group.name"
@@ -190,7 +190,7 @@
           style="display: flex; justify-content: center; align-items: center"
         >
           <div
-            *ngFor="let group of feature.properties.group"
+            *ngFor="let group of feature.properties.taggit.group"
             class="center-temp"
             style="display: flex"
             (mouseover)="(group.name)"

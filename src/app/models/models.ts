@@ -209,9 +209,9 @@ export class FeatureCollection implements IFeatureCollection {
 export class Feature implements AppGeoJSONFeature {
   geometry: Geometry;
   // Taggit specific:
-  // properties.tags: Tag[]
-  // properties.groups: Group[]
-  // properties.values: TagValue[]
+  // properties.taggit
+  // properties.taggit.tags: Tag[]
+  // properties.taggit.group: Group[]
   properties: GeoJsonProperties;
   id?: string | number;
   type: any;
@@ -222,6 +222,12 @@ export class Feature implements AppGeoJSONFeature {
   constructor(f: AppGeoJSONFeature) {
     this.geometry = f.geometry;
     this.properties = f.properties;
+
+    // NOTE: Taggit-specific
+    this.properties.taggit = this.properties.taggit ? this.properties.taggit : {};
+    this.properties.taggit.group = this.properties.taggit.group ? this.properties.taggit.group : [];
+    this.properties.taggit.tags = this.properties.taggit.tags ? this.properties.taggit.tags : [];
+
     this.id = f.id;
     this.type = f.type;
     this.assets = f.assets;

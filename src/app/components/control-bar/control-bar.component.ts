@@ -406,7 +406,7 @@ export class ControlBarComponent implements OnInit {
           environment.apiUrl + '/assets/' + groupFeature.assets[0].path;
         featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
         const coordinates = groupFeature.geometry.coordinates;
-        const tags = groupFeature.properties.tags;
+        const tags = groupFeature.properties.taggit.tags;
         const featureObj = {
           src: featureSource,
           id: groupFeature.id,

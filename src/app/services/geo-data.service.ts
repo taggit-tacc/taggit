@@ -219,21 +219,17 @@ export class GeoDataService {
     const fc = this._features.value;
 
     fc.features.map((f) => {
-      if (!f.properties.tags) {
-        f.properties.tags = [];
-      }
-
       if (featureId == f.id) {
-        if (f.properties.tags.some((t) => updatedTag.id == t.id)) {
-          f.properties.tags.map((t) => {
+        if (f.properties.taggit.tags.some((t) => updatedTag.id == t.id)) {
+          f.properties.taggit.tags.map((t) => {
             if (t.id == updatedTag.id) {
               t.value = updatedTag.value;
             }
             return t;
           });
         } else {
-          f.properties.tags = f.properties.tags.length
-            ? [...f.properties.tags, updatedTag]
+          f.properties.taggit.tags = f.properties.taggit.tags.length
+            ? [...f.properties.taggit.tags, updatedTag]
             : [updatedTag];
         }
       }
@@ -529,10 +525,10 @@ export class GeoDataService {
     featureList
       .filter(
         (feat: Feature) =>
-          feat.properties.group && feat.properties.group.length > 0
+          feat.properties.taggit.group && feat.properties.taggit.group.length > 0
       )
       .forEach((feat: Feature) => {
-        feat.properties.group.forEach((group: TagGroup) => {
+        feat.properties.taggit.group.forEach((group: TagGroup) => {
           groupsFeatures.set(
             group.name,
             groupsFeatures.has(group.name)
@@ -557,9 +553,9 @@ export class GeoDataService {
   getGroupFeatures(featureList: Feature[], group: TagGroup) {
     return featureList.filter(
       (feat: Feature) =>
-        feat.properties.group &&
-        feat.properties.group.length &&
-        feat.properties.group.some((grp: TagGroup) => grp.id === group.id)
+        feat.properties.taggit.group &&
+        feat.properties.taggit.group.length &&
+        feat.properties.taggit.group.some((grp: TagGroup) => grp.id === group.id)
     );
   }
 
@@ -569,10 +565,9 @@ export class GeoDataService {
     style?: FeatureStyles
   ): Feature[] {
     return featureList.map((feat: Feature) => {
-      let groupProp = feat.properties.group ? feat.properties.group : [];
-      groupProp = groupProp.filter((grp: TagGroup) => grp.id !== group.id);
+      const groupProp = feat.properties.taggit.group.filter((grp: TagGroup) => grp.id !== group.id);
       groupProp.push(group);
-      feat.properties.group = groupProp;
+      feat.properties.taggit.group = groupProp;
       feat.properties.style = style
         ? style
         : feat.properties.style
@@ -589,11 +584,11 @@ export class GeoDataService {
     style?: FeatureStyles
   ): Feature[] {
     return this.getGroupFeatures(featureList, group).map((feat: Feature) => {
-      const groupProp = feat.properties.group.filter(
+      const groupProp = feat.properties.taggit.group.filter(
         (grp: TagGroup) => grp.id !== group.id
       );
       groupProp.push(group);
-      feat.properties.group = groupProp;
+      feat.properties.taggit.group = groupProp;
       feat.properties.style = style
         ? style
         : feat.properties.style
@@ -606,7 +601,7 @@ export class GeoDataService {
 
   private deleteGroup(featureList: Feature[], group: TagGroup): Feature[] {
     return this.getGroupFeatures(featureList, group).map((feat: Feature) => {
-      feat.properties.group = feat.properties.group.filter(
+      feat.properties.taggit.group = feat.properties.taggit.group.filter(
         (grp: TagGroup) => grp.id !== group.id
       );
       return feat;
