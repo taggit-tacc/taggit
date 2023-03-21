@@ -525,7 +525,7 @@ export class GeoDataService {
     featureList
       .filter(
         (feat: Feature) =>
-          feat.properties.taggit.group && feat.properties.taggit.group.length > 0
+          feat.properties.taggit.groups && feat.properties.taggit.groups.length > 0
       )
       .forEach((feat: Feature) => {
         feat.properties.taggit.group.forEach((group: TagGroup) => {
@@ -553,9 +553,9 @@ export class GeoDataService {
   getGroupFeatures(featureList: Feature[], group: TagGroup) {
     return featureList.filter(
       (feat: Feature) =>
-        feat.properties.taggit.group &&
-        feat.properties.taggit.group.length &&
-        feat.properties.taggit.group.some((grp: TagGroup) => grp.id === group.id)
+        feat.properties.taggit.groups &&
+        feat.properties.taggit.groups.length &&
+        feat.properties.taggit.groups.some((grp: TagGroup) => grp.id === group.id)
     );
   }
 
@@ -567,7 +567,7 @@ export class GeoDataService {
     return featureList.map((feat: Feature) => {
       const groupProp = feat.properties.taggit.group.filter((grp: TagGroup) => grp.id !== group.id);
       groupProp.push(group);
-      feat.properties.taggit.group = groupProp;
+      feat.properties.taggit.groups = groupProp;
       feat.properties.style = style
         ? style
         : feat.properties.style
@@ -584,11 +584,11 @@ export class GeoDataService {
     style?: FeatureStyles
   ): Feature[] {
     return this.getGroupFeatures(featureList, group).map((feat: Feature) => {
-      const groupProp = feat.properties.taggit.group.filter(
+      const groupProp = feat.properties.taggit.groups.filter(
         (grp: TagGroup) => grp.id !== group.id
       );
       groupProp.push(group);
-      feat.properties.taggit.group = groupProp;
+      feat.properties.taggit.groups = groupProp;
       feat.properties.style = style
         ? style
         : feat.properties.style
@@ -601,7 +601,7 @@ export class GeoDataService {
 
   private deleteGroup(featureList: Feature[], group: TagGroup): Feature[] {
     return this.getGroupFeatures(featureList, group).map((feat: Feature) => {
-      feat.properties.taggit.group = feat.properties.taggit.group.filter(
+      feat.properties.taggit.groups = feat.properties.taggit.groups.filter(
         (grp: TagGroup) => grp.id !== group.id
       );
       return feat;

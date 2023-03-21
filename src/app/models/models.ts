@@ -211,7 +211,7 @@ export class Feature implements AppGeoJSONFeature {
   // Taggit specific:
   // properties.taggit
   // properties.taggit.tags: Tag[]
-  // properties.taggit.group: Group[]
+  // properties.taggit.groups: Group[]
   properties: GeoJsonProperties;
   id?: string | number;
   type: any;
@@ -225,7 +225,7 @@ export class Feature implements AppGeoJSONFeature {
 
     // NOTE: Taggit-specific
     this.properties.taggit = this.properties.taggit ? this.properties.taggit : {};
-    this.properties.taggit.group = this.properties.taggit.group ? this.properties.taggit.group : [];
+    this.properties.taggit.groups = this.properties.taggit.groups ? this.properties.taggit.groups : [];
     this.properties.taggit.tags = this.properties.taggit.tags ? this.properties.taggit.tags : [];
 
     this.id = f.id;
