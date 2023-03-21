@@ -47,6 +47,9 @@ export class GeoDataService {
   private _loaded: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public loaded: Observable<boolean> = this._loaded.asObservable();
 
+  private _loadingGallery: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  public loadingGallery: Observable<boolean> = this._loadingGallery.asObservable();
+
   private _activeGroupId: BehaviorSubject<number> = new BehaviorSubject(null);
   public activeGroupId: Observable<number> = this._activeGroupId.asObservable();
 
@@ -155,6 +158,7 @@ export class GeoDataService {
     restoreScroll = false
   ): void {
     const qstring: string = querystring.stringify(query.toJson());
+    this._loadingGallery.next(false);
     this.http
       .get<FeatureCollection>(
         environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring
@@ -163,6 +167,7 @@ export class GeoDataService {
         (fc: FeatureCollection) => {
           this.setFeatures(fc);
           this._loaded.next(true);
+          this._loadingGallery.next(true);
 
           if (restoreScroll) {
             this.scrollService.setScrollRestored(true);
@@ -528,7 +533,7 @@ export class GeoDataService {
           feat.properties.taggit.groups && feat.properties.taggit.groups.length > 0
       )
       .forEach((feat: Feature) => {
-        feat.properties.taggit.group.forEach((group: TagGroup) => {
+        feat.properties.taggit.groups.forEach((group: TagGroup) => {
           groupsFeatures.set(
             group.name,
             groupsFeatures.has(group.name)
@@ -565,7 +570,7 @@ export class GeoDataService {
     style?: FeatureStyles
   ): Feature[] {
     return featureList.map((feat: Feature) => {
-      const groupProp = feat.properties.taggit.group.filter((grp: TagGroup) => grp.id !== group.id);
+      const groupProp = feat.properties.taggit.groups.filter((grp: TagGroup) => grp.id !== group.id);
       groupProp.push(group);
       feat.properties.taggit.groups = groupProp;
       feat.properties.style = style

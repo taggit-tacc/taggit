@@ -348,7 +348,7 @@ export class ControlBarComponent implements OnInit {
 
   toggleTagger() {
     if (!this.showTagger) {
-      this.scrollService.setScrollRestored(true);
+      this.scrollService.setScrollPosition();
 
       const [initialGroupName] = this.groupsFeatures.keys();
       const activeGroupFeatures = this.groupsFeatures.get(initialGroupName);
@@ -358,7 +358,7 @@ export class ControlBarComponent implements OnInit {
       this.groupsService.setShowTagGenerator(false);
       this.groupsService.unselectAllImages();
     } else {
-      this.scrollService.setScrollPosition();
+      this.scrollService.setScrollRestored(true);
     }
 
     this.groupsService.toggleTagger();

@@ -36,7 +36,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   showTagger = false;
   scrolling = false;
   scrollStatus: string;
-  imagesExist: boolean;
+  imagesExist: boolean = false;
   projectsExist: boolean;
   featureList: Array<any> = [];
   featureListScroll: Array<any>;
@@ -47,6 +47,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   // activeFeatureNum: number;
   featurePath: string;
   loaded: boolean;
+  loadingGallery: boolean = false;
   groupsFeatures: Map<string, any>;
   groups: Map<string, any>;
 
@@ -81,10 +82,14 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
       }
     );
 
+    this.geoDataService.loadingGallery.subscribe(e => {
+        this.loadingGallery = e;
+    });
+
     this.featureService.features$.subscribe((fc: any) => {
+      this.imagesExist = false;
       if (fc) {
         if (fc.features.length > 0) {
-          this.imagesExist = true;
           this.featureList = fc.features.filter((feature) => {
             try {
               return (
@@ -100,6 +105,9 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
               return false;
             }
           });
+          if (this.featureList.length > 0) {
+            this.imagesExist = true;
+          }
           this.featureListScroll = this.featureList.slice(0, this.scrollSum);
         } else {
           this.imagesExist = false;

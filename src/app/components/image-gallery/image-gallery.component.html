@@ -1,5 +1,7 @@
 <div *ngIf="loaded; else loader" id="loading-load">
   <div *ngIf="projectsExist; else noProjWarn" id="gallery-container">
+
+  <div *ngIf="loadingGallery; else galleryLoader">
     <div *ngIf="imagesExist; else noImgWarn" id="gallery-container-container">
       <div
         [ngClass]="scrollStatus"
@@ -35,6 +37,14 @@
         <app-side-bar></app-side-bar>
       </div>
     </div>
+  </div>
+
+    <ng-template #galleryLoader>
+      <div id="no-img">
+      <i class="fas fa-circle-notch fa-spin"></i>
+      </div>
+    </ng-template>
+
     <ng-template #noImgWarn>
       <div id="no-img">
         No images have been imported!<br />Please import images through the
