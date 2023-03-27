@@ -1,0 +1,41 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taggit
+spec:
+  selector:
+    matchLabels:
+      run: taggit
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: taggit
+    spec:
+      containers:
+      - name: taggit
+        image: taccaci/taggit:${TAGGIT_TAG}
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: '256M'
+          limits:
+            memory: '512M'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: taggit
+  labels:
+    run: taggit
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: ${TAGGIT_NODEPORT}
+    protocol: TCP
+  selector:
+    run: taggit

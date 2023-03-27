@@ -9,7 +9,7 @@ RUN npm install
 WORKDIR /
 COPY . /www
 WORKDIR /www
-RUN ng build --prod --base-href /hazmapper/
+RUN ng build --prod --base-href /taggit/
 RUN ls
 
 
