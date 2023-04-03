@@ -91,13 +91,9 @@ export class TapisFilesService {
     const fullURL = `https://agave.designsafe-ci.org/files/v2/media/system/${systemID}${path}`;
 
     // construct a file to submit
-    let fileType = 'plain/text';
-    extension == '.csv'
-      ? (fileType = 'text/csv')
-      : (fileType = 'application/json');
-    const tmp = new Blob([data], { type: fileType });
+    const tmp = new Blob([data], { type: 'blob' });
     const date = new Date();
-    const file = new File([tmp], fileName, { lastModified: date.valueOf() });
+    const file = new File([tmp], fileName + '.zip', { lastModified: date.valueOf() });
 
     // Creates a form data object which holds the file to be uploaded
     const form: FormData = new FormData();

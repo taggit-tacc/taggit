@@ -8,11 +8,11 @@ import { GeoDataService } from 'src/app/services/geo-data.service';
   templateUrl: './form-radio.component.html',
 })
 export class FormRadioComponent {
-  @Output() formValue: EventEmitter<any> = new EventEmitter<any>();
   @Input() field: any = {};
   @Input() form: GroupForm;
   @Input() label: String;
   public value: string;
+  activeGroupFeature: any;
 
   constructor(
     private formsService: FormsService,
@@ -21,12 +21,15 @@ export class FormRadioComponent {
 
   ngOnInit() {
     this.geoDataService.activeGroupFeature.subscribe((next) => {
+      this.activeGroupFeature = next;
       this.value = this.formsService.getTagValue(next, this.form);
-      this.formValue.emit({ id: this.form.id, value: this.value });
     });
   }
 
   updateCheckedTag() {
-    this.formValue.emit({ id: this.form.id, value: this.value });
+    this.geoDataService.setTagFeaturesQueue(this.activeGroupFeature.id, {
+      id: this.form.id,
+      value: this.value,
+    });
   }
 }

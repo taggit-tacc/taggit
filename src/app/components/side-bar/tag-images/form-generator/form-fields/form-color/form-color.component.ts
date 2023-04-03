@@ -12,7 +12,6 @@ import { ProjectsService } from 'src/app/services/projects.service';
   styleUrls: ['./form-color.component.scss'],
 })
 export class FormColorComponent implements OnInit {
-  @Output() formValue: EventEmitter<any> = new EventEmitter<any>();
   @Input() field: any = {};
   @Input() form: GroupForm;
   @Input() color: string;
@@ -35,7 +34,6 @@ export class FormColorComponent implements OnInit {
     this.geoDataService.activeGroupFeature.subscribe((next) => {
       this.value = this.formsService.getTagValue(next, this.form);
       this.chosenTag = this.value.label;
-      this.formValue.emit({ id: this.form.id, value: this.value });
     });
 
     this.projectsService.activeProject.subscribe((next) => {
@@ -59,6 +57,10 @@ export class FormColorComponent implements OnInit {
       this.activeGroup,
       this.value.color
     );
-    this.formValue.emit({ id: this.form.id, value: this.value });
+
+    this.geoDataService.setTagFeaturesQueue(this.activeGroupFeature.id, {
+      id: this.form.id,
+      value: this.value,
+    });
   }
 }
