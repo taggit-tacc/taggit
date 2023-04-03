@@ -33,6 +33,7 @@ import { TapisFilesService } from '../../services/tapis-files.service';
 import { ScrollService } from 'src/app/services/scroll.service';
 import { NotificationsService } from 'src/app/services/notifications.service';
 import { FeatureService } from 'src/app/services/feature.service';
+import * as JSZip from 'jszip';
 
 @Component({
   selector: 'app-control-bar',
@@ -270,12 +271,17 @@ export class ControlBarComponent implements OnInit {
   }
 
   openDownloadSelector(fileName: string) {
-    const modal = this.dialog.open(ModalDownloadSelectorComponent);
-    let path: Array<string>;
-    modal.afterClosed().subscribe((passbackData: Array<string>) => {
-      path = passbackData;
-      this.saveFile(path[3] == '.json', true, path[0], path[1], path[2]);
-    });
+
+    if (this.groups.size === 0) {
+      this.notificationsService.showErrorToast('No groups have been created for this gallery. Please create at least one group.');
+    } else {
+      const modal = this.dialog.open(ModalDownloadSelectorComponent);
+      let path: Array<string>;
+      modal.afterClosed().subscribe((passbackData: Array<string>) => {
+        path = passbackData;
+        this.saveFile(true, path[0], path[1], path[2]);
+      });
+    }
   }
 
   openCreateProjectModal() {
@@ -376,319 +382,120 @@ export class ControlBarComponent implements OnInit {
     this.geoDataService.setActiveGroupFeature(this.activeGroupFeature);
   }
 
-  // saves project as a CSV file by first organizing a JSON or a CSV and converting it. Saves to either MyData or local
-  // I apologize in advance for this mess of a function -Ben
-  // This really needs to be split into something like 3 separate functions
+  // Flattens feature keys and remove redundant one
+  getCSVHeaders(exportFeatures: any): any[] {
+    return [...new Set(exportFeatures.flatMap((ef: any) => Object.keys(ef)))];
+  }
+
+  exportList() {
+    const exportList = [];
+
+    this.groups.forEach((e) => {
+      const exportGroupObj = {};
+      exportGroupObj['groupName'] = e.name;
+      const groupFeatures = this.groupsFeatures.get(e.name);
+      exportGroupObj['features'] = [];
+
+      const forms = e.forms;
+
+      groupFeatures.forEach((groupFeature) => {
+        let featureSource =
+          environment.apiUrl + '/assets/' + groupFeature.assets[0].path;
+
+        featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
+        const coordinates = groupFeature.geometry.coordinates;
+        const tags = groupFeature.properties.tags;
+        const featureObj = {
+          src: featureSource,
+          id: groupFeature.id,
+          longitude: coordinates[0],
+          latitude: coordinates[1],
+          groupName: e.name,
+          icon: e.icon,
+          color: e.color,
+        };
+
+        if (forms && tags) {
+          forms.forEach((f) => {
+            const tag = tags.find((t) => {
+              return f.id === t.id;
+            });
+            if (tag) {
+              const label = f.label.charAt(0).toUpperCase() + f.label.slice(1);
+              featureObj['Tag' + label + 'Type'] = f.type;
+              featureObj['Tag' + label + 'Value'] =
+                f.type === 'checkbox'
+                  ? tag.value.map((v) => v.label).join('|')
+                  : tag.value;
+            }
+          });
+        }
+        exportGroupObj['features'].push(featureObj);
+      });
+      exportList.push(exportGroupObj);
+    });
+    return exportList;
+  }
+
   saveFile(
-    isJSON: Boolean,
     forExport: Boolean = false,
     systemID = '',
     path = '',
-    fileName
+    fileName = ''
   ) {
-    let CSVHolder = 'FeatureID,longitude,latitude,src';
-    let JSONHolder: String = '';
-    let projID = '';
-    let tagsPresent = true;
-    let headerComplete = false; // If true, then the full csv header info has been compiled
-    let headerTagOptions = 0; // Controls how many tagOption columns are in the final CSV
+    if (this.groups.size === 0) {
+      this.notificationsService.showErrorToast('No groups have been created for this gallery. Please create at least one group.');
+    } else {
+      const exportList = this.exportList();
+      const filename = fileName ? fileName : 'taggit-proj-' + this.selectedProject.name;
+ 
+      // JSON
+      const jsonContent = JSON.stringify(exportList);
+      const jsonBlob = new Blob(['\ufeff' + jsonContent], {
+        type: 'text/json;charset=utf-8;',
+      });
 
-    this.featureList.forEach((element) => {
-      // Retrieves project ID for building a filename
-      projID = element.project_id;
+      // CSV
+      const csvFiles = exportList.map((exportItem) => {
+        const csvRows = [];
+        const headers = this.getCSVHeaders(exportItem.features);
+        csvRows.push(headers.join(','));
 
-      // retrieves longitude and latitude values as an array
-      const coordinates = element.geometry.coordinates;
+        exportItem.features.forEach((ef) => {
+          const values = headers.map((header) =>
+            ef[header] ? ef[header] : ''
+          );
+          csvRows.push(values.join(','));
+        });
 
-      // creates image source URL from environment and cleans up URL to a usable link
-      let featureSource =
-        environment.apiUrl + '/assets/' + element.assets[0].path;
-      featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
+        return csvRows.join('\n');
+      });
 
-      // Grabs group data
-      // Group data can be accessed from the feature, through the properties element
-      // If the image doesn't have a group, a placeholder is given
-      // NOTE: future group properties can be accessed in the same way
-      let group, styles, tag;
-      try {
-        try {
-          group = element.properties.group;
-        } catch {
-          group = [
-            {
-              color: '#000000',
-              name: 'N/A',
-              icon: 'fa-house-damage',
-            },
-          ];
-        }
+      // Create ZIP
+      const zip = new JSZip();
+      const jsonFolder = zip.folder("json");
+      const csvFolder = zip.folder("csv");
 
-        try {
-          styles = element.properties.style;
-        } catch {
-          styles = [];
-        }
+      jsonFolder.file('data.json', jsonBlob);
 
-        try {
-          tag = element.properties.tag;
-        } catch {
-          tag = [];
-        }
+      csvFiles.forEach((csv, i) => {
+        csvFolder.file(`group-${i}.csv`, csv);
+      });
 
-        // If groups are present on the data, add header data
-        if (group.length > 0 && !headerComplete) {
-          CSVHolder += ',groupName,groupColor,groupIcon';
-        }
-
-        // Check if the tag var has any data, if so, add new lines to the header
-        if (tag != undefined && tagsPresent && !headerComplete) {
-          // Add a few more lines to the holder to accomodate tags
-          CSVHolder += ',Icon,Color,tagType,tagSelection';
-          tag.forEach((tag) => {
-            let tempTagOptionNum = 0;
-            tag.options.forEach((option) => {
-              tempTagOptionNum++;
-              if (tempTagOptionNum > headerTagOptions) {
-                CSVHolder += ',tagOption';
-                headerTagOptions = tempTagOptionNum;
-              }
-            });
-          });
-          if (!headerComplete) {
-            CSVHolder += '\r\n';
-            tagsPresent = false;
-            headerComplete = true;
-          }
-        } else if (!headerComplete) {
-          // If not, indent the last line.
-          CSVHolder += '\r\n';
-          headerComplete = true;
-        }
-      } catch (error) {}
-
-      if (isJSON) {
-        // Compile the data it into a JSON
-        JSONHolder +=
-          this.compileJSON(
-            coordinates,
-            element.id,
-            featureSource,
-            group,
-            tag,
-            styles
-          ) + ', \n';
-      } else {
-        // Compiles the attributes into a CSV format
-        // If there is no groups for the feature, output without group info
-        if (group == undefined) {
-          // Indents CSV header.
-          CSVHolder += '\r\n';
-          // Compiles data to a line of a CSV, and adds it to a growing full CSV file
-          // 			  featureID			 Longitude				Latitude			   src
-          const tempCSV =
-            element.id +
-            ',' +
-            coordinates[0] +
-            ',' +
-            coordinates[1] +
-            ',' +
-            featureSource +
-            '\r\n';
-          CSVHolder += tempCSV;
+      zip.generateAsync({ type: 'blob' }).then((content) => {
+        if (forExport) {
+          this.filesService.export(systemID, path, filename, '.zip', content);
         } else {
-          group.forEach((group) => {
-            // If tags exist, try to add each tag to the CSV
-            if (tag != undefined) {
-              try {
-                tag.forEach((tag) => {
-                  // If the tag is in the group, compile a row
-                  // TODO: If a group doesn't have a tag, it doesn't get printed at all
-                  if (true) {
-                    // (tag.groupName === group.name) {
-                    // 			  featureID			 Longitude				Latitude			   src
-                    let tempCSV =
-                      element.id +
-                      ',' +
-                      coordinates[0] +
-                      ',' +
-                      coordinates[1] +
-                      ',' +
-                      featureSource +
-                      ',' +
-                      // groupName			groupColor			groupIcon		   Icon					 Color
-                      group.name +
-                      ',' +
-                      group.color +
-                      ',' +
-                      group.icon +
-                      ',' +
-                      styles.faIcon +
-                      ',' +
-                      styles.color +
-                      ',' +
-                      // tagType			tagOption(This is repeated a lot)
-                      tag.type +
-                      ',' +
-                      tag.extra[0].option;
-                    tag.options.forEach((option) => {
-                      // Save each option in the tag to the CSV
-                      // Adds just the label to the CSV, we can reconstruct the key from that.
-                      tempCSV += ',' + option.label;
-                    });
-                    tempCSV += '\r\n';
-                    // And adds it to a growing full CSV file
-                    CSVHolder += tempCSV;
-                  }
-                });
-              } catch {
-                try {
-                  // If the above fails, attempt to construct a line with group data
-                  // 			  featureID			 Longitude				Latitude			   src
-                  const tempCSV =
-                    element.id +
-                    ',' +
-                    coordinates[0] +
-                    ',' +
-                    coordinates[1] +
-                    ',' +
-                    featureSource +
-                    ',' +
-                    // groupName			groupColor			groupIcon
-                    group.name +
-                    ',' +
-                    group.color +
-                    ',' +
-                    group.icon +
-                    '\r\n';
-                  CSVHolder += tempCSV;
-                } catch (error) {
-                  // If all else fails, It writes no data on an error, so output the groupless data
-                  // 			  featureID			 Longitude				Latitude			   src
-                  const tempCSV =
-                    element.id +
-                    ',' +
-                    coordinates[0] +
-                    ',' +
-                    coordinates[1] +
-                    ',' +
-                    featureSource +
-                    '\r\n';
-                  CSVHolder += tempCSV;
-                }
-              }
-            } else {
-              // Compiles data to a line of a CSV
-              // 			  featureID			 Longitude				Latitude			   src
-              const tempCSV =
-                element.id +
-                ',' +
-                coordinates[0] +
-                ',' +
-                coordinates[1] +
-                ',' +
-                featureSource +
-                ',' +
-                // groupName			groupColor			groupIcon
-                group.name +
-                ',' +
-                group.color +
-                ',' +
-                group.icon +
-                '\r\n';
-              // And adds it to a growing full CSV file
-              CSVHolder += tempCSV;
-            }
-          });
-        }
-      }
-    });
-    let content;
-    let extension;
-    // determine whether the file is wanted as a JSON or a CSV
-    if (isJSON) {
-      content = JSONHolder;
-      extension = '.json';
-    } else {
-      content = CSVHolder;
-      extension = '.csv';
-    }
-
-    // If the function is marked for export to Design Safe, route through export, otherwise, download the file
-    if (forExport) {
-      fileName == ''
-        ? (fileName = projID + extension)
-        : (fileName += extension);
-      this.filesService.export(systemID, path, fileName, extension, content);
-    } else {
-      this.download(content, extension, projID);
-    }
-  }
-
-  compileJSON(
-    coordinates,
-    featureID,
-    featureSource: string,
-    groups = [],
-    tags = [],
-    style
-  ) {
-    let compiledJSON = '';
-    let transferJSON;
-
-    // Add the most basic information to the compiled JSON
-    transferJSON = {
-      longitude: coordinates[0],
-      latitude: coordinates[1],
-      src: featureSource,
-    };
-    compiledJSON += JSON.stringify(transferJSON);
-
-    if (groups.length != 0) {
-      groups.forEach((group) => {
-        // At this point, group info should be added,
-        // If tags are set to a default value, there are none present, compile without tag information
-        transferJSON = {
-          groupName: group.name,
-          groupColor: group.color,
-        };
-        compiledJSON += JSON.stringify(transferJSON);
-        if (tags.length > 0) {
-          // Compile a JSON with full tag information
-          tags.forEach((tag) => {
-            if (tag.feature == featureID) {
-              transferJSON = {
-                icon: style.faIcon,
-                'icon color': style.color,
-                'tag name': tag.label,
-                'tag type': tag.type,
-                'tag selection': tag.extra[0].option,
-              };
-              compiledJSON += JSON.stringify(transferJSON);
-            }
-          });
+          this.download(content, '.zip', filename);
         }
       });
     }
-    // If the above failed, compile the minimum JSON
-    if (compiledJSON == '') {
-      transferJSON = {
-        longitude: coordinates[0],
-        latitude: coordinates[1],
-        src: featureSource,
-      };
-      compiledJSON += JSON.stringify(transferJSON);
-    }
-    return compiledJSON;
   }
 
-  download(content, extension, projID) {
+  download(content, extension, filename) {
     // Creates a download link in typescript through a blob
-    const blob = new Blob(['\ufeff' + content], {
-      type: 'text/csv;charset=utf-8;',
-    });
     const download = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    const filename = 'taggit-proj-' + projID;
+    const url = window.URL.createObjectURL(content);
 
     // checks if the browser is Safari or otherwise, if so open download in new window
     // Its a quirk of those browsers that they don't allow same-page downloads
@@ -705,5 +512,7 @@ export class ControlBarComponent implements OnInit {
     document.body.appendChild(download);
     download.click();
     document.body.removeChild(download);
+
+    window.URL.revokeObjectURL(url);
   }
 }
