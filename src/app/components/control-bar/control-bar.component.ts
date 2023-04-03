@@ -489,29 +489,6 @@ export class ControlBarComponent implements OnInit {
           this.download(content, '.zip', filename);
         }
       });
-
-      // if (isJSON) {
-      // const content = JSON.stringify(exportList);
-      // const blob = new Blob(['\ufeff' + content], {
-      //   type: 'text/json;charset=utf-8;',
-      // });
-
-      // if (forExport) {
-      //   // this.filesService.export(systemID, path, filename, '.json', blob);
-      //   this.filesService.export(systemID, path, filename, '.json', jsonBlob);
-      // } else {
-      //   // this.download(blob, '.json', filename);
-      //   this.download(jsonBlob, '.json', filename);
-      // }
-      //
-      // } else {
-
-
-      // csvFiles.forEach((csv, i) => {
-      //   zip.file(`group-${i}.csv`, csv);
-      // });
-      //
-      // }
     }
   }
 
