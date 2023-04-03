@@ -5,8 +5,7 @@
     <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
     <meta charset="utf-8" />
     <title>Taggit</title>
-    <base href="/" />
-
+    <base id="base" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link
@@ -25,6 +24,19 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
       rel="stylesheet"
     />
+
+    <script>
+      var hostname = window.location.hostname;
+      var pathname = window.location.pathname;
+
+      if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-staging')) {
+        document.getElementById('base').href = '/taggit-staging/';
+      } else if (/^hazmapper.tacc.utexas.edu/.test(hostname)) {
+        document.getElementById('base').href = '/taggit/';
+      } else {
+        document.getElementById('base').href = '/';
+      }
+    </script>
   </head>
   <body>
     <app-root></app-root>
