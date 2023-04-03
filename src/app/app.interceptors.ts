@@ -6,13 +6,15 @@ import {
   HttpInterceptor,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
+import { EnvService } from './services/env.service';
 import { AuthService } from './services/authentication.service';
-import { environment } from '../environments/environment';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService
+  ) {}
 
   intercept(
     request: HttpRequest<any>,
@@ -22,6 +24,7 @@ export class AuthInterceptor implements HttpInterceptor {
       catchError((err) => {
         if (err.status === 401) {
           // auto logout if 401 response returned from api
+          // https://jira.tacc.utexas.edu/browse/DES-1999
           this.authService.logout();
           location.reload();
         }
@@ -35,7 +38,10 @@ export class AuthInterceptor implements HttpInterceptor {
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
-  constructor(private authSvc: AuthService) {}
+  constructor(
+    private authSvc: AuthService,
+    private envService: EnvService,
+  ) {}
 
   intercept(
     request: HttpRequest<any>,
@@ -52,14 +58,11 @@ export class TokenInterceptor implements HttpInterceptor {
     }
     // we put the JWT on the request to our geoapi API because it is not behind ws02 if in local dev
     // and if user is logged in
-    if (
-      request.url.indexOf('http://localhost') > -1 &&
-      this.authSvc.isLoggedIn()
-    ) {
+    if (this.envService.jwt && request.url.indexOf(this.envService.apiUrl) > -1 && this.authSvc.isLoggedIn()) {
       // add header
       request = request.clone({
         setHeaders: {
-          'X-JWT-Assertion-designsafe': environment.jwt,
+          'X-JWT-Assertion-designsafe': this.envService.jwt,
         },
       });
     }

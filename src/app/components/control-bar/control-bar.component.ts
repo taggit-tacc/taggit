@@ -27,7 +27,7 @@ import {
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalCurrentProjectComponent } from '../modal-current-project/modal-current-project.component';
-import { environment } from '../../../environments/environment';
+import { EnvService } from '../../services/env.service';
 import { TapisFilesService } from '../../services/tapis-files.service';
 
 import { ScrollService } from 'src/app/services/scroll.service';
@@ -73,6 +73,7 @@ export class ControlBarComponent implements OnInit {
     private bsModalService: BsModalService,
     private groupsService: GroupsService,
     private formsService: FormsService,
+    private envService: EnvService,
     private authService: AuthService,
     private readonly cdr: ChangeDetectorRef,
     private filesService: TapisFilesService,
@@ -402,7 +403,7 @@ export class ControlBarComponent implements OnInit {
 
       // creates image source URL from environment and cleans up URL to a usable link
       let featureSource =
-        environment.apiUrl + '/assets/' + element.assets[0].path;
+        this.envService.apiUrl + '/assets/' + element.assets[0].path;
       featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
 
       // Grabs group data

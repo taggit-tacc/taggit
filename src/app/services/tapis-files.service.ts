@@ -6,7 +6,6 @@ import { Project } from '../models/models';
 import { share } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
-import { environment } from '../../environments/environment';
 import { AuthService } from './authentication.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { SystemSummary } from 'ng-tapis';

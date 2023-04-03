@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
 import { ToastrService } from 'ngx-toastr';
+import { EnvService } from './env.service';
 import { HttpClient } from '@angular/common/http';
 import { INotification } from '../models/notification';
 import { interval, Observable, ReplaySubject } from 'rxjs';
@@ -20,7 +20,8 @@ export class NotificationsService {
   constructor(
     private toastr: ToastrService,
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private envService: EnvService
   ) {
     if (this.authService.isLoggedIn()) {
       const timer = interval(this.TIMEOUT);
@@ -32,7 +33,7 @@ export class NotificationsService {
 
   // Sends a request to GeoAPI to retrieve recent notifications
   getRecent(): void {
-    const baseUrl = environment.apiUrl + 'notifications/';
+    const baseUrl = this.envService.apiUrl + 'notifications/';
     const now = new Date();
     const then = new Date(now.getTime() - this.TIMEOUT);
 

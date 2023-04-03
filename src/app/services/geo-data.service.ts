@@ -15,13 +15,13 @@ import {
   GroupForm,
 } from '../models/models';
 import { Feature, FeatureCollection } from '../models/models';
-import { environment } from '../../environments/environment';
 import { Form } from '@angular/forms';
 import { take } from 'rxjs/operators';
 import * as querystring from 'querystring';
 import { RemoteFile } from 'ng-tapis';
 import { NotificationsService } from './notifications.service';
 import { ScrollService } from './scroll.service';
+import { EnvService } from './env.service';
 import { getRandomColor } from '../utils/randomColor';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -73,6 +73,7 @@ export class GeoDataService {
   constructor(
     private http: HttpClient,
     private notificationsService: NotificationsService,
+    private envService: EnvService,
     private scrollService: ScrollService
   ) {
     this._features = new BehaviorSubject<FeatureCollection>({
@@ -96,7 +97,7 @@ export class GeoDataService {
     feature: Feature
   ): Observable<FeatureCollection> {
     return this.http.get<FeatureCollection>(
-      environment.apiUrl + `/projects/${projectId}/features/${feature.id}/`
+      this.envService.apiUrl + `/projects/${projectId}/features/${feature.id}/`
     );
   }
 
@@ -108,7 +109,7 @@ export class GeoDataService {
     const qstring: string = querystring.stringify(query.toJson());
     this.http
       .get<FeatureCollection>(
-        environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring
+        this.envService.apiUrl + `/projects/${projectId}/features/` + '?' + qstring
       )
       .subscribe(
         (fc: FeatureCollection) => {
@@ -132,7 +133,7 @@ export class GeoDataService {
   deleteFeature(feature: Feature) {
     this.http
       .delete(
-        environment.apiUrl +
+        this.envService.apiUrl +
           `projects/${feature.project_id}/features/${feature.id}/`
       )
       .subscribe((resp) => {
@@ -143,7 +144,7 @@ export class GeoDataService {
   getPointClouds(projectId: number) {
     this.http
       .get<Array<IPointCloud>>(
-        environment.apiUrl + `/projects/${projectId}/point-cloud/`
+        this.envService.apiUrl + `/projects/${projectId}/point-cloud/`
       )
       .subscribe((resp) => {
         this._pointClouds.next(resp);
@@ -186,7 +187,7 @@ export class GeoDataService {
       conversion_parameters: conversionParams,
     };
     this.http
-      .post(environment.apiUrl + `/projects/${projectId}/point-cloud/`, payload)
+      .post(this.envService.apiUrl + `/projects/${projectId}/point-cloud/`, payload)
       .subscribe(
         (resp) => {
           this.getPointClouds(projectId);
@@ -206,7 +207,7 @@ export class GeoDataService {
   ): void {
     this.http
       .post(
-        environment.apiUrl +
+        this.envService.apiUrl +
           `projects/${projectId}/features/${featureId}/properties/`,
         groupData
       )
@@ -230,7 +231,7 @@ export class GeoDataService {
   ): void {
     this.http
       .post(
-        environment.apiUrl +
+        this.envService.apiUrl +
           `/projects/${projectId}/features/${featureId}/styles/`,
         styles
       )
@@ -249,7 +250,7 @@ export class GeoDataService {
   deletePointCloud(pc: IPointCloud): void {
     this.http
       .delete(
-        environment.apiUrl + `/projects/${pc.project_id}/point-cloud/${pc.id}/`
+        this.envService.apiUrl + `/projects/${pc.project_id}/point-cloud/${pc.id}/`
       )
       .subscribe((resp) => {
         this.getPointClouds(pc.project_id);
@@ -261,7 +262,7 @@ export class GeoDataService {
     form.append('file', file);
     this.http
       .post(
-        environment.apiUrl + `/projects/${pc.project_id}/point-cloud/${pc.id}/`,
+        this.envService.apiUrl + `/projects/${pc.project_id}/point-cloud/${pc.id}/`,
         form
       )
       .subscribe((resp) => {
@@ -278,7 +279,7 @@ export class GeoDataService {
     this.fileList = tmp;
     this.http
       .post(
-        environment.apiUrl + `projects/${projectId}/features/files/import/`,
+        this.envService.apiUrl + `projects/${projectId}/features/files/import/`,
         payload
       )
 
@@ -310,7 +311,7 @@ export class GeoDataService {
     const payload = { system_id: file.system, path: file.path };
     this.http
       .post(
-        environment.apiUrl +
+        this.envService.apiUrl +
           `projects/${projectId}/features/${featureId}/assets/`,
         payload
       )
@@ -326,7 +327,7 @@ export class GeoDataService {
     let response;
     // Calls the addFeatureAsset route in GeoAPI, resp is a list of features
     this.http
-      .post(environment.apiUrl + `projects/${projectId}/features/`, payload)
+      .post(this.envService.apiUrl + `projects/${projectId}/features/`, payload)
       .subscribe((resp) => {
         response = new Feature(resp[0]);
         this.importImage(projectId, response, path);
@@ -339,7 +340,7 @@ export class GeoDataService {
 
     this.http
       .get<FeatureCollection>(
-        environment.apiUrl + `/projects/${projectId}/features/` + '?' + qstring
+        this.envService.apiUrl + `/projects/${projectId}/features/` + '?' + qstring
       )
       .subscribe((resp) => {
         const blob = new Blob([JSON.stringify(resp)], {
@@ -358,7 +359,7 @@ export class GeoDataService {
     form.append('file', file, file.name);
     this.http
       .post<Array<Feature>>(
-        environment.apiUrl + `/projects/${projectId}/features/files/`,
+        this.envService.apiUrl + `/projects/${projectId}/features/files/`,
         form
       )
       .subscribe(
@@ -378,7 +379,7 @@ export class GeoDataService {
     form.append('file', file, file.name);
     this.http
       .post<Feature>(
-        environment.apiUrl +
+        this.envService.apiUrl +
           `/api/projects/${projectId}/features/${featureId}/assets/`,
         form
       )
@@ -399,7 +400,7 @@ export class GeoDataService {
 
   getOverlays(projectId: number): void {
     this.http
-      .get(environment.apiUrl + `/projects/${projectId}/overlays/`)
+      .get(this.envService.apiUrl + `/projects/${projectId}/overlays/`)
       .subscribe((ovs: Array<Overlay>) => {
         this._overlays.next(ovs);
       });
@@ -423,7 +424,7 @@ export class GeoDataService {
     payload.append('maxLon', maxLon.toFixed(6));
 
     this.http
-      .post(environment.apiUrl + `/projects/${projectId}/overlays/`, payload)
+      .post(this.envService.apiUrl + `/projects/${projectId}/overlays/`, payload)
       .subscribe((resp) => {
         this.getOverlays(projectId);
       });

@@ -3,10 +3,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { BsModalRef } from 'ngx-foundation/modal/bs-modal-ref.service';
 import { FeatureService } from 'src/app/services/feature.service';
 import { ScrollService } from 'src/app/services/scroll.service';
-import { AppEnvironment, environment } from '../../../environments/environment';
 import { Feature, Project, TagGroup } from '../../models/models';
 import { GeoDataService } from '../../services/geo-data.service';
 import { GroupsService } from '../../services/groups.service';
+import { EnvService } from '../../services/env.service';
 import { ProjectsService } from '../../services/projects.service';
 
 @Component({
@@ -16,7 +16,6 @@ import { ProjectsService } from '../../services/projects.service';
 })
 export class ImageBoxComponent implements OnInit {
   @Input() feature: any;
-  environment: AppEnvironment;
   featureSource: string;
   featurePath: string;
   status = false; // Controls the whether or not an image box is selected or not
@@ -36,6 +35,7 @@ export class ImageBoxComponent implements OnInit {
     private geoDataService: GeoDataService,
     private groupsService: GroupsService,
     private projectsService: ProjectsService,
+    private envService: EnvService,
     private dialog: MatDialog,
     private scrollService: ScrollService,
     private featureService: FeatureService
@@ -43,11 +43,10 @@ export class ImageBoxComponent implements OnInit {
 
   ngOnInit() {
     // TODO: put this in models
-    this.environment = environment;
     let featureSource: string;
     if (this.feature.assets[0].path != '../../images/Image-not-found.png') {
       featureSource =
-        this.environment.apiUrl + '/assets/' + this.feature.assets[0].path;
+        this.envService.apiUrl + '/assets/' + this.feature.assets[0].path;
     } else {
       featureSource = this.feature.assets[0].path;
     }

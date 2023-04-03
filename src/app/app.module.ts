@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 // CommonModule for dynamic field
@@ -32,11 +32,11 @@ import { MainComponent } from './components/main/main.component';
 import { NotFoundComponent } from './components/notfound/notfound.component';
 import { ControlBarComponent } from './components/control-bar/control-bar.component';
 import { AuthService } from './services/authentication.service';
+import { EnvService } from './services/env.service';
 import { CallbackComponent } from './components/callback/callback.component';
 import { AuthInterceptor, TokenInterceptor } from './app.interceptors';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ModalFileBrowserComponent } from './components/modal-file-browser/modal-file-browser.component';
-import { environment } from '../environments/environment';
 import { ImageGalleryComponent } from './components/image-gallery/image-gallery.component';
 // import { TaggerComponent } from './components/tagger/tagger.component';
 // import { PresetGeneratorComponent } from './components/preset-generator/preset-generator.component';
@@ -146,8 +146,18 @@ import { MatCardModule } from '@angular/material/card';
       useClass: TokenInterceptor,
     },
     {
+      provide: APP_INITIALIZER,
+      useFactory: (envService: EnvService) => () => envService.init(),
+      deps: [EnvService],
+      multi: true,
+    },
+    {
       provide: APP_BASE_HREF,
-      useValue: environment.baseHref,
+      useFactory: (envService: EnvService) => {
+        envService.init();
+        return envService.baseHref;
+      },
+      deps: [EnvService],
     },
   ],
   bootstrap: [AppComponent],

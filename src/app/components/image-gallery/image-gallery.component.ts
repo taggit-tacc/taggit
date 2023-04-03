@@ -13,8 +13,8 @@ import {
   FeatureCollection,
   TagGroup,
 } from '../../models/models';
-import { AppEnvironment, environment } from '../../../environments/environment';
 import { ProjectsService } from '../../services/projects.service';
+import { EnvService } from '../../services/env.service';
 import { ScrollService } from 'src/app/services/scroll.service';
 import { GroupsService } from '../../services/groups.service';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -29,7 +29,6 @@ import { FeatureService } from 'src/app/services/feature.service';
   styleUrls: ['./image-gallery.component.scss'],
 })
 export class ImageGalleryComponent implements OnInit, AfterViewChecked {
-  environment: AppEnvironment;
 
   public projects: Project[];
   groupName: string;
@@ -56,6 +55,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
     private groupsService: GroupsService,
     private readonly cdr: ChangeDetectorRef,
     private renderer: Renderer2,
+    private envService: EnvService,
     private spinner: NgxSpinnerService,
     private dialog: MatDialog,
     private scrollService: ScrollService,
@@ -70,7 +70,6 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit() {
-    this.environment = environment;
 
     this.geoDataService.loaded.subscribe(
       (e) => {
@@ -150,7 +149,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
 
   getPath() {
     return (
-      this.environment.apiUrl +
+      this.envService.apiUrl +
       '/assets/' +
       this.activeGroupFeature.assets[0].path.replace(/([^:])(\/{2,})/g, '$1/')
     );

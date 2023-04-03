@@ -1,18 +1,13 @@
 import { EnvironmentType } from './environmentType';
 
 export interface AppEnvironment {
-  production: boolean;
-  apiUrl: string;
   jwt?: string;
-  clientId: string;
-  baseHref: string;
+  production: boolean;
   backend: EnvironmentType;
 }
 
 export const environment: AppEnvironment = {
   production: true,
-  apiUrl: 'https://agave.designsafe-ci.org/geo/v2/',
-  clientId: 'jHXnvsmQQcmP43qlrG7ATaxFXHQa',
-  baseHref: '/',
+  // only used during testing
   backend: EnvironmentType.Production,
 };
