@@ -37,7 +37,7 @@ export class ModalDownloadSelectorComponent implements OnInit {
   public currentDirectory: RemoteFile;
   public passbackData: Array<string> = ['', '', '', ''];
   public fileName = '';
-  public fileExtension = '.csv';
+  public fileExtension = '.zip';
   private offset: number;
 
   constructor(

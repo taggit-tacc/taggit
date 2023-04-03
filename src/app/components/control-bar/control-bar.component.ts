@@ -279,7 +279,7 @@ export class ControlBarComponent implements OnInit {
       let path: Array<string>;
       modal.afterClosed().subscribe((passbackData: Array<string>) => {
         path = passbackData;
-        this.saveFile(path[3] == 'JSON', true, path[0], path[1], path[2]);
+        this.saveFile(true, path[0], path[1], path[2]);
       });
     }
   }
@@ -382,12 +382,9 @@ export class ControlBarComponent implements OnInit {
     this.geoDataService.setActiveGroupFeature(this.activeGroupFeature);
   }
 
-  getCSVHeaders(exportFeatures) {
-    let headerArray = [];
-    exportFeatures.forEach((ef) => {
-      headerArray = [...Object.keys(ef)];
-    });
-    return headerArray;
+  // Flattens feature keys and remove redundant one
+  getCSVHeaders(exportFeatures: any): any[] {
+    return [...new Set(exportFeatures.flatMap((ef: any) => Object.keys(ef)))];
   }
 
   exportList() {
@@ -441,7 +438,6 @@ export class ControlBarComponent implements OnInit {
   }
 
   saveFile(
-    isJSON: Boolean,
     forExport: Boolean = false,
     systemID = '',
     path = '',
@@ -452,45 +448,70 @@ export class ControlBarComponent implements OnInit {
     } else {
       const exportList = this.exportList();
       const filename = fileName ? fileName : 'taggit-proj-' + this.selectedProject.name;
-      if (isJSON) {
-        const content = JSON.stringify(exportList);
-        const blob = new Blob(['\ufeff' + content], {
-          type: 'text/json;charset=utf-8;',
+ 
+      // JSON
+      const jsonContent = JSON.stringify(exportList);
+      const jsonBlob = new Blob(['\ufeff' + jsonContent], {
+        type: 'text/json;charset=utf-8;',
+      });
+
+      // CSV
+      const csvFiles = exportList.map((exportItem) => {
+        const csvRows = [];
+        const headers = this.getCSVHeaders(exportItem.features);
+        csvRows.push(headers.join(','));
+
+        exportItem.features.forEach((ef) => {
+          const values = headers.map((header) =>
+            ef[header] ? ef[header] : ''
+          );
+          csvRows.push(values.join(','));
         });
+
+        return csvRows.join('\n');
+      });
+
+      // Create ZIP
+      const zip = new JSZip();
+      const jsonFolder = zip.folder("json");
+      const csvFolder = zip.folder("csv");
+
+      jsonFolder.file('data.json', jsonBlob);
+
+      csvFiles.forEach((csv, i) => {
+        csvFolder.file(`group-${i}.csv`, csv);
+      });
+
+      zip.generateAsync({ type: 'blob' }).then((content) => {
         if (forExport) {
-          this.filesService.export(systemID, path, filename, '.json', blob);
+          this.filesService.export(systemID, path, filename, '.zip', content);
         } else {
-          this.download(blob, '.json', filename);
+          this.download(content, '.zip', filename);
         }
-      } else {
-        const csvFiles = exportList.map((exportItem) => {
-          const csvRows = [];
-          const headers = this.getCSVHeaders(exportItem.features);
-          csvRows.push(headers.join(','));
+      });
 
-          exportItem.features.forEach((ef) => {
-            const values = headers.map((header) =>
-              ef[header] ? ef[header] : ''
-            );
-            csvRows.push(values.join(','));
-          });
+      // if (isJSON) {
+      // const content = JSON.stringify(exportList);
+      // const blob = new Blob(['\ufeff' + content], {
+      //   type: 'text/json;charset=utf-8;',
+      // });
 
-          return csvRows.join('\n');
-        });
+      // if (forExport) {
+      //   // this.filesService.export(systemID, path, filename, '.json', blob);
+      //   this.filesService.export(systemID, path, filename, '.json', jsonBlob);
+      // } else {
+      //   // this.download(blob, '.json', filename);
+      //   this.download(jsonBlob, '.json', filename);
+      // }
+      //
+      // } else {
 
-        const zip = new JSZip();
-        csvFiles.forEach((csv, i) => {
-          zip.file(`group-${i}.csv`, csv);
-        });
 
-        zip.generateAsync({ type: 'blob' }).then((content) => {
-          if (forExport) {
-            this.filesService.export(systemID, path, filename, '.zip', content);
-          } else {
-            this.download(content, '.zip', filename);
-          }
-        });
-      }
+      // csvFiles.forEach((csv, i) => {
+      //   zip.file(`group-${i}.csv`, csv);
+      // });
+      //
+      // }
     }
   }
 
