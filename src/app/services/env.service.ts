@@ -92,13 +92,13 @@ export class EnvService {
       this._env = EnvironmentType.Staging;
       this._apiUrl = this.getApiUrl(this.env);
       this._portalUrl = this.getPortalUrl(this.env);
-      this._clientId = 'foitdqFcimPzKZuMhbQ1oyh3Anka';
+      this._clientId = '8wVVA6GE3wyW4bXl0uQ04CfnQY8a';
       this._baseHref = '/taggit-staging/';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname)) {
       this._env = EnvironmentType.Production;
       this._apiUrl = this.getApiUrl(this.env);
       this._portalUrl = this.getPortalUrl(this.env);
-      this._clientId = 'tMvAiRdcsZ52S_89lCkO4x3d6VMa';
+      this._clientId = 'DcUrt7H9n5JMzjXcHOuqkYwSVtwa';
       this._baseHref = '/taggit/';
     } else if (/^taggit-tacc.github.io/.test(hostname)) {
       this._env = EnvironmentType.Production;
