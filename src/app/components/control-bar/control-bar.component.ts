@@ -67,6 +67,7 @@ export class ControlBarComponent implements OnInit {
   foundFilePaths = [];
   groupToAdd: TagGroup;
   public activeProject: Project;
+  tagFeaturesQueue: any;
 
   constructor(
     private projectsService: ProjectsService,
@@ -88,8 +89,12 @@ export class ControlBarComponent implements OnInit {
     this.filesService.getState();
 
     this.groupsService.groupToAdd.subscribe((next) => {
-      console.log(next)
+      console.log(next);
       this.groupToAdd = next;
+    });
+
+    this.geoDataService.tagFeaturesQueue.subscribe((next) => {
+      this.tagFeaturesQueue = next;
     });
 
     this.featureService.features$.subscribe((fc: FeatureCollection) => {
@@ -185,7 +190,9 @@ export class ControlBarComponent implements OnInit {
       }
 
       if (projects.length) {
-        const selectedLastProject = lastProject ? this.projects.find((prj) => prj.id === lastProject.id) : null;
+        const selectedLastProject = lastProject
+          ? this.projects.find((prj) => prj.id === lastProject.id)
+          : null;
         if (selectedLastProject) {
           this.projectsService.setActiveProject(selectedLastProject);
         } else {
@@ -221,7 +228,6 @@ export class ControlBarComponent implements OnInit {
   ngAfterViewChecked() {
     this.cdr.detectChanges();
   }
-
 
   clearAll() {
     this.groupsService.unselectAllImages();
@@ -332,7 +338,6 @@ export class ControlBarComponent implements OnInit {
     }
   }
 
-
   addToGroup(group: TagGroup) {
     this.geoDataService.createGroupFeatures(
       this.activeProject.id,
@@ -348,7 +353,7 @@ export class ControlBarComponent implements OnInit {
 
   toggleTagger() {
     if (!this.showTagger) {
-      this.scrollService.setScrollRestored(true);
+      this.scrollService.setScrollPosition();
 
       const [initialGroupName] = this.groupsFeatures.keys();
       const activeGroupFeatures = this.groupsFeatures.get(initialGroupName);
@@ -358,7 +363,7 @@ export class ControlBarComponent implements OnInit {
       this.groupsService.setShowTagGenerator(false);
       this.groupsService.unselectAllImages();
     } else {
-      this.scrollService.setScrollPosition();
+      this.scrollService.setScrollRestored(true);
     }
 
     this.groupsService.toggleTagger();
@@ -404,7 +409,7 @@ export class ControlBarComponent implements OnInit {
 
         featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
         const coordinates = groupFeature.geometry.coordinates;
-        const tags = groupFeature.properties.tags;
+        const tags = groupFeature.properties.taggit.tags;
         const featureObj = {
           src: featureSource,
           id: groupFeature.id,
@@ -514,5 +519,9 @@ export class ControlBarComponent implements OnInit {
     document.body.removeChild(download);
 
     window.URL.revokeObjectURL(url);
+  }
+
+  saveTags(ev) {
+    this.geoDataService.updateTagFeaturesQueue(this.activeProject.id);
   }
 }

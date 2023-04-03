@@ -17,16 +17,16 @@
       *ngIf="selectedProject"
       (click)="openProjectModal(selectedProject)"
     >
-      Current Gallery : {{ selectedProject.name }}
+      Current Gallery/Map : {{ selectedProject.name }}
     </span>
     <button mat-menu-item (click)="openCreateProjectModal()">
-      Create Gallery
+      Create Gallery/Map
     </button>
     <button mat-menu-item [matMenuTriggerFor]="projectList">
-      Select Gallery
+      Select Gallery/Map
     </button>
-    <button mat-menu-item (click)="openFilePicker(test)">File Browser</button>
-    <button mat-menu-item [matMenuTriggerFor]="saveOptions">Save group data</button>
+    <button mat-menu-item (click)="openFilePicker(test)">Import images from DesignSafe</button>
+    <button mat-menu-item [matMenuTriggerFor]="saveOptions">Export Tags/Groups</button>
   </mat-menu>
 
   <mat-menu #projectList="matMenu">
@@ -85,10 +85,11 @@
       class="button-spacing"
       mat-raised-button
       href="{{ hazmapperLink }}"
-      title="Open your gallery in HazMapper"
+      title="View in HazMapper"
       target="_blank"
     >
-      <img src="assets/hazmapper-header-logo.png" width="100PX" />
+      <img src="assets/hazmapper-header-logo.png" width="25PX" />
+      <span style="padding-left: 5px; color: #00BBD8">View in HazMapper</span>
     </a>
 
     <button
@@ -107,7 +108,6 @@
     >
       Create Group
     </button>
-
 
     <ng-template #addGroupModal>
       <mat-form-field>
@@ -169,6 +169,16 @@
   </div>
 
   <button
+    *ngIf="showTagger && tagFeaturesQueue.length > 0"
+    mat-raised-button
+    style="margin-left: 15px"
+    (click)="saveTags()"
+  >
+    <i class="fas fa-save"></i>
+    Save Tags
+  </button>
+
+  <button
     *ngIf="groupsExist && !showTagger"
     mat-raised-button
     style="margin-left: 15px"
@@ -183,6 +193,6 @@
     style="margin-left: 15px"
     (click)="toggleTagger()"
   >
-    Gallery
+    Gallery/Map
   </button>
 </mat-toolbar>

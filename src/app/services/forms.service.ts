@@ -101,13 +101,6 @@ export class FormsService {
       color: color ? color : '#00C8FF',
       faIcon: icon ? icon : group.icon,
     };
-
-    this.geoDataService.updateGroupFeatures(
-      projectId,
-      featureList,
-      group,
-      style
-    );
   }
 
   updateTagValue(
@@ -116,15 +109,14 @@ export class FormsService {
     form: GroupForm,
     tagValue: any
   ) {
-    let tagProp = feature.properties.tags ? feature.properties.tags : [];
-    tagProp = tagProp.filter((tag: Tag) => form.id !== tag.id);
+    const tagProp = feature.properties.taggit.tags.filter((tag: Tag) => form.id !== tag.id);
 
     const tag = {
       id: form.id,
       value: tagValue,
     };
 
-    feature.properties.tags = [...tagProp, tag];
+    feature.properties.taggit.tags = [...tagProp, tag];
 
     this.geoDataService.updateFeatureProperty(
       activeProject.id,
@@ -133,13 +125,8 @@ export class FormsService {
     );
   }
 
-  updateTagValues(
-    activeProject: Project,
-    feature: Feature,
-    formList: GroupForm[],
-    newValues: any[]
-  ) {
-    feature.properties.tags = newValues;
+  updateTagValues(activeProject: Project, feature: Feature, newValues: any[]) {
+    feature.properties.taggit.tags = newValues;
     this.geoDataService.updateFeatureProperty(
       activeProject.id,
       feature.id,
@@ -148,8 +135,8 @@ export class FormsService {
   }
 
   getTagValue(feature: Feature, form: GroupForm): any {
-    if (feature.properties.tags) {
-      const tagValueObj = feature.properties.tags.find(
+    if (feature && feature.properties.taggit.tags) {
+      const tagValueObj = feature.properties.taggit.tags.find(
         (featTag: any) => featTag.id && featTag.id === form.id
       );
 

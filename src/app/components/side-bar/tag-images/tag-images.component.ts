@@ -32,7 +32,7 @@ export class TagImagesComponent implements OnInit {
     private dialog: MatDialog,
     private projectsService: ProjectsService,
     private geoDataService: GeoDataService
-  ) {}
+  ) { }
 
   ngOnInit() {
     combineLatest(
@@ -87,22 +87,6 @@ export class TagImagesComponent implements OnInit {
 
   showTagGenerator() {
     this.groupsService.setShowTagGenerator(true);
-  }
-
-  saveTags() {
-    this.formsService.updateTagValues(
-      this.activeProject,
-      this.activeGroupFeature,
-      this.formList,
-      this.tagValues
-    );
-  }
-
-  setValue(formValue) {
-    this.tagValues = this.tagValues.filter(
-      (value) => value.id !== formValue.id
-    );
-    this.tagValues.push(formValue);
   }
 
   expandPanel() {

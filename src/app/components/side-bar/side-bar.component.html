@@ -1,7 +1,27 @@
-<app-select-group></app-select-group>
-<app-select-image></app-select-image>
+<ng-container *ngIf="!loadingFeatureProperties; else loading">
+  <app-select-group></app-select-group>
+  <app-select-image></app-select-image>
 
-<app-tag-generator *ngIf="showTagGenerator; else tagImages"></app-tag-generator>
-<ng-template #tagImages>
-  <app-tag-images></app-tag-images>
+  <app-tag-generator
+    *ngIf="showTagGenerator; else tagImages"
+  ></app-tag-generator>
+  <ng-template #tagImages>
+    <app-tag-images></app-tag-images>
+  </ng-template>
+</ng-container>
+<ng-template #loading>
+  <div
+    style="
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    "
+  >
+    <span>
+      Updating Group Data
+      <i class="fas fa-circle-notch fa-spin"></i>
+    </span>
+  </div>
 </ng-template>
