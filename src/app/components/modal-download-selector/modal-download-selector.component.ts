@@ -36,8 +36,8 @@ export class ModalDownloadSelectorComponent implements OnInit {
   public publishedDataSystem: SystemSummary;
   public currentDirectory: RemoteFile;
   public passbackData: Array<string> = ['', '', '', ''];
-  public fileName = 'Custom File Name';
-  public fileExtension = '.csv';
+  public fileName = '';
+  public fileExtension = '.zip';
   private offset: number;
 
   constructor(
@@ -168,15 +168,7 @@ export class ModalDownloadSelectorComponent implements OnInit {
 
   chooseFiles() {
     this.passbackData[0] = this.selectedSystem.id;
-
-    // checks to see if the input was left unchanged
-    if (this.downloadSelectForm.dirty) {
-      // if changed, enter name as specified
-      this.passbackData[2] = this.downloadSelectForm.get('Name').value;
-    } else {
-      // if unchanged, enter filename as empty string
-      this.passbackData[2] = '';
-    }
+    this.passbackData[2] = this.downloadSelectForm.get('Name').value;
     this.passbackData[3] = this.fileExtension;
     this.dialogRef.close(this.passbackData);
   }

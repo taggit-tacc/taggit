@@ -277,12 +277,17 @@ export class ControlBarComponent implements OnInit {
   }
 
   openDownloadSelector(fileName: string) {
-    const modal = this.dialog.open(ModalDownloadSelectorComponent);
-    let path: Array<string>;
-    modal.afterClosed().subscribe((passbackData: Array<string>) => {
-      path = passbackData;
-      this.saveFile(path[3] == '.json', true, path[0], path[1], path[2]);
-    });
+
+    if (this.groups.size === 0) {
+      this.notificationsService.showErrorToast('No groups have been created for this gallery. Please create at least one group.');
+    } else {
+      const modal = this.dialog.open(ModalDownloadSelectorComponent);
+      let path: Array<string>;
+      modal.afterClosed().subscribe((passbackData: Array<string>) => {
+        path = passbackData;
+        this.saveFile(true, path[0], path[1], path[2]);
+      });
+    }
   }
 
   openCreateProjectModal() {
@@ -382,12 +387,9 @@ export class ControlBarComponent implements OnInit {
     this.geoDataService.setActiveGroupFeature(this.activeGroupFeature);
   }
 
-  getCSVHeaders(exportFeatures) {
-    let headerArray = [];
-    exportFeatures.forEach((ef) => {
-      headerArray = [...Object.keys(ef)];
-    });
-    return headerArray;
+  // Flattens feature keys and remove redundant one
+  getCSVHeaders(exportFeatures: any): any[] {
+    return [...new Set(exportFeatures.flatMap((ef: any) => Object.keys(ef)))];
   }
 
   exportList() {
@@ -404,6 +406,7 @@ export class ControlBarComponent implements OnInit {
       groupFeatures.forEach((groupFeature) => {
         let featureSource =
           environment.apiUrl + '/assets/' + groupFeature.assets[0].path;
+
         featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
         const coordinates = groupFeature.geometry.coordinates;
         const tags = groupFeature.properties.taggit.tags;
@@ -440,25 +443,24 @@ export class ControlBarComponent implements OnInit {
   }
 
   saveFile(
-    isJSON: Boolean,
     forExport: Boolean = false,
     systemID = '',
     path = '',
-    fileName
+    fileName = ''
   ) {
-    const exportList = this.exportList();
-    const filename = 'taggit-proj-' + this.selectedProject.name;
-    if (isJSON) {
-      const content = JSON.stringify(exportList);
-      const blob = new Blob(['\ufeff' + content], {
+    if (this.groups.size === 0) {
+      this.notificationsService.showErrorToast('No groups have been created for this gallery. Please create at least one group.');
+    } else {
+      const exportList = this.exportList();
+      const filename = fileName ? fileName : 'taggit-proj-' + this.selectedProject.name;
+ 
+      // JSON
+      const jsonContent = JSON.stringify(exportList);
+      const jsonBlob = new Blob(['\ufeff' + jsonContent], {
         type: 'text/json;charset=utf-8;',
       });
-      if (forExport) {
-        this.filesService.export(systemID, path, fileName, '.json', blob);
-      } else {
-        this.download(blob, '.json', filename);
-      }
-    } else {
+
+      // CSV
       const csvFiles = exportList.map((exportItem) => {
         const csvRows = [];
         const headers = this.getCSVHeaders(exportItem.features);
@@ -474,14 +476,20 @@ export class ControlBarComponent implements OnInit {
         return csvRows.join('\n');
       });
 
+      // Create ZIP
       const zip = new JSZip();
+      const jsonFolder = zip.folder("json");
+      const csvFolder = zip.folder("csv");
+
+      jsonFolder.file('data.json', jsonBlob);
+
       csvFiles.forEach((csv, i) => {
-        zip.file(`group-${i}.csv`, csv);
+        csvFolder.file(`group-${i}.csv`, csv);
       });
 
       zip.generateAsync({ type: 'blob' }).then((content) => {
         if (forExport) {
-          this.filesService.export(systemID, path, fileName, '.zip', content);
+          this.filesService.export(systemID, path, filename, '.zip', content);
         } else {
           this.download(content, '.zip', filename);
         }
