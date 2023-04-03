@@ -33,7 +33,7 @@ export class NotificationsService {
 
   // Sends a request to GeoAPI to retrieve recent notifications
   getRecent(): void {
-    const baseUrl = this.envService.apiUrl + 'notifications/';
+    const baseUrl = this.envService.apiUrl + '/notifications/';
     const now = new Date();
     const then = new Date(now.getTime() - this.TIMEOUT);
 

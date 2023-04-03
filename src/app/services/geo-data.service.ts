@@ -134,7 +134,7 @@ export class GeoDataService {
     this.http
       .delete(
         this.envService.apiUrl +
-          `projects/${feature.project_id}/features/${feature.id}/`
+          `/projects/${feature.project_id}/features/${feature.id}/`
       )
       .subscribe((resp) => {
         this.getFeatures(feature.project_id, new AssetFilters(), true);
@@ -208,7 +208,7 @@ export class GeoDataService {
     this.http
       .post(
         this.envService.apiUrl +
-          `projects/${projectId}/features/${featureId}/properties/`,
+          `/projects/${projectId}/features/${featureId}/properties/`,
         groupData
       )
       .subscribe(
@@ -279,7 +279,7 @@ export class GeoDataService {
     this.fileList = tmp;
     this.http
       .post(
-        this.envService.apiUrl + `projects/${projectId}/features/files/import/`,
+        this.envService.apiUrl + `/projects/${projectId}/features/files/import/`,
         payload
       )
 
@@ -312,7 +312,7 @@ export class GeoDataService {
     this.http
       .post(
         this.envService.apiUrl +
-          `projects/${projectId}/features/${featureId}/assets/`,
+          `/projects/${projectId}/features/${featureId}/assets/`,
         payload
       )
       .subscribe((resp) => {
@@ -327,7 +327,7 @@ export class GeoDataService {
     let response;
     // Calls the addFeatureAsset route in GeoAPI, resp is a list of features
     this.http
-      .post(this.envService.apiUrl + `projects/${projectId}/features/`, payload)
+      .post(this.envService.apiUrl + `/projects/${projectId}/features/`, payload)
       .subscribe((resp) => {
         response = new Feature(resp[0]);
         this.importImage(projectId, response, path);
