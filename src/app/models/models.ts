@@ -281,3 +281,18 @@ export interface IProjectUser {
   id: number;
   username: string;
 }
+
+export interface DesignSafeProject {
+  uuid: string;
+  value: any;
+}
+
+export interface DesignSafeProjectCollection {
+  projects: DesignSafeProject[];
+}
+
+export enum AgaveFileOperations {
+  Delete,
+  Update,
+}
+

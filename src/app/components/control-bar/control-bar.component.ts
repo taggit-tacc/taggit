@@ -8,6 +8,7 @@ import {
 import { ProjectsService } from '../../services/projects.service';
 import { Feature, Project, TagGroup } from '../../models/models';
 import { FeatureCollection } from 'geojson';
+import { AgaveSystemsService } from '../../services/agave-systems.service';
 import { GeoDataService } from '../../services/geo-data.service';
 import { LatLng } from 'leaflet';
 import { skip } from 'rxjs/operators';
@@ -79,6 +80,7 @@ export class ControlBarComponent implements OnInit {
     private authService: AuthService,
     private readonly cdr: ChangeDetectorRef,
     private filesService: TapisFilesService,
+    private agaveSystemsService: AgaveSystemsService,
     private router: Router,
     private dialog: MatDialog,
     private scrollService: ScrollService,
@@ -90,7 +92,6 @@ export class ControlBarComponent implements OnInit {
     this.filesService.getState();
 
     this.groupsService.groupToAdd.subscribe((next) => {
-      console.log(next);
       this.groupToAdd = next;
     });
 
@@ -178,8 +179,11 @@ export class ControlBarComponent implements OnInit {
     this.authService.currentUser.subscribe((next) => (this.currentUser = next));
 
     this.projectsService.getProjects();
-    this.projectsService.projects.subscribe((projects) => {
-      this.projects = projects;
+    this.agaveSystemsService.list();
+
+    combineLatest([this.projectsService.projects, this.agaveSystemsService.projects]).subscribe(([projects, dsProjects]) => {
+      this.projects = this.agaveSystemsService.getProjectMetadata(projects, dsProjects);
+      console.log(projects);
 
       // restores view to the last visited project from local storage
       let lastProject = null;
@@ -201,14 +205,14 @@ export class ControlBarComponent implements OnInit {
           this.projectsService.setActiveProject(this.projects[0]);
         }
       }
+    });
 
-      this.groupsService.selectedImages.subscribe((next) => {
-        this.selectedImages = next;
-      });
+    this.groupsService.selectedImages.subscribe((next) => {
+      this.selectedImages = next;
+    });
 
-      this.groupsService.showTagger.subscribe((next) => {
-        this.showTagger = next;
-      });
+    this.groupsService.showTagger.subscribe((next) => {
+      this.showTagger = next;
     });
 
     this.projectsService.activeProject.subscribe((next) => {

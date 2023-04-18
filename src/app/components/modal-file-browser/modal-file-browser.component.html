@@ -12,7 +12,7 @@
   <option [ngValue]="publishedDataSystem">Published Data</option>
   <optgroup label="My Projects">
     <option *ngFor="let project of projects" [ngValue]="project">
-      {{ project.description }}
+      {{ project.description }} | {{ project.name }}
     </option>
   </optgroup>
 </select>
