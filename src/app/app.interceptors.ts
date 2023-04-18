@@ -22,7 +22,7 @@ export class AuthInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
       catchError((err) => {
-        if (err.status === 401) {
+        if (err.status === 401 || err.status === 403) {
           // auto logout if 401 response returned from api
           // https://jira.tacc.utexas.edu/browse/DES-1999
           this.authService.logout();
