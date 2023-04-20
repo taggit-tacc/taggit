@@ -33,9 +33,17 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router, private envService: EnvService) {}
 
+  public getTokenKeyword() {
+    return `${this.envService.env}TaggitToken`;
+  }
+
+  public getUserKeyword() {
+    return `${this.envService.env}TaggitUser`;
+  }
+
   public login() {
     // First, check if the user has a token in localStorage
-    const tokenStr = localStorage.getItem(this.LS_TOKEN_KEY);
+    const tokenStr = localStorage.getItem(this.getTokenKeyword());
     if (!tokenStr) {
       this.redirectToauthenticaor();
     } else {
@@ -51,9 +59,10 @@ export class AuthService {
 
   private redirectToauthenticaor() {
     const client_id = this.envService.clientId;
-    const callback = location.origin + this.envService.baseHref + 'callback/';
+    const callback = location.origin + this.envService.baseHref + 'callback';
     const state = Math.random().toString(36);
     const AUTH_URL = `https://agave.designsafe-ci.org/authorize?scope=openid&client_id=${client_id}&response_type=token&redirect_uri=${callback}&state=${state}`;
+    console.log(AUTH_URL)
     window.location.href = AUTH_URL;
   }
 
@@ -66,27 +75,27 @@ export class AuthService {
 
   public logout(): void {
     this.userToken = null;
-    localStorage.removeItem(this.LS_TOKEN_KEY);
-    localStorage.removeItem(this.LS_USER_KEY);
+    localStorage.removeItem(this.getTokenKeyword());
+    localStorage.removeItem(this.getUserKeyword());
   }
 
   public setToken(token: string, expires: number): void {
     this.userToken = AuthToken.fromExpiresIn(token, expires);
-    localStorage.setItem(this.LS_TOKEN_KEY, JSON.stringify(this.userToken));
+    localStorage.setItem(this.getTokenKeyword(), JSON.stringify(this.userToken));
     // hit the wso2 api to retrieve the username etc
     this.router.navigate(['/']);
   }
 
   public getUserInfo() {
     const INFO_URL = `https://agave.designsafe-ci.org/oauth2/userinfo?schema=openid`;
-    const userStr = localStorage.getItem(this.LS_USER_KEY);
+    const userStr = localStorage.getItem(this.getUserKeyword());
     const user = JSON.parse(userStr);
     if (user !== null) {
       this._currentUser.next(new AuthenticatedUser(user.username, user.email));
     } else {
       this.http.get<OpenIDUser>(INFO_URL).subscribe((resp) => {
         const u = new AuthenticatedUser(resp.name, resp.email);
-        localStorage.setItem(this.LS_USER_KEY, JSON.stringify(u));
+        localStorage.setItem(this.getUserKeyword(), JSON.stringify(u));
         this._currentUser.next(u);
       });
     }

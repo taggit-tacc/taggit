@@ -7,6 +7,7 @@ import { share } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 import { AuthService } from './authentication.service';
+import { EnvService } from './env.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { SystemSummary } from 'ng-tapis';
 // import { verify } from 'ts-mockito';
@@ -41,8 +42,17 @@ export class TapisFilesService {
     private tapis: ApiService,
     private http: HttpClient,
     private authService: AuthService,
+    private envService: EnvService,
     private popup: MatSnackBar
   ) {}
+
+  public getSystemKeyword() {
+    return `${this.envService.env}System`;
+  }
+
+  public getFileKeyword() {
+    return `${this.envService.env}File`;
+  }
 
   checkIfSelectable(file: RemoteFile): boolean {
     if (file.type === 'dir') {
@@ -118,15 +128,15 @@ export class TapisFilesService {
   saveState() {
     const sysStr = JSON.stringify(this.lastSystem);
     const fileStr = JSON.stringify(this.lastFile);
-    window.localStorage.setItem('system', sysStr);
-    window.localStorage.setItem('file', fileStr);
+    window.localStorage.setItem(this.getSystemKeyword(), sysStr);
+    window.localStorage.setItem(this.getFileKeyword(), fileStr);
   }
 
   // Attempts to retrieve the last used state
   getState() {
     try {
-      this.lastSystem = JSON.parse(window.localStorage.getItem('system'));
-      this.lastFile = JSON.parse(window.localStorage.getItem('file'));
+      this.lastSystem = JSON.parse(window.localStorage.getItem(this.getSystemKeyword()));
+      this.lastFile = JSON.parse(window.localStorage.getItem(this.getFileKeyword()));
       this.noPreviousSelections = this.lastFile == null;
     } catch (error) {
       console.log(error);

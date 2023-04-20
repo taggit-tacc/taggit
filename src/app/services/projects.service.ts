@@ -33,6 +33,10 @@ export class ProjectsService {
     private notificationsService: NotificationsService
   ) {}
 
+  public getLastProjectKeyword() {
+    return `${this.envService.env}LastProject`;
+  }
+
   testGeoApi(): void {
     const data = {
       name: 'Awesome Project',
@@ -81,7 +85,7 @@ export class ProjectsService {
 
   setActiveProject(proj: Project): void {
     // saves change as last visited project
-    window.localStorage.setItem('lastProj', JSON.stringify(proj));
+    window.localStorage.setItem(this.getLastProjectKeyword(), JSON.stringify(proj));
     try {
       this._activeProject.next(proj);
     } catch (error) {
@@ -102,7 +106,7 @@ export class ProjectsService {
   delete(data: Project): void {
     this.http.delete(this.envService.apiUrl + `/projects/${data.id}/`).subscribe(
       (resp) => {
-        window.localStorage.removeItem('lastProj');
+        window.localStorage.removeItem(this.getLastProjectKeyword());
         this.getProjects();
       },
       (error) => {

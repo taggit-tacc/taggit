@@ -183,12 +183,11 @@ export class ControlBarComponent implements OnInit {
 
     combineLatest([this.projectsService.projects, this.agaveSystemsService.projects]).subscribe(([projects, dsProjects]) => {
       this.projects = this.agaveSystemsService.getProjectMetadata(projects, dsProjects);
-      console.log(projects);
 
       // restores view to the last visited project from local storage
       let lastProject = null;
       try {
-        lastProject = JSON.parse(window.localStorage.getItem('lastProj'));
+        lastProject = JSON.parse(window.localStorage.getItem(this.projectsService.getLastProjectKeyword()));
       } catch (error) {
         // possible that lastProj item is null and not json
         lastProject = null;
