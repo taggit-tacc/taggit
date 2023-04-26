@@ -290,9 +290,3 @@ export interface DesignSafeProject {
 export interface DesignSafeProjectCollection {
   projects: DesignSafeProject[];
 }
-
-export enum AgaveFileOperations {
-  Delete,
-  Update,
-}
-

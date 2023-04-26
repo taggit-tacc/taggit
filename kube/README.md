@@ -6,11 +6,11 @@ The deployment of images and updating of the Kubernetes services and application
 workflow found [here](https://jenkins01.tacc.utexas.edu/view/Hazmapper+Geoapi/.)
 
 The images used in deployment are built automatically for the master branch using TravisCI and 
-pushed to Docker Hub (see https://hub.docker.com/r/taccaci/hazmapper).
+pushed to Docker Hub (see https://hub.docker.com/r/taccaci/taggit).
 
 ### Kube config
 
-[`hazmapper.kube.yaml`](hazmapper.kube.yaml) describes the configuration of the cluster. The file is adjusted using `envsubstr` to provide
+[`taggit.kube.yaml`](taggit.kube.yaml) describes the configuration of the cluster. The file is adjusted using `envsubstr` to provide
 custom values for the image tags and node portfor the production or staging environments.
 
 ## Additional Information/Tips

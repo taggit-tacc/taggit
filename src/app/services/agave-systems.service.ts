@@ -4,7 +4,7 @@ import { ApiService } from 'ng-tapis';
 import { EnvService } from './env.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, ReplaySubject } from 'rxjs';
-import { DesignSafeProjectCollection, Project, AgaveFileOperations } from '../models/models';
+import { DesignSafeProjectCollection, Project } from '../models/models';
 
 @Injectable({
   providedIn: 'root',

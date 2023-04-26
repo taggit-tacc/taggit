@@ -28,8 +28,6 @@ export class AuthService {
   public readonly currentUser: Observable<AuthenticatedUser> =
     this._currentUser.asObservable();
   userToken: AuthToken;
-  private LS_TOKEN_KEY = 'taggitToken';
-  private LS_USER_KEY = 'taggitUser';
 
   constructor(private http: HttpClient, private router: Router, private envService: EnvService) {}
 
