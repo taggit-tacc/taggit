@@ -7,7 +7,6 @@ WORKDIR /www
 RUN npm install -g @angular/cli@8.3.22
 RUN npm install
 RUN ng build --prod
-# RUN ls
 
 
 FROM nginx:1.17-alpine
