@@ -349,8 +349,8 @@ export class ControlBarComponent implements OnInit {
       this.groups.get(group.name)
     );
     this.groupsService.unselectAllImages();
-    this.scrollService.setScrollRestored(true);
   }
+
   openAddGroupModal(template: TemplateRef<any>) {
     this.dialog.open(template);
   }

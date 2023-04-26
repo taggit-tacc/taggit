@@ -94,7 +94,6 @@ export class ImageBoxComponent implements OnInit {
       featureService.deleteFeature(value);
     });
     this.groupsService.unselectAllImages();
-    this.scrollService.setScrollRestored(true);
   }
 
   openModal(template: TemplateRef<any>) {
@@ -130,6 +129,5 @@ export class ImageBoxComponent implements OnInit {
       this.groups.get(group.name)
     );
     this.groupsService.unselectAllImages();
-    this.scrollService.setScrollRestored(true);
   }
 }
