@@ -35,7 +35,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   showTagger = false;
   scrolling = false;
   scrollStatus: string;
-  imagesExist: boolean = false;
+  imagesExist = false;
   projectsExist: boolean;
   featureList: Array<any> = [];
   featureListScroll: Array<any>;
@@ -46,7 +46,7 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   // activeFeatureNum: number;
   featurePath: string;
   loaded: boolean;
-  loadingGallery: boolean = false;
+  loadingGallery = false;
   groupsFeatures: Map<string, any>;
   groups: Map<string, any>;
 

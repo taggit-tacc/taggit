@@ -296,8 +296,8 @@ export class ControlBarComponent implements OnInit {
 
   openCreateProjectModal() {
     this.dialog.open(ModalCreateProjectComponent, {
-      height: '400px',
-      width: '600px',
+      height: '200px',
+      width: '550px',
     });
   }
 
@@ -401,9 +401,9 @@ export class ControlBarComponent implements OnInit {
 
     this.groups.forEach((e) => {
       const exportGroupObj = {};
-      exportGroupObj['groupName'] = e.name;
+      exportGroupObj.groupName = e.name;
       const groupFeatures = this.groupsFeatures.get(e.name);
-      exportGroupObj['features'] = [];
+      exportGroupObj.features = [];
 
       const forms = e.forms;
 
@@ -439,7 +439,7 @@ export class ControlBarComponent implements OnInit {
             }
           });
         }
-        exportGroupObj['features'].push(featureObj);
+        exportGroupObj.features.push(featureObj);
       });
       exportList.push(exportGroupObj);
     });
@@ -482,8 +482,8 @@ export class ControlBarComponent implements OnInit {
 
       // Create ZIP
       const zip = new JSZip();
-      const jsonFolder = zip.folder("json");
-      const csvFolder = zip.folder("csv");
+      const jsonFolder = zip.folder('json');
+      const csvFolder = zip.folder('csv');
 
       jsonFolder.file('data.json', jsonBlob);
 

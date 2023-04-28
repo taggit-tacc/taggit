@@ -90,7 +90,7 @@ export class ImageBoxComponent implements OnInit {
 
   imageDelete() {
     const featureService = this.featureService;
-    this.selectedImages.forEach(function (value) {
+    this.selectedImages.forEach(function(value) {
       featureService.deleteFeature(value);
     });
     this.groupsService.unselectAllImages();

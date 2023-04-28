@@ -1,37 +1,8 @@
-<h4>Create a new Gallery/Map</h4>
-<form
-  [formGroup]="projCreateForm"
-  (ngSubmit)="submit()"
-  id="create-project-form"
->
-  <mat-form-field>
-    <mat-label>Name:</mat-label>
-    <input matInput type="text" formControlName="name" required="true" />
-  </mat-form-field>
-
-  <mat-form-field>
-    <mat-label>Description</mat-label>
-    <textarea matInput formControlName="description" required="true"></textarea>
-  </mat-form-field>
-
-  <div class="button-group small">
-    <button
-      mat-raised-button
-      color="warn"
-      class="button small warning"
-      type="button"
-      (click)="close()"
-    >
-      Close
-    </button>
-    <button
-      mat-raised-button
-      color="primary"
-      class="button small align-right"
-      type="submit"
-      [disabled]="!projCreateForm.valid"
-    >
-      Submit
-    </button>
+<div class="redirect-message-container">
+  <h3>Create a new Gallery/Map</h3>
+  <div class="redirect-message">All new maps/galleries should be started on Hazmapper. 
+    <div>
+      <a href={{hazmapperLink}}>Click here</a> to go to Hazmapper.
+    </div>
   </div>
-</form>
+</div>

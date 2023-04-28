@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BsModalService, BsModalRef } from 'ngx-foundation';
 import { FormGroup, FormControl } from '@angular/forms';
 import { ProjectsService } from '../../services/projects.service';
+import { EnvService } from '../../services/env.service';
 import { Project, ProjectRequest } from '../../models/models';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
@@ -15,10 +16,12 @@ export class ModalCreateProjectComponent implements OnInit {
   public readonly onClose: Subject<any> = new Subject<any>();
 
   projCreateForm: FormGroup;
+  hazmapperLink: string;
 
   constructor(
     public dialogRef: MatDialogRef<ModalCreateProjectComponent>,
     private dialog: MatDialog,
+    private envService: EnvService,
     private projectsService: ProjectsService
   ) {}
 
@@ -27,6 +30,7 @@ export class ModalCreateProjectComponent implements OnInit {
       name: new FormControl(''),
       description: new FormControl(''),
     });
+    this.hazmapperLink = this.envService.hazmapperUrl;
   }
 
   close(project: Project) {

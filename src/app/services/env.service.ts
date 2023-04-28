@@ -12,6 +12,19 @@ export class EnvService {
   private _jwt?: string;
   private _clientId: string;
   private _baseHref: string;
+  private _hazmapperUrl: string;
+
+  private getHazmapperUrl(backend: EnvironmentType): string {
+    if (backend === EnvironmentType.Local) {
+      return 'https://hazmapper.tacc.utexas.edu/hazmapper';
+    } else if (backend === EnvironmentType.Staging) {
+      return 'https://hazmapper.tacc.utexas.edu/staging';
+    } else if (backend === EnvironmentType.Production) {
+      return 'https://hazmapper.tacc.utexas.edu/hazmapper';
+    } else {
+      throw new Error('Unsupported Type');
+    }
+  }
 
   private getApiUrl(backend: EnvironmentType): string {
     if (backend === EnvironmentType.Local) {
@@ -57,6 +70,10 @@ export class EnvService {
     return this._baseHref;
   }
 
+  get hazmapperUrl(): string {
+    return this._hazmapperUrl;
+  }
+
   get designSafeUrl(): string {
     return 'https://agave.designsafe-ci.org/';
   }
@@ -82,6 +99,7 @@ export class EnvService {
       this._env = EnvironmentType.Local;
       this._apiUrl = this.getApiUrl(environment.backend);
       this._portalUrl = this.getPortalUrl(environment.backend);
+      this._hazmapperUrl = this.getHazmapperUrl(environment.backend);
       // when we are using the local backend, a jwt is required
       if (environment.backend === EnvironmentType.Local) {
         this._jwt = environment.jwt;
@@ -92,18 +110,21 @@ export class EnvService {
       this._env = EnvironmentType.Staging;
       this._apiUrl = this.getApiUrl(this.env);
       this._portalUrl = this.getPortalUrl(this.env);
+      this._hazmapperUrl = this.getHazmapperUrl(this.env);
       this._clientId = '8wVVA6GE3wyW4bXl0uQ04CfnQY8a';
       this._baseHref = '/taggit-staging/';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname)) {
       this._env = EnvironmentType.Production;
       this._apiUrl = this.getApiUrl(this.env);
       this._portalUrl = this.getPortalUrl(this.env);
+      this._hazmapperUrl = this.getHazmapperUrl(this.env);
       this._clientId = 'DcUrt7H9n5JMzjXcHOuqkYwSVtwa';
       this._baseHref = '/taggit/';
     } else if (/^taggit-tacc.github.io/.test(hostname)) {
       this._env = EnvironmentType.Production;
       this._apiUrl = this.getApiUrl(this.env);
       this._portalUrl = this.getPortalUrl(this.env);
+      this._hazmapperUrl = this.getHazmapperUrl(this.env);
       this._clientId = 'jHXnvsmQQcmP43qlrG7ATaxFXHQa';
       this._baseHref = '/';
     } else {
