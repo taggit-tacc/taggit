@@ -8,6 +8,7 @@ import {
 import { ProjectsService } from '../../services/projects.service';
 import { Feature, Project, TagGroup } from '../../models/models';
 import { FeatureCollection } from 'geojson';
+import { AgaveSystemsService } from '../../services/agave-systems.service';
 import { GeoDataService } from '../../services/geo-data.service';
 import { LatLng } from 'leaflet';
 import { skip } from 'rxjs/operators';
@@ -27,7 +28,7 @@ import {
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalCurrentProjectComponent } from '../modal-current-project/modal-current-project.component';
-import { environment } from '../../../environments/environment';
+import { EnvService } from '../../services/env.service';
 import { TapisFilesService } from '../../services/tapis-files.service';
 
 import { ScrollService } from 'src/app/services/scroll.service';
@@ -75,9 +76,11 @@ export class ControlBarComponent implements OnInit {
     private bsModalService: BsModalService,
     private groupsService: GroupsService,
     private formsService: FormsService,
+    private envService: EnvService,
     private authService: AuthService,
     private readonly cdr: ChangeDetectorRef,
     private filesService: TapisFilesService,
+    private agaveSystemsService: AgaveSystemsService,
     private router: Router,
     private dialog: MatDialog,
     private scrollService: ScrollService,
@@ -89,7 +92,6 @@ export class ControlBarComponent implements OnInit {
     this.filesService.getState();
 
     this.groupsService.groupToAdd.subscribe((next) => {
-      console.log(next);
       this.groupToAdd = next;
     });
 
@@ -177,13 +179,15 @@ export class ControlBarComponent implements OnInit {
     this.authService.currentUser.subscribe((next) => (this.currentUser = next));
 
     this.projectsService.getProjects();
-    this.projectsService.projects.subscribe((projects) => {
-      this.projects = projects;
+    this.agaveSystemsService.list();
+
+    combineLatest([this.projectsService.projects, this.agaveSystemsService.projects]).subscribe(([projects, dsProjects]) => {
+      this.projects = this.agaveSystemsService.getProjectMetadata(projects, dsProjects);
 
       // restores view to the last visited project from local storage
       let lastProject = null;
       try {
-        lastProject = JSON.parse(window.localStorage.getItem('lastProj'));
+        lastProject = JSON.parse(window.localStorage.getItem(this.projectsService.getLastProjectKeyword()));
       } catch (error) {
         // possible that lastProj item is null and not json
         lastProject = null;
@@ -200,14 +204,14 @@ export class ControlBarComponent implements OnInit {
           this.projectsService.setActiveProject(this.projects[0]);
         }
       }
+    });
 
-      this.groupsService.selectedImages.subscribe((next) => {
-        this.selectedImages = next;
-      });
+    this.groupsService.selectedImages.subscribe((next) => {
+      this.selectedImages = next;
+    });
 
-      this.groupsService.showTagger.subscribe((next) => {
-        this.showTagger = next;
-      });
+    this.groupsService.showTagger.subscribe((next) => {
+      this.showTagger = next;
     });
 
     this.projectsService.activeProject.subscribe((next) => {
@@ -292,8 +296,8 @@ export class ControlBarComponent implements OnInit {
 
   openCreateProjectModal() {
     this.dialog.open(ModalCreateProjectComponent, {
-      height: '400px',
-      width: '600px',
+      height: '200px',
+      width: '550px',
     });
   }
 
@@ -345,8 +349,8 @@ export class ControlBarComponent implements OnInit {
       this.groups.get(group.name)
     );
     this.groupsService.unselectAllImages();
-    this.scrollService.setScrollRestored(true);
   }
+
   openAddGroupModal(template: TemplateRef<any>) {
     this.dialog.open(template);
   }
@@ -397,15 +401,15 @@ export class ControlBarComponent implements OnInit {
 
     this.groups.forEach((e) => {
       const exportGroupObj = {};
-      exportGroupObj['groupName'] = e.name;
+      exportGroupObj.groupName = e.name;
       const groupFeatures = this.groupsFeatures.get(e.name);
-      exportGroupObj['features'] = [];
+      exportGroupObj.features = [];
 
       const forms = e.forms;
 
       groupFeatures.forEach((groupFeature) => {
         let featureSource =
-          environment.apiUrl + '/assets/' + groupFeature.assets[0].path;
+          this.envService.apiUrl + '/assets/' + groupFeature.assets[0].path;
 
         featureSource = featureSource.replace(/([^:])(\/{2,})/g, '$1/');
         const coordinates = groupFeature.geometry.coordinates;
@@ -435,7 +439,7 @@ export class ControlBarComponent implements OnInit {
             }
           });
         }
-        exportGroupObj['features'].push(featureObj);
+        exportGroupObj.features.push(featureObj);
       });
       exportList.push(exportGroupObj);
     });
@@ -478,8 +482,8 @@ export class ControlBarComponent implements OnInit {
 
       // Create ZIP
       const zip = new JSZip();
-      const jsonFolder = zip.folder("json");
-      const csvFolder = zip.folder("csv");
+      const jsonFolder = zip.folder('json');
+      const csvFolder = zip.folder('csv');
 
       jsonFolder.file('data.json', jsonBlob);
 

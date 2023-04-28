@@ -1,33 +1,17 @@
 @import '../../../variables.scss';
 
 :host {
-  #create-project-form {
+  .redirect-message-container {
     display: flex;
+    justify-content: center;
     flex-direction: column;
+    size: 15px;
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+  }
+  .redirect-message {
     text-align: center;
-    padding: 5em;
+    padding-top: 10px;
   }
 }
-// TODO: Fix annoying margin flash
-// :host {
-//   position: {top: 20px};
-//   width: 450px;
-//   height: 250px;
-//   min-height: 20em;
-//   .fileslisting {
-//	min-height: 15em;
-//	max-height: 15em;
-//	overflow-y: scroll;
-//   }
-
-//   .file-row {
-//	border: 1px solid transparent;
-//	&:hover {
-//	  border: 1px solid $lightGrey;
-//	  &.selected {
-//		background: #d3d3d3;
-//	  }
-//	}
-//   }
-
-// }

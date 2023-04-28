@@ -1,16 +1,12 @@
-
-FROM node:12-alpine as node
+FROM node:14.19.1-alpine3.15 as node
 
 RUN mkdir /www
 COPY package.json /www
-WORKDIR /www
-RUN npm install -g @angular/cli@8.0.3
-RUN npm install
-WORKDIR /
 COPY . /www
 WORKDIR /www
-RUN ng build --prod --base-href /hazmapper/
-RUN ls
+RUN npm install -g @angular/cli@8.3.22
+RUN npm install
+RUN ng build --prod
 
 
 FROM nginx:1.17-alpine

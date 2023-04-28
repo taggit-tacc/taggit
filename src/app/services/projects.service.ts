@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Project, IProjectUser, ProjectRequest } from '../models/models';
-import { environment } from '../../environments/environment';
+import { EnvService } from './env.service';
 import { AuthService } from './authentication.service';
 import { NotificationsService } from './notifications.service';
 
@@ -29,8 +29,13 @@ export class ProjectsService {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
+    private envService: EnvService,
     private notificationsService: NotificationsService
   ) {}
+
+  public getLastProjectKeyword() {
+    return `${this.envService.env}LastProject`;
+  }
 
   testGeoApi(): void {
     const data = {
@@ -54,7 +59,7 @@ export class ProjectsService {
 
   // Queries database for all user projects.
   getProjects(): void {
-    this.http.get<Project[]>(environment.apiUrl + `/projects/`).subscribe(
+    this.http.get<Project[]>(this.envService.apiUrl + `/projects/`).subscribe(
       (projects) => {
         this._projects.next(projects);
       },
@@ -68,7 +73,7 @@ export class ProjectsService {
 
   create(data: ProjectRequest) {
     this.http.post<Project>(
-      environment.apiUrl + `/projects/`,
+      this.envService.apiUrl + `/projects/`,
       data
     ).subscribe((proj) => {
       // Adding deletable attribute as missing from response https://jira.tacc.utexas.edu/browse/DES-2381
@@ -80,7 +85,7 @@ export class ProjectsService {
 
   setActiveProject(proj: Project): void {
     // saves change as last visited project
-    window.localStorage.setItem('lastProj', JSON.stringify(proj));
+    window.localStorage.setItem(this.getLastProjectKeyword(), JSON.stringify(proj));
     try {
       this._activeProject.next(proj);
     } catch (error) {
@@ -90,7 +95,7 @@ export class ProjectsService {
 
   update(data: ProjectRequest): void {
     this.http
-      .put<Project>(environment.apiUrl + `/projects/${data.project.id}/`, data)
+      .put<Project>(this.envService.apiUrl + `/projects/${data.project.id}/`, data)
       .subscribe((resp) => {
         this._activeProject.next(resp);
         this.getProjects();
@@ -99,9 +104,9 @@ export class ProjectsService {
 
   // Note: This will delete the project for everyone, if the project is shared.
   delete(data: Project): void {
-    this.http.delete(environment.apiUrl + `projects/${data.id}/`).subscribe(
+    this.http.delete(this.envService.apiUrl + `/projects/${data.id}/`).subscribe(
       (resp) => {
-        window.localStorage.removeItem('lastProj');
+        window.localStorage.removeItem(this.getLastProjectKeyword());
         this.getProjects();
       },
       (error) => {
@@ -114,7 +119,7 @@ export class ProjectsService {
   getProjectUsers(proj: Project): Observable<Array<IProjectUser>> {
     return this.http
       .get<Array<IProjectUser>>(
-        environment.apiUrl + `/projects/${proj.id}/users/`
+        this.envService.apiUrl + `/projects/${proj.id}/users/`
       )
       .pipe(
         tap((users) => {
@@ -128,7 +133,7 @@ export class ProjectsService {
       username: uname,
     };
     this.http
-      .post(environment.apiUrl + `/projects/${proj.id}/users/`, payload)
+      .post(this.envService.apiUrl + `/projects/${proj.id}/users/`, payload)
       .subscribe((resp) => {
         this.getProjectUsers(proj).subscribe();
       });
@@ -136,7 +141,7 @@ export class ProjectsService {
 
   deleteUserFromProject(proj: Project, user: string): void {
     this.http
-      .delete(environment.apiUrl + `/projects/${proj.id}/users/${user}/`)
+      .delete(this.envService.apiUrl + `/projects/${proj.id}/users/${user}/`)
       .subscribe(
         (resp) => {
           this.getProjectUsers(proj).subscribe();

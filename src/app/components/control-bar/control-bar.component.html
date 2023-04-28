@@ -37,6 +37,9 @@
       (click)="selectProject(p)"
       [ngClass]="{ 'active-project': p === selectedProject }"
     >
+      <div *ngIf="p.ds_id">
+        <span>Project: {{ p.ds_id }} | {{ p.name }} | {{ p.title }}</span>
+      </div>
       {{ p.name }}
     </button>
   </mat-menu>

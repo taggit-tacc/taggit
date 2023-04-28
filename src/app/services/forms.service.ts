@@ -48,7 +48,7 @@ export class FormsService {
         }
         return form;
       })
-    }
+    };
 
     this.geoDataService.updateGroupFeatures(
       projectId,

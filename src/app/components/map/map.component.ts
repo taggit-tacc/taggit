@@ -11,7 +11,7 @@ import * as turf from '@turf/turf';
 import { AllGeoJSON } from '@turf/helpers';
 import { filter, skip } from 'rxjs/operators';
 import { Overlay } from '../../models/models';
-import { AppEnvironment, environment } from '../../../environments/environment';
+import { EnvService } from '../../services/env.service';
 
 @Component({
   selector: 'app-map',
@@ -25,10 +25,10 @@ export class MapComponent implements OnInit {
   activeOverlay: Overlay;
   features: FeatureGroup = new FeatureGroup();
   overlays: Map<number, ImageOverlay>;
-  environment: AppEnvironment;
 
   constructor(
     private GeoDataService: GeoDataService,
+    private envService: EnvService,
     private route: ActivatedRoute
   ) {
     // Have to bind these to keep this being this
@@ -40,7 +40,6 @@ export class MapComponent implements OnInit {
     // const mapType: string = this.route.snapshot.queryParamMap.get('mapType');
     // this.projectId = +this.route.snapshot.paramMap.get("projectId");
     // this.cluster = this.route.snapshot.queryParamMap.get('mapType');
-    this.environment = environment;
     this.overlays = new Map();
     this.map = new L.Map('map', {
       center: [40, -80],
@@ -106,7 +105,7 @@ export class MapComponent implements OnInit {
       this.overlays.delete(ov.id);
     } else {
       const overlay = L.imageOverlay(
-        environment.apiUrl + '/assets/' + ov.path,
+        this.envService.apiUrl + '/assets/' + ov.path,
         [
           [ov.minLat, ov.minLon],
           [ov.maxLat, ov.maxLon],
