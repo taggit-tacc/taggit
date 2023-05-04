@@ -23,12 +23,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-node-
 
-    - name: npm ci
+    - name: npm install
       run: |
         npm ci
     - name: Linting
-      run: |
-        npm run lint
+      run: npm run lint
   Build:
     runs-on: ubuntu-latest
     steps:
@@ -46,8 +45,6 @@ jobs:
           ${{ runner.os }}-node-
 
     - name: npm ci
-      run: |
-        npm ci
+      run: npm ci
     - name: Build
-      run: |
-        npm run build
+      run: npm run build
