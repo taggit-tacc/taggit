@@ -24,8 +24,7 @@ jobs:
           ${{ runner.os }}-node-
 
     - name: npm install
-      run: |
-        npm ci
+      run: npm install
     - name: Linting
       run: npm run lint
   Build:
@@ -44,7 +43,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-node-
 
-    - name: npm ci
-      run: npm ci
+    - name: npm install
+      run: npm install
     - name: Build
       run: npm run build
