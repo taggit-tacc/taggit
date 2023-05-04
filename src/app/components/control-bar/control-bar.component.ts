@@ -1,7 +1,6 @@
 import {
   Component,
   OnInit,
-  Output,
   TemplateRef,
   ChangeDetectorRef,
 } from '@angular/core';
@@ -55,7 +54,6 @@ export class ControlBarComponent implements OnInit {
   groupName: string;
   showTagger = false;
   selectedImages: Array<any>;
-  modalRef: BsModalRef;
   activeGroup: TagGroup;
   groups: Map<string, TagGroup>;
   groupsFeatures: Map<string, any>;
@@ -158,7 +156,7 @@ export class ControlBarComponent implements OnInit {
           // Compiles a list of all necessary files to import via the alt method
           // The substring from 0 to 16 contains the phrase "Error importing", everything after this is the file path
           if (
-            item.message.substring(0, 16) == 'Error importing ' &&
+            item.message.substring(0, 16) === 'Error importing ' &&
             !this.foundFilePaths.some(
               (filePath) => filePath === item.message.substring(16)
             )
@@ -509,8 +507,8 @@ export class ControlBarComponent implements OnInit {
     // checks if the browser is Safari or otherwise, if so open download in new window
     // Its a quirk of those browsers that they don't allow same-page downloads
     if (
-      navigator.userAgent.indexOf('Safari') != -1 &&
-      navigator.userAgent.indexOf('Chrome') == -1
+      navigator.userAgent.indexOf('Safari') !== -1 &&
+      navigator.userAgent.indexOf('Chrome') === -1
     ) {
       download.setAttribute('target', '_blank');
     }
