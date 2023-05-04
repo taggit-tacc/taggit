@@ -46,4 +46,6 @@ jobs:
     - name: npm install
       run: npm install
     - name: Build
-      run: npm run build
+      run: |
+        touch src/environments/jwt.js
+        npm run build
