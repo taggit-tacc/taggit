@@ -218,7 +218,7 @@ export class ControlBarComponent implements OnInit {
         this.getDataForProject(this.selectedProject);
         // retrieves uuid for project, formats result into a link to that Hazmapper map
         this.hazmapperLink =
-          'https://hazmapper.tacc.utexas.edu/hazmapper/project/' + next.uuid;
+          this.envService.hazmapperUrl + '/project/' + next.uuid;
       }
     });
 
