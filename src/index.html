@@ -29,7 +29,9 @@
       var hostname = window.location.hostname;
       var pathname = window.location.pathname;
 
-      if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-staging')) {
+      if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-dev')) {
+        document.getElementById('base').href = '/taggit-dev/';
+      } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-staging')) {
         document.getElementById('base').href = '/taggit-staging/';
       } else if (/^hazmapper.tacc.utexas.edu/.test(hostname)) {
         document.getElementById('base').href = '/taggit/';
