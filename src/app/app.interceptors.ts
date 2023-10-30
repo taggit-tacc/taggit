@@ -9,6 +9,7 @@ import { Observable, throwError } from 'rxjs';
 import { EnvService } from './services/env.service';
 import { AuthService } from './services/authentication.service';
 import { catchError } from 'rxjs/operators';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -63,6 +64,22 @@ export class TokenInterceptor implements HttpInterceptor {
       request = request.clone({
         setHeaders: {
           'X-JWT-Assertion-designsafe': this.envService.jwt,
+        },
+      });
+    }
+
+    // for guest users, add a custom header with a unique id
+    if (!this.authSvc.isLoggedIn()) {
+      // Get (or create of needed) the guestUserID in local storage
+      let guestUuid = localStorage.getItem('guestUuid');
+
+      if (!guestUuid) {
+        guestUuid = uuidv4();
+        localStorage.setItem('guestUuid', guestUuid);
+      }
+      request = request.clone({
+        setHeaders: {
+          'X-Guest-UUID': guestUuid,
         },
       });
     }
