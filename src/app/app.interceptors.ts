@@ -84,6 +84,15 @@ export class TokenInterceptor implements HttpInterceptor {
       });
     }
 
+    if(request.url.indexOf(this.envService.apiUrl) > -1) {
+      // Add information about what app is making the request
+      request = request.clone({
+        setHeaders: {
+          'X-Geoapi-Application': 'taggit',
+        },
+      });
+    }
+
     return next.handle(request);
   }
 }
