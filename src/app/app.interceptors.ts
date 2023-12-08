@@ -68,31 +68,60 @@ export class TokenInterceptor implements HttpInterceptor {
       });
     }
 
-    // for guest users, add a custom header with a unique id
-    if (!this.authSvc.isLoggedIn()) {
-      // Get (or create of needed) the guestUserID in local storage
-      let guestUuid = localStorage.getItem('guestUuid');
-
-      if (!guestUuid) {
-        guestUuid = uuidv4();
-        localStorage.setItem('guestUuid', guestUuid);
-      }
-      request = request.clone({
-        setHeaders: {
-          'X-Guest-UUID': guestUuid,
-        },
-      });
-    }
-
-    if(request.url.indexOf(this.envService.apiUrl) > -1) {
+    if (request.url.indexOf(this.envService.apiUrl) > -1) {
       // Add information about what app is making the request
-      request = request.clone({
+
+      // Disabling custom headers due to https://tacc-main.atlassian.net/browse/WG-191
+      // and using additional query params
+      let analytics_params = {};
+
+      /*request = request.clone({
         setHeaders: {
-          'X-Geoapi-Application': 'taggit',
+          'X-Geoapi-Application': 'hazmapper',
         },
-      });
+      });*/
+
+      analytics_params = { ...analytics_params, application: 'hazmapper' };
+
+      // for guest users, add a unique id
+      if (!this.authSvc.isLoggedIn()) {
+        // Get (or create of needed) the guestUserID in local storage
+        let guestUuid = localStorage.getItem('guestUuid');
+
+        if (!guestUuid) {
+          guestUuid = uuidv4();
+          localStorage.setItem('guestUuid', guestUuid);
+        }
+        /*Disabling custom headers due to https://tacc-main.atlassian.net/browse/WG-191
+        request = request.clone({
+          setHeaders: {
+            'X-Guest-UUID': guestUuid,
+          },
+        });
+        */
+        analytics_params = { ...analytics_params, guest_uuid: guestUuid };
+      }
+      /* Send analytics-related params to projects endpoint only (until we use headers
+        again in https://tacc-main.atlassian.net/browse/WG-192) */
+      if (this.isProjectFeaturesRequest(request)) {
+        // Clone the request and add query parameters
+        request = request.clone({
+          setParams: { ...request.params, ...analytics_params },
+        });
+      }
     }
 
     return next.handle(request);
+  }
+
+  /**
+   * Determines whether a given HTTP request targets the features endpoint of a project or public project.
+   *
+   * This endpoint is being logged with extra information for analytics purposes.
+   */
+  private isProjectFeaturesRequest(request: HttpRequest<any>): boolean {
+    // Regular expression to match /projects/{projectId}/features or /public-projects/{projectId}/features
+    const urlPattern = /\/(projects|public-projects)\/\d+\/features\/?(?:\?.*)?/;
+    return request.method === 'GET' && urlPattern.test(request.url);
   }
 }
