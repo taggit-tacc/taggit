@@ -81,7 +81,7 @@ export class TokenInterceptor implements HttpInterceptor {
         },
       });*/
 
-      analytics_params = { ...analytics_params, application: 'hazmapper' };
+      analytics_params = { ...analytics_params, application: 'taggit' };
 
       // for guest users, add a unique id
       if (!this.authSvc.isLoggedIn()) {
