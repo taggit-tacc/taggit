@@ -78,7 +78,7 @@ export class TokenInterceptor implements HttpInterceptor {
 
       // for guest users, add a unique id
       if (!this.authSvc.isLoggedIn()) {
-        // Get (or create of needed) the guestUserID in local storage
+        // Get (or create if needed) the guestUserID in local storage
         let guestUuid = localStorage.getItem('guestUuid');
 
         if (!guestUuid) {
