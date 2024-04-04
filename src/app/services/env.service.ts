@@ -21,6 +21,8 @@ export class EnvService {
       return 'https://hazmapper.tacc.utexas.edu/staging';
     } else if (backend === EnvironmentType.Dev) {
       return 'https://hazmapper.tacc.utexas.edu/dev';
+    } else if (backend === EnvironmentType.Experimental) {
+      return 'https://hazmapper.tacc.utexas.edu/exp';
     } else if (backend === EnvironmentType.Production) {
       return 'https://hazmapper.tacc.utexas.edu/hazmapper';
     } else {
@@ -32,11 +34,13 @@ export class EnvService {
     if (backend === EnvironmentType.Local) {
       return 'http://localhost:8888';
     } else if (backend === EnvironmentType.Staging) {
-      return 'https://agave.designsafe-ci.org/geo-staging/v2';
+      return 'https://staging.geoapi-services.tacc.utexas.edu:8000';
     } else if (backend === EnvironmentType.Production) {
-      return 'https://agave.designsafe-ci.org/geo/v2';
+      return 'https://prod.geoapi-services.tacc.utexas.edu:8000';
     } else if (backend === EnvironmentType.Dev) {
-      return 'https://agave.designsafe-ci.org/geo-dev/v2';
+      return 'https://dev.geoapi-services.tacc.utexas.edu:8000';
+    } else if (backend === EnvironmentType.Experimental) {
+      return 'https://experimental.geoapi-services.tacc.utexas.edu:8000';
     } else {
       throw new Error('Unsupported Type');
     }
@@ -45,6 +49,8 @@ export class EnvService {
   private getPortalUrl(backend: EnvironmentType): string {
     if (backend === EnvironmentType.Production) {
       return 'https://www.designsafe-ci.org/';
+    } else if (backend === EnvironmentType.Experimental) {
+      return 'https://designsafeci-next.tacc.utexas.edu/';
     } else {
       return 'https://designsafeci-dev.tacc.utexas.edu/';
     }
@@ -79,6 +85,7 @@ export class EnvService {
   }
 
   get designSafeUrl(): string {
+    // TODO_TAPISV3
     return 'https://agave.designsafe-ci.org/';
   }
 
@@ -109,27 +116,34 @@ export class EnvService {
         this._jwt = environment.jwt;
       }
       this._baseHref = '/';
-      this._clientId = 'RMCJHgW9CwJ6mKjhLTDnUYBo9Hka';
+      this._clientId = 'taggit.localhost';
+    } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-exp')) {
+      this._env = EnvironmentType.Experimental;
+      this._apiUrl = this.getApiUrl(this.env);
+      this._portalUrl = this.getPortalUrl(this.env);
+      this._hazmapperUrl = this.getHazmapperUrl(this.env);
+      this._clientId = 'taggit.experimental';
+      this._baseHref = '/taggit-dev/';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-dev')) {
       this._env = EnvironmentType.Dev;
       this._apiUrl = this.getApiUrl(this.env);
       this._portalUrl = this.getPortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._clientId = '2rSCfaGy7TIg2jLLZCfI0vhLREoa';
+      this._clientId = 'taggit.dev';
       this._baseHref = '/taggit-dev/';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-staging')) {
       this._env = EnvironmentType.Staging;
       this._apiUrl = this.getApiUrl(this.env);
       this._portalUrl = this.getPortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._clientId = '8wVVA6GE3wyW4bXl0uQ04CfnQY8a';
+      this._clientId = 'taggit.staging';
       this._baseHref = '/taggit-staging/';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname)) {
       this._env = EnvironmentType.Production;
       this._apiUrl = this.getApiUrl(this.env);
       this._portalUrl = this.getPortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._clientId = 'DcUrt7H9n5JMzjXcHOuqkYwSVtwa';
+      this._clientId = 'taggit.prod';
       this._baseHref = '/taggit/';
     } else if (/^taggit-tacc.github.io/.test(hostname)) {
       this._env = EnvironmentType.Production;
