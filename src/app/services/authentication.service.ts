@@ -4,15 +4,15 @@ import { AuthToken } from '../models/models';
 import { EnvService } from '../services/env.service';
 import { Observable, ReplaySubject } from 'rxjs';
 import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
 
 export class AuthenticatedUser {
   public readonly username: string;
   public readonly email: string;
   private _token: AuthToken;
 
-  constructor(username: string, email: string) {
+  constructor(username: string) {
     this.username = username;
-    this.email = email;
   }
 }
 
@@ -51,7 +51,7 @@ export class AuthService {
         this.logout();
         this.redirectToauthenticaor();
       }
-      this.getUserInfo();
+      this.getUserInfoFromToken();
     }
   }
 
@@ -60,8 +60,8 @@ export class AuthService {
     const callbackSlash = this.envService.env === 'production' || this.envService.env === 'staging' ? 'callback/' : 'callback';
     const callback = location.origin + this.envService.baseHref + callbackSlash;
     const state = Math.random().toString(36);
-    const AUTH_URL = `https://agave.designsafe-ci.org/authorize?scope=openid&client_id=${client_id}&response_type=token&redirect_uri=${callback}&state=${state}`;
-    window.location.href = AUTH_URL;
+    const AUTH_URL_V3 = `${this.envService.tapisUrl}/v3/oauth2/authorize?client_id=${client_id}&response_type=token&redirect_uri=${callback}`;
+    window.location.href = AUTH_URL_V3;
   }
 
   /**
@@ -80,22 +80,15 @@ export class AuthService {
   public setToken(token: string, expires: number): void {
     this.userToken = AuthToken.fromExpiresIn(token, expires);
     localStorage.setItem(this.getTokenKeyword(), JSON.stringify(this.userToken));
+    this.getUserInfoFromToken();
     // hit the wso2 api to retrieve the username etc
     this.router.navigate(['/']);
   }
 
-  public getUserInfo() {
-    const INFO_URL = `https://agave.designsafe-ci.org/oauth2/userinfo?schema=openid`;
-    const userStr = localStorage.getItem(this.getUserKeyword());
-    const user = JSON.parse(userStr);
-    if (user !== null) {
-      this._currentUser.next(new AuthenticatedUser(user.username, user.email));
-    } else {
-      this.http.get<OpenIDUser>(INFO_URL).subscribe((resp) => {
-        const u = new AuthenticatedUser(resp.name, resp.email);
-        localStorage.setItem(this.getUserKeyword(), JSON.stringify(u));
-        this._currentUser.next(u);
-      });
-    }
+  public getUserInfoFromToken() {
+    // tapis/username
+    const decodedJwt = jwtDecode(this.userToken.token);
+    const u = new AuthenticatedUser(decodedJwt['tapis/username']);
+    this._currentUser.next(u);
   }
 }

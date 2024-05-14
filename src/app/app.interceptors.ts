@@ -26,6 +26,8 @@ export class AuthInterceptor implements HttpInterceptor {
         if (err.status === 401) {
           // auto logout if 401 response returned from api
           // https://jira.tacc.utexas.edu/browse/DES-1999
+          // TODO_TAPISV3 When token expires, force user to login again.
+          // Check which error code Tapis returns
           this.authService.logout();
           location.reload();
         }
@@ -48,25 +50,28 @@ export class TokenInterceptor implements HttpInterceptor {
     request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    if (request.url.indexOf('https://agave.designsafe-ci.org') > -1) {
+    if (request.url.includes(this.envService.tapisUrl) || 
+    request.url.includes(this.envService.apiUrl) ||
+    request.url.includes(this.envService.designSafeUrl)) {
       if (this.authSvc.isLoggedIn()) {
         request = request.clone({
           setHeaders: {
-            Authorization: 'Bearer ' + this.authSvc.userToken.token,
+            'X-Tapis-Token': this.authSvc.userToken.token,
           },
         });
       }
     }
+    //TODO_TAPISV3 Remove this block
     // we put the JWT on the request to our geoapi API because it is not behind ws02 if in local dev
     // and if user is logged in
-    if (this.envService.jwt && request.url.indexOf(this.envService.apiUrl) > -1 && this.authSvc.isLoggedIn()) {
-      // add header
-      request = request.clone({
-        setHeaders: {
-          'X-JWT-Assertion-designsafe': this.envService.jwt,
-        },
-      });
-    }
+    //if (this.envService.jwt && request.url.indexOf(this.envService.apiUrl) > -1 && this.authSvc.isLoggedIn()) {
+    //  // add header
+    //  request = request.clone({
+    //    setHeaders: {
+    //      'X-JWT-Assertion-designsafe': this.envService.jwt,
+    //    },
+    //  });
+    //}
 
     if (request.url.indexOf(this.envService.apiUrl) > -1) {
       // Add information about what app is making the request

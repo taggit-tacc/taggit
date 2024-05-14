@@ -24,14 +24,14 @@ export class AgaveSystemsService {
   private systemsList: SystemSummary[];
 
   constructor(
-    private tapis: ApiService,
+    private tapisv2: ApiService,
     private envService: EnvService,
     private http: HttpClient
   ) {}
 
   // list() runs when the file browser is opened, retrieves all files in TACC for given user
   list() {
-    this.tapis.systemsList({ type: 'STORAGE' }).subscribe(
+    this.http.get<any>(this.envService.tapisUrl + `v3/systems/?listType=ALL`).subscribe(
       (resp) => {
         this._systems.next(resp.result);
         this._projects.next(
@@ -44,9 +44,9 @@ export class AgaveSystemsService {
       }
     );
 
-    this.http.get<DesignSafeProjectCollection>(this.envService.designSafeUrl + `/projects/v2/`).subscribe(
+    this.http.get<DesignSafeProjectCollection>(this.envService.designSafeUrl + `/api/projects/v2/`).subscribe(
       (resp) => {
-        const projectSystems = resp.projects.map((project) => {
+        const projectSystems = resp.result.map((project) => {
           return {
             id: 'project-' + project.uuid,
             name: project.value.projectId,

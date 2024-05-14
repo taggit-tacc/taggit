@@ -11,11 +11,10 @@ export class CallbackComponent implements OnInit {
   constructor(private route: ActivatedRoute, private auth: AuthService) {}
 
   ngOnInit() {
-    // TODO: For some reason wso2 is sending back a fragment like #access_token=qadad&expires_in=3600
     const frag = this.route.snapshot.fragment;
     const params = new URLSearchParams(frag);
-    const token = params.get('access_token');
-    const expires_in = +params.get('expires_in');
+    const token = this.route.snapshot.queryParams.access_token;
+    const expires_in = this.route.snapshot.queryParams.expires_in;
     this.auth.setToken(token, expires_in);
   }
 }
