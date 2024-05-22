@@ -34,9 +34,6 @@ export class AgaveSystemsService {
     this.http.get<any>(this.envService.tapisUrl + `v3/systems/?listType=ALL`).subscribe(
       (resp) => {
         this._systems.next(resp.result);
-        this._projects.next(
-          resp.result.filter((sys) => sys.id.startsWith('project'))
-        );
       },
       (error) => {
         this._systems.next(null);
