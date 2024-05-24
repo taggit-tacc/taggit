@@ -130,6 +130,13 @@ export class EnvService {
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
       this._clientId = 'taggit.dev';
       this._baseHref = '/taggit-dev/';
+    } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-exp')) {
+      this._env = EnvironmentType.Experimental;
+      this._apiUrl = this.getApiUrl(this.env);
+      this._hazmapperUrl = this.getHazmapperUrl(this.env);
+      this._portalUrl = this.getPortalUrl(this.env);
+      this._clientId = 'taggit.experimental';
+      this._baseHref = '/taggit-exp/';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-staging')) {
       this._env = EnvironmentType.Staging;
       this._apiUrl = this.getApiUrl(this.env);
@@ -151,15 +158,7 @@ export class EnvService {
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
       this._clientId = 'jHXnvsmQQcmP43qlrG7ATaxFXHQa'; // Need to update or delete the clientId to match convention
       this._baseHref = '/';
-    } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-exp')) {
-      this._env = EnvironmentType.Experimental;
-      this._apiUrl = this.getApiUrl(this.env);
-      this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._portalUrl = this.getPortalUrl(this.env);
-      this._clientId = 'taggit.experimental';
-      this._baseHref = '/taggit-exp/';
-    }
-    else {
+    } else {
       console.error('Cannot find environment for host name ${hostname}');
     }
   }
