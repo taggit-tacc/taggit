@@ -1,10 +1,15 @@
 TAG := $(shell git log --format=%h -1)
-IMAGE ?= taccaci/taggit:$(TAG)
+IMAGE ?= taccaci/taggit
 
 .PHONY: image
-image:
-	docker build -t $(IMAGE) -f Dockerfile .
+build:
+	docker build -t $(IMAGE):$(TAG) -f Dockerfile .
+	docker tag $(IMAGE):$(TAG) $(IMAGE):latest
 
 .PHONY: deploy
 deploy:
-	docker push $(IMAGE)
+	docker push $(IMAGE):$(TAG)
+
+.PHONY: deploy-latest
+deploy-latest:
+	docker push $(IMAGE):latest
