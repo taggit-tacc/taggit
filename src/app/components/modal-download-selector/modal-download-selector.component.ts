@@ -136,28 +136,31 @@ export class ModalDownloadSelectorComponent implements OnInit {
         ModalDownloadSelectorComponent.limit
       )
       .subscribe(
-        (listing) => {
-          const files = listing.result;
+        (response) => {
+          // Add 'system' to results to match v2
+          const files = response.result.map((f) => ({
+            ...f,
+            system: this.currentDirectory.system,
+          }));
 
-          if (files.length && files[0].name === '.') {
-            // This removes the first item in the listing, which in Agave
-            // is always a reference to self '.' and replaces with '..'
-            const current = files.shift();
-            this.currentPath.next(current.path);
-            this.passbackData[1] = current.path;
-            current.path = this.tapisFilesService.getParentPath(current.path);
-            current.name = '..';
-            files.unshift(current);
-          }
-          const newFile = [];
-          files.forEach(function(value, index) {
-            if (value.type == 'file' || value.type == 'dir') {
-              newFile.push(value);
-            }
-          });
+          this.currentPath.next(this.currentDirectory.path);
+          this.passbackData[1] = this.currentDirectory.path;
+          debugger;
+
+          // Add '..' entry for users to move to parent path
+          const backPath = {
+            name: '..',
+            format: 'folder',
+            type: 'dir',
+            mimeType: 'test/directory',
+            size: 8192,
+            path: this.tapisFilesService.getParentPath(this.currentDirectory.path),
+            system: this.currentDirectory.system,
+          };
+          files.unshift(backPath);
 
           this.inProgress = false;
-          this.filesList = this.filesList.concat(newFile);
+          this.filesList = this.filesList.concat(files);
           this.offset = this.offset + files.length;
         },
         (error) => {

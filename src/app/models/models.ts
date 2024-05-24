@@ -288,5 +288,5 @@ export interface DesignSafeProject {
 }
 
 export interface DesignSafeProjectCollection {
-  projects: DesignSafeProject[];
+  result: DesignSafeProject[];
 }

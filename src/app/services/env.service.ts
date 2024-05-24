@@ -23,6 +23,8 @@ export class EnvService {
       return 'https://hazmapper.tacc.utexas.edu/dev';
     } else if (backend === EnvironmentType.Production) {
       return 'https://hazmapper.tacc.utexas.edu/hazmapper';
+    } else if (backend === EnvironmentType.Experimental) {
+      return 'https://hazmapper.tacc.utexas.edu/exp';
     } else {
       throw new Error('Unsupported Type');
     }
@@ -32,19 +34,27 @@ export class EnvService {
     if (backend === EnvironmentType.Local) {
       return 'http://localhost:8888';
     } else if (backend === EnvironmentType.Staging) {
-      return 'https://agave.designsafe-ci.org/geo-staging/v2';
+      return 'https://hazmapper.tacc.utexas.edu/geoapi-staging';
     } else if (backend === EnvironmentType.Production) {
-      return 'https://agave.designsafe-ci.org/geo/v2';
+      return 'https://hazmapper.tacc.utexas.edu/geoapi';
     } else if (backend === EnvironmentType.Dev) {
-      return 'https://agave.designsafe-ci.org/geo-dev/v2';
+      return 'https://hazmapper.tacc.utexas.edu/geoapi-dev';
+    } else if (backend === EnvironmentType.Experimental) {
+      return 'https://hazmapper.tacc.utexas.edu/geoapi-experimental';
     } else {
       throw new Error('Unsupported Type');
     }
   }
 
+  get tapisUrl(): string {
+    return 'https://designsafe.tapis.io/';
+  }
+
   private getPortalUrl(backend: EnvironmentType): string {
     if (backend === EnvironmentType.Production) {
       return 'https://www.designsafe-ci.org/';
+    } else if (backend === EnvironmentType.Experimental) {
+      return 'https://designsafeci-next.tacc.utexas.edu/';
     } else {
       return 'https://designsafeci-dev.tacc.utexas.edu/';
     }
@@ -78,8 +88,9 @@ export class EnvService {
     return this._hazmapperUrl;
   }
 
+  //TODO_TAPISV3 Check if we still need this since we use Portal URL
   get designSafeUrl(): string {
-    return 'https://agave.designsafe-ci.org/';
+    return 'https://designsafeci-next.tacc.utexas.edu';
   }
 
   get portalUrl(): string {
@@ -105,40 +116,50 @@ export class EnvService {
       this._portalUrl = this.getPortalUrl(environment.backend);
       this._hazmapperUrl = this.getHazmapperUrl(environment.backend);
       // when we are using the local backend, a jwt is required
+      // TODO_TAPISV3 Remove jwt from environment service and
+      // files as they no longer have to be added
       if (environment.backend === EnvironmentType.Local) {
         this._jwt = environment.jwt;
       }
       this._baseHref = '/';
-      this._clientId = 'RMCJHgW9CwJ6mKjhLTDnUYBo9Hka';
+      this._clientId = 'taggit.localhost';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-dev')) {
       this._env = EnvironmentType.Dev;
       this._apiUrl = this.getApiUrl(this.env);
       this._portalUrl = this.getPortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._clientId = '2rSCfaGy7TIg2jLLZCfI0vhLREoa';
+      this._clientId = 'taggit.dev';
       this._baseHref = '/taggit-dev/';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-staging')) {
       this._env = EnvironmentType.Staging;
       this._apiUrl = this.getApiUrl(this.env);
       this._portalUrl = this.getPortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._clientId = '8wVVA6GE3wyW4bXl0uQ04CfnQY8a';
+      this._clientId = 'taggit.staging';
       this._baseHref = '/taggit-staging/';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname)) {
       this._env = EnvironmentType.Production;
       this._apiUrl = this.getApiUrl(this.env);
       this._portalUrl = this.getPortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._clientId = 'DcUrt7H9n5JMzjXcHOuqkYwSVtwa';
+      this._clientId = 'taggit.prod';
       this._baseHref = '/taggit/';
     } else if (/^taggit-tacc.github.io/.test(hostname)) {
       this._env = EnvironmentType.Production;
       this._apiUrl = this.getApiUrl(this.env);
       this._portalUrl = this.getPortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._clientId = 'jHXnvsmQQcmP43qlrG7ATaxFXHQa';
+      this._clientId = 'jHXnvsmQQcmP43qlrG7ATaxFXHQa'; // Need to update or delete the clientId to match convention
       this._baseHref = '/';
-    } else {
+    } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-exp')) {
+      this._env = EnvironmentType.Experimental;
+      this._apiUrl = this.getApiUrl(this.env);
+      this._hazmapperUrl = this.getHazmapperUrl(this.env);
+      this._portalUrl = this.getPortalUrl(this.env);
+      this._clientId = 'taggit.experimental';
+      this._baseHref = '/taggit-exp/';
+    }
+    else {
       console.error('Cannot find environment for host name ${hostname}');
     }
   }
