@@ -174,18 +174,20 @@ export class ModalFileBrowserComponent implements OnInit {
 
           this.currentPath.next(this.currentDirectory.path);
 
-          // Add '..' entry for users to move to parent path
-          const backPath = {
-            name: '..',
-            format: 'folder',
-            type: 'dir',
-            mimeType: 'test/directory',
-            size: 8192,
-            path: this.tapisFilesService.getParentPath(this.currentDirectory.path),
-            system: this.currentDirectory.system,
-          };
-          files.unshift(backPath);
-
+          // If this is the first load, add the '..' entry for users to move to parent path
+          if (this.offset === 0) {
+            const backPath = {
+              name: '..',
+              format: 'folder',
+              type: 'dir',
+              mimeType: 'test/directory',
+              size: 8192,
+              path: this.tapisFilesService.getParentPath(this.currentDirectory.path),
+              system: this.currentDirectory.system,
+            };
+            this.filesList.unshift(backPath);
+          }
+   
           this.inProgress = false;
           this.retrievalError = false;
           this.filesList = this.filesList.concat(files);
