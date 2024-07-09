@@ -32,11 +32,11 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router, private envService: EnvService) {}
 
   public getTokenKeyword() {
-    return `${this.envService.env}TaggitToken`;
+    return `${this.envService.env}V3TaggitToken`;
   }
 
   public getUserKeyword() {
-    return `${this.envService.env}TaggitUser`;
+    return `${this.envService.env}V3TaggitUser`;
   }
 
   public login() {
