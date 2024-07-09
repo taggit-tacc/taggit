@@ -399,9 +399,9 @@ export class ControlBarComponent implements OnInit {
 
     this.groups.forEach((e) => {
       const exportGroupObj = {};
-      exportGroupObj.groupName = e.name;
+      exportGroupObj['groupName'] = e.name;
       const groupFeatures = this.groupsFeatures.get(e.name);
-      exportGroupObj.features = [];
+      exportGroupObj['features'] = [];
 
       const forms = e.forms;
 
@@ -437,7 +437,7 @@ export class ControlBarComponent implements OnInit {
             }
           });
         }
-        exportGroupObj.features.push(featureObj);
+        exportGroupObj['features'].push(featureObj);
       });
       exportList.push(exportGroupObj);
     });
