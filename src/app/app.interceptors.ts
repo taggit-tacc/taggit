@@ -11,33 +11,6 @@ import { AuthService } from './services/authentication.service';
 import { catchError } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-  constructor(
-    private authService: AuthService
-  ) {}
-
-  intercept(
-    request: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
-    return next.handle(request).pipe(
-      catchError((err) => {
-        if (err.status === 401) {
-          // auto logout if 401 response returned from api
-          // https://jira.tacc.utexas.edu/browse/DES-1999
-          // TODO_TAPISV3 When token expires, force user to login again.
-          // Check which error code Tapis returns
-          this.authService.logout();
-          location.reload();
-        }
-
-        const error = err.error.message || err.statusText;
-        return throwError(error);
-      })
-    );
-  }
-}
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
@@ -52,7 +25,12 @@ export class TokenInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     if (request.url.includes(this.envService.tapisUrl) || 
     request.url.includes(this.envService.apiUrl) ||
-    request.url.includes(this.envService.designSafeUrl)) {
+    request.url.includes(this.envService.designSafePortalUrl)) {
+      if (this.authSvc.isLoggedInButTokenExpired()){
+        this.authSvc.logout();
+        location.reload();
+      }
+
       if (this.authSvc.isLoggedIn()) {
         request = request.clone({
           setHeaders: {
@@ -61,17 +39,6 @@ export class TokenInterceptor implements HttpInterceptor {
         });
       }
     }
-    //TODO_TAPISV3 Remove this block
-    // we put the JWT on the request to our geoapi API because it is not behind ws02 if in local dev
-    // and if user is logged in
-    //if (this.envService.jwt && request.url.indexOf(this.envService.apiUrl) > -1 && this.authSvc.isLoggedIn()) {
-    //  // add header
-    //  request = request.clone({
-    //    setHeaders: {
-    //      'X-JWT-Assertion-designsafe': this.envService.jwt,
-    //    },
-    //  });
-    //}
 
     if (request.url.indexOf(this.envService.apiUrl) > -1) {
       // Add information about what app is making the request
