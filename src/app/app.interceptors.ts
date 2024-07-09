@@ -26,7 +26,7 @@ export class TokenInterceptor implements HttpInterceptor {
     if (request.url.includes(this.envService.tapisUrl) || 
     request.url.includes(this.envService.apiUrl) ||
     request.url.includes(this.envService.designSafePortalUrl)) {
-      if (this.authSvc.isLoggedInButTokenExpired()){
+      if (this.authSvc.isLoggedInButTokenExpired()) {
         this.authSvc.logout();
         location.reload();
       }
