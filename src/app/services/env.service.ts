@@ -8,8 +8,7 @@ import { EnvironmentType } from '../../environments/environmentType';
 export class EnvService {
   private _env: EnvironmentType;
   private _apiUrl: string;
-  private _portalUrl: string;
-  private _jwt?: string;
+  private _designSafePortalUrl: string;
   private _clientId: string;
   private _baseHref: string;
   private _hazmapperUrl: string;
@@ -47,16 +46,16 @@ export class EnvService {
   }
 
   get tapisUrl(): string {
-    return 'https://designsafe.tapis.io/';
+    return 'https://designsafe.tapis.io';
   }
 
-  private getPortalUrl(backend: EnvironmentType): string {
+  private getDesignSafePortalUrl(backend: EnvironmentType): string {
     if (backend === EnvironmentType.Production) {
-      return 'https://www.designsafe-ci.org/';
-    } else if (backend === EnvironmentType.Experimental) {
-      return 'https://designsafeci-next.tacc.utexas.edu/';
+      return 'https://www.designsafe-ci.org';
+    } else if (backend === EnvironmentType.Experimental || backend === EnvironmentType.Local) {
+      return 'https://designsafeci-next.tacc.utexas.edu';
     } else {
-      return 'https://designsafeci-dev.tacc.utexas.edu/';
+      return 'https://designsafeci-dev.tacc.utexas.edu';
     }
   }
 
@@ -72,10 +71,6 @@ export class EnvService {
     return this._apiUrl;
   }
 
-  get jwt(): string {
-    return this._jwt;
-  }
-
   get clientId(): string {
     return this._clientId;
   }
@@ -88,13 +83,8 @@ export class EnvService {
     return this._hazmapperUrl;
   }
 
-  //TODO_TAPISV3 Check if we still need this since we use Portal URL
-  get designSafeUrl(): string {
-    return 'https://designsafeci-next.tacc.utexas.edu';
-  }
-
-  get portalUrl(): string {
-    return this._portalUrl;
+  get designSafePortalUrl(): string {
+    return this._designSafePortalUrl;
   }
 
   constructor() {}
@@ -113,20 +103,14 @@ export class EnvService {
     if (/^localhost/.test(hostname)) {
       this._env = EnvironmentType.Local;
       this._apiUrl = this.getApiUrl(environment.backend);
-      this._portalUrl = this.getPortalUrl(environment.backend);
+      this._designSafePortalUrl = this.getDesignSafePortalUrl(environment.backend);
       this._hazmapperUrl = this.getHazmapperUrl(environment.backend);
-      // when we are using the local backend, a jwt is required
-      // TODO_TAPISV3 Remove jwt from environment service and
-      // files as they no longer have to be added
-      if (environment.backend === EnvironmentType.Local) {
-        this._jwt = environment.jwt;
-      }
       this._baseHref = '/';
       this._clientId = 'taggit.localhost';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-dev')) {
       this._env = EnvironmentType.Dev;
       this._apiUrl = this.getApiUrl(this.env);
-      this._portalUrl = this.getPortalUrl(this.env);
+      this._designSafePortalUrl = this.getDesignSafePortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
       this._clientId = 'taggit.dev';
       this._baseHref = '/taggit-dev/';
@@ -134,27 +118,27 @@ export class EnvService {
       this._env = EnvironmentType.Experimental;
       this._apiUrl = this.getApiUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._portalUrl = this.getPortalUrl(this.env);
+      this._designSafePortalUrl = this.getDesignSafePortalUrl(this.env);
       this._clientId = 'taggit.experimental';
       this._baseHref = '/taggit-exp/';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-staging')) {
       this._env = EnvironmentType.Staging;
       this._apiUrl = this.getApiUrl(this.env);
-      this._portalUrl = this.getPortalUrl(this.env);
+      this._designSafePortalUrl = this.getDesignSafePortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
       this._clientId = 'taggit.staging';
       this._baseHref = '/taggit-staging/';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname)) {
       this._env = EnvironmentType.Production;
       this._apiUrl = this.getApiUrl(this.env);
-      this._portalUrl = this.getPortalUrl(this.env);
+      this._designSafePortalUrl = this.getDesignSafePortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
       this._clientId = 'taggit.prod';
       this._baseHref = '/taggit/';
     } else if (/^taggit-tacc.github.io/.test(hostname)) {
       this._env = EnvironmentType.Production;
       this._apiUrl = this.getApiUrl(this.env);
-      this._portalUrl = this.getPortalUrl(this.env);
+      this._designSafePortalUrl = this.getDesignSafePortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
       this._clientId = 'jHXnvsmQQcmP43qlrG7ATaxFXHQa'; // Need to update or delete the clientId to match convention
       this._baseHref = '/';
