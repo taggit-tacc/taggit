@@ -31,7 +31,7 @@ export class AgaveSystemsService {
 
   // list() runs when the file browser is opened, retrieves all files in TACC for given user
   list() {
-    this.http.get<any>(this.envService.tapisUrl + `v3/systems/?listType=ALL`).subscribe(
+    this.http.get<any>(this.envService.tapisUrl + `/v3/systems/?listType=ALL`).subscribe(
       (resp) => {
         this._systems.next(resp.result);
       },
@@ -41,7 +41,7 @@ export class AgaveSystemsService {
       }
     );
 
-    this.http.get<DesignSafeProjectCollection>(this.envService.designSafeUrl + `/api/projects/v2/`).subscribe(
+    this.http.get<DesignSafeProjectCollection>(this.envService.designSafePortalUrl + `/api/projects/v2/`).subscribe(
       (resp) => {
         const projectSystems = resp.result.map((project) => {
           return {

@@ -34,7 +34,7 @@ import { ControlBarComponent } from './components/control-bar/control-bar.compon
 import { AuthService } from './services/authentication.service';
 import { EnvService } from './services/env.service';
 import { CallbackComponent } from './components/callback/callback.component';
-import { AuthInterceptor, TokenInterceptor } from './app.interceptors';
+import { TokenInterceptor } from './app.interceptors';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ModalFileBrowserComponent } from './components/modal-file-browser/modal-file-browser.component';
 import { ImageGalleryComponent } from './components/image-gallery/image-gallery.component';
@@ -135,11 +135,6 @@ import { MatCardModule } from '@angular/material/card';
   ],
   providers: [
     AuthService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      multi: true,
-      useClass: AuthInterceptor,
-    },
     {
       provide: HTTP_INTERCEPTORS,
       multi: true,

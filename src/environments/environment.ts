@@ -3,16 +3,13 @@
 // The list of file replacements can be found in `angular.json`.
 
 import { EnvironmentType } from './environmentType';
-import { jwt as devJWT } from './jwt';
 
 export interface AppEnvironment {
-  jwt?: string;
   backend: EnvironmentType;
   production: boolean;
 }
 
 export const environment: AppEnvironment = {
   backend: EnvironmentType.Experimental,
-  jwt: devJWT,
   production: false,
 };

@@ -67,7 +67,7 @@ export class TapisFilesService {
   }
 
   listFiles(system: string, path: string, offset: number, limit: number) {
-    return this.http.get<any>(this.envService.tapisUrl + `v3/files/ops/${system}/${path}?offset=${offset}&limit=${limit}`);
+    return this.http.get<any>(this.envService.tapisUrl + `/v3/files/ops/${system}/${path}?offset=${offset}&limit=${limit}`);
   }
 
   public getParentPath(path: string): string {
@@ -93,9 +93,7 @@ export class TapisFilesService {
       verticalPosition: 'top',
     };
     // construct the full URL that points to where the data will be stored
-    const fullURL = this.envService.tapisUrl + `v3/files/ops/${systemID}/${path}/${fileName}`;
-    // TODO_TAPISV3 Update where Taggit stores exports in DesignSafe for v3
-    //const fullURL = `https://hazmapper.tacc.utexas.edu/geoapi-experimental/${systemID}${path}`;
+    const fullURL = this.envService.tapisUrl + `/v3/files/ops/${systemID}/${path}/${fileName}`;
 
     // construct a file to submit
     const tmp = new Blob([data], { type: 'blob' });

@@ -32,11 +32,11 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router, private envService: EnvService) {}
 
   public getTokenKeyword() {
-    return `${this.envService.env}TaggitToken`;
+    return `${this.envService.env}V3TaggitToken`;
   }
 
   public getUserKeyword() {
-    return `${this.envService.env}TaggitUser`;
+    return `${this.envService.env}V3TaggitUser`;
   }
 
   public login() {
@@ -68,7 +68,26 @@ export class AuthService {
    * Checks to make sure that the user has a token and the token is not expired;
    */
   public isLoggedIn(): boolean {
-    return this.userToken && !this.userToken.isExpired();
+    const tokenStr = localStorage.getItem(this.getTokenKeyword());
+    if (tokenStr) {
+      const token = JSON.parse(tokenStr);
+      this.userToken = new AuthToken(token.token, new Date(token.expires));
+      return this.userToken && !this.userToken.isExpired();
+    }
+    return false;
+  }
+
+  /**
+   * Checks to see if there is a logged in user but token is expired;
+   */
+  public isLoggedInButTokenExpired(): boolean {
+    const tokenStr = localStorage.getItem(this.getTokenKeyword());
+    if (tokenStr) {
+      const token = JSON.parse(tokenStr);
+      this.userToken = new AuthToken(token.token, new Date(token.expires));
+      return this.userToken && this.userToken.isExpired();
+    }
+    return false;
   }
 
   public logout(): void {
