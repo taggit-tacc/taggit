@@ -112,28 +112,28 @@ export class EnvService {
       this._apiUrl = this.getApiUrl(this.env);
       this._designSafePortalUrl = this.getDesignSafePortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._clientId = 'taggit.dev';
+      this._clientId = 'taggitds.dev';
       this._baseHref = '/taggit-dev/';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-exp')) {
       this._env = EnvironmentType.Experimental;
       this._apiUrl = this.getApiUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
       this._designSafePortalUrl = this.getDesignSafePortalUrl(this.env);
-      this._clientId = 'taggit.experimental';
+      this._clientId = 'taggitds.experimental';
       this._baseHref = '/taggit-exp/';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-staging')) {
       this._env = EnvironmentType.Staging;
       this._apiUrl = this.getApiUrl(this.env);
       this._designSafePortalUrl = this.getDesignSafePortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._clientId = 'taggit.staging';
+      this._clientId = 'taggitds.staging';
       this._baseHref = '/taggit-staging/';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname)) {
       this._env = EnvironmentType.Production;
       this._apiUrl = this.getApiUrl(this.env);
       this._designSafePortalUrl = this.getDesignSafePortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._clientId = 'taggit.prod';
+      this._clientId = 'taggitds.prod';
       this._baseHref = '/taggit/';
     } else if (/^taggit-tacc.github.io/.test(hostname)) {
       this._env = EnvironmentType.Production;
