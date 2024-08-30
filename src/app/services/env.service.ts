@@ -106,7 +106,7 @@ export class EnvService {
       this._designSafePortalUrl = this.getDesignSafePortalUrl(environment.backend);
       this._hazmapperUrl = this.getHazmapperUrl(environment.backend);
       this._baseHref = '/';
-      this._clientId = 'taggitds.localhost';
+      this._clientId = 'taggitds.local';
     } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-dev')) {
       this._env = EnvironmentType.Dev;
       this._apiUrl = this.getApiUrl(this.env);
