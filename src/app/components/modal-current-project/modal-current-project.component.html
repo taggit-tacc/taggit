@@ -11,12 +11,13 @@
       formControlName="name"
       appearance="filled"
       required="true"
+      readonly="true"
     />
   </mat-form-field>
 
   <mat-form-field>
     <mat-label>Description</mat-label>
-    <textarea matInput formControlName="description" required="true"></textarea>
+    <textarea matInput formControlName="description" required="true" readonly="true"></textarea>
   </mat-form-field>
 
   <div class="button-group small">
@@ -38,16 +39,6 @@
       (click)="delete()"
     >
       Delete
-    </button>
-    <button
-      mat-raised-button
-      color="primary"
-      class="button small align-right"
-      type="submit"
-      (click)="update()"
-      [disabled]="!projCreateForm.valid"
-    >
-      Update
     </button>
   </div>
 </form>
