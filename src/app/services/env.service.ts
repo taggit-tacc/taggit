@@ -52,10 +52,10 @@ export class EnvService {
   private getDesignSafePortalUrl(backend: EnvironmentType): string {
     if (backend === EnvironmentType.Production) {
       return 'https://www.designsafe-ci.org';
-    } else if (backend === EnvironmentType.Experimental || backend === EnvironmentType.Local) {
+    } else if (backend === EnvironmentType.Experimental) {
       return 'https://designsafeci-next.tacc.utexas.edu';
     } else {
-      return 'https://designsafeci-dev.tacc.utexas.edu';
+      return 'https://pprd.designsafe-ci.org';
     }
   }
 
