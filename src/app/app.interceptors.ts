@@ -23,6 +23,8 @@ export class TokenInterceptor implements HttpInterceptor {
     request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
+    const headers: { [key: string]: string } = {};
+
     if (request.url.includes(this.envService.tapisUrl) || 
     request.url.includes(this.envService.apiUrl) ||
     request.url.includes(this.envService.designSafePortalUrl)) {
@@ -31,22 +33,18 @@ export class TokenInterceptor implements HttpInterceptor {
         location.reload();
       }
 
+
       if (this.authSvc.isLoggedIn()) {
-        request = request.clone({
-          setHeaders: {
-            'X-Tapis-Token': this.authSvc.userToken.token,
-          },
-        });
+        headers['X-Tapis-Token'] = this.authSvc.userToken.token;
       }
     }
 
-    if (request.url.indexOf(this.envService.apiUrl) > -1) {
+    if (request.url.includes(this.envService.apiUrl)) {
       // Add information about what app is making the request
 
-      // Using query params instead of custom headers due to https://tacc-main.atlassian.net/browse/WG-191
-      let analytics_params = {};
-
-      analytics_params = { ...analytics_params, application: 'taggit' };
+      // Add information about what app is making the request
+      headers['X-Geoapi-Application'] = 'taggit';
+      headers['X-Geoapi-IsPublicView'] = 'True'; // Todo: update for public-view in https://tacc-main.atlassian.net/browse/WG-127
 
       // for guest users, add a unique id
       if (!this.authSvc.isLoggedIn()) {
@@ -57,16 +55,13 @@ export class TokenInterceptor implements HttpInterceptor {
           guestUuid = uuidv4();
           localStorage.setItem('guestUuid', guestUuid);
         }
-        analytics_params = { ...analytics_params, guest_uuid: guestUuid };
+        headers['X-Guest-UUID'] = guestUuid;
       }
-      /* Send analytics-related params to projects endpoint only (until we use headers
-        again in https://tacc-main.atlassian.net/browse/WG-192) */
-      if (this.isProjectFeaturesRequest(request)) {
-        // Clone the request and add query parameters
-        request = request.clone({
-          setParams: { ...request.params, ...analytics_params },
-        });
-      }
+    }
+
+    // Apply headers if there are any to set
+    if (Object.keys(headers).length > 0) {
+      request = request.clone({ setHeaders: headers });
     }
 
     return next.handle(request);
