@@ -11,10 +11,17 @@ export class CallbackComponent implements OnInit {
   constructor(private route: ActivatedRoute, private auth: AuthService) {}
 
   ngOnInit() {
-    const frag = this.route.snapshot.fragment;
-    const params = new URLSearchParams(frag);
-    const token = this.route.snapshot.queryParams.access_token;
-    const expires_in = this.route.snapshot.queryParams.expires_in;
-    this.auth.setToken(token, expires_in);
+    const fragment = this.route.snapshot.fragment;
+    if (fragment) {
+      const params = new URLSearchParams(fragment);
+      const token = params.get('access_token');
+      const expires_in = Number(params.get('expires_in'));
+      this.auth.setToken(token, expires_in);
+    } else {
+      // TODO REMOVE
+      const token = this.route.snapshot.queryParams.access_token;
+      const expires_in = this.route.snapshot.queryParams.expires_in;
+      this.auth.setToken(token, expires_in);
+    }
   }
 }
