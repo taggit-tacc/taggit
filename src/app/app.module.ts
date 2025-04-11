@@ -65,6 +65,7 @@ import { FormTextBoxComponent } from './components/side-bar/tag-images/form-gene
 import { FormColorComponent } from './components/side-bar/tag-images/form-generator/form-fields/form-color/form-color.component';
 import { ModalShareProjectComponent } from './components/modal-share-project/modal-share-project.component';
 import { MatCardModule } from '@angular/material/card';
+import { MainWelcomeComponent } from './components/main-welcome/main-welcome.component';
 
 @NgModule({
   declarations: [
@@ -98,6 +99,7 @@ import { MatCardModule } from '@angular/material/card';
     FormTextBoxComponent,
     ModalShareProjectComponent,
     FormColorComponent,
+    MainWelcomeComponent,
   ],
   imports: [
     // this is for the ng-tapis library
