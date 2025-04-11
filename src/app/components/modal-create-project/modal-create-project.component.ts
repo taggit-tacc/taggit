@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { BsModalService, BsModalRef } from 'ngx-foundation';
 import { FormGroup, FormControl } from '@angular/forms';
-import { ProjectsService } from '../../services/projects.service';
 import { EnvService } from '../../services/env.service';
-import { Project, ProjectRequest } from '../../models/models';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -20,9 +17,7 @@ export class ModalCreateProjectComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<ModalCreateProjectComponent>,
-    private dialog: MatDialog,
     private envService: EnvService,
-    private projectsService: ProjectsService
   ) {}
 
   ngOnInit() {
@@ -33,24 +28,7 @@ export class ModalCreateProjectComponent implements OnInit {
     this.hazmapperLink = this.envService.hazmapperUrl;
   }
 
-  close(project: Project) {
-    this.dialogRef.close();
-  }
-
-  submit() {
-    // Watch content we can set to false, for our project, we don't need this yet.
-    // Watch content refers to syncing files created in a folder with a hazmapper map
-    // Set observable to true, Hazmapper doesn't let users define that value for some reason.
-    const proj = new Project();
-    const projRqst = new ProjectRequest();
-
-    // Retrieve project name and description
-    proj.description = this.projCreateForm.get('description').value;
-    proj.name = this.projCreateForm.get('name').value;
-
-    projRqst.project = proj;
-
-    this.projectsService.create(projRqst);
+  close() {
     this.dialogRef.close();
   }
 }
