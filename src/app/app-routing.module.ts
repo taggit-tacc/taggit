@@ -24,6 +24,7 @@ export class Activate implements CanActivate {
     if (this.authSvc.isLoggedIn()) {
       return true;
     }
+    debugger;
     this.authSvc.login();
   }
 }

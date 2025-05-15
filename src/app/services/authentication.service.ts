@@ -40,6 +40,7 @@ export class AuthService {
   }
 
   public login() {
+    debugger;
     // First, check if the user has a token in localStorage
     const tokenStr = localStorage.getItem(this.getTokenKeyword());
     if (!tokenStr) {
@@ -56,6 +57,7 @@ export class AuthService {
   }
 
   private redirectToauthenticaor() {
+    debugger;
     const client_id = this.envService.clientId;
     const callback = location.origin + this.envService.baseHref + 'callback';
     const state = Math.random().toString(36);
