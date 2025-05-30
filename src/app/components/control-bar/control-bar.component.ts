@@ -179,26 +179,16 @@ export class ControlBarComponent implements OnInit {
     this.projectsService.getProjects();
     this.agaveSystemsService.list();
 
-    combineLatest([this.projectsService.projects, this.agaveSystemsService.projects]).subscribe(([projects, dsProjects]) => {
+    combineLatest([this.projectsService.selectedProjectUUID$, this.projectsService.projects, this.agaveSystemsService.projects]).subscribe(([selectedProjectUUID, projects, dsProjects]) => {
       this.projects = this.agaveSystemsService.getProjectMetadata(projects, dsProjects);
 
-      // restores view to the last visited project from local storage
-      let lastProject = null;
-      try {
-        lastProject = JSON.parse(window.localStorage.getItem(this.projectsService.getLastProjectKeyword()));
-      } catch (error) {
-        // possible that lastProj item is null and not json
-        lastProject = null;
-      }
-
       if (projects.length) {
-        const selectedLastProject = lastProject
-          ? this.projects.find((prj) => prj.id === lastProject.id)
-          : null;
+        const selectedLastProject = selectedProjectUUID ? this.projects.find((prj) => prj.uuid === selectedProjectUUID) : null;
         if (selectedLastProject) {
           this.projectsService.setActiveProject(selectedLastProject);
         } else {
           // default to the first project in the list
+          // TODO SHOW ERROR if this is the case and spinner while we wait for these things
           this.projectsService.setActiveProject(this.projects[0]);
         }
       }
@@ -244,7 +234,8 @@ export class ControlBarComponent implements OnInit {
   }
 
   selectProject(p: Project): void {
-    this.projectsService.setActiveProject(p);
+    // navigate to this project
+    this.router.navigate(['/project', p.uuid]);
   }
 
   getDataForProject(p: Project): void {

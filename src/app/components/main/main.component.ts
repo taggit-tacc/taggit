@@ -1,14 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { GeoDataService } from '../../services/geo-data.service';
-import { Feature } from '../../models/models';
-import {
-  AuthenticatedUser,
-  AuthService,
-} from '../../services/authentication.service';
-import { Observable } from 'rxjs';
-import { BsModalRef, BsModalService } from 'ngx-foundation';
-import { ModalFileBrowserComponent } from '../modal-file-browser/modal-file-browser.component';
-import { RemoteFile } from 'ng-tapis';
+import { ActivatedRoute, UrlSegment } from '@angular/router';
+import { AuthService } from '../../services/authentication.service';
+import { ProjectsService } from '../../services/projects.service';
+import { BsModalService } from 'ngx-foundation';
+
 
 @Component({
   selector: 'app-main',
@@ -16,19 +12,21 @@ import { RemoteFile } from 'ng-tapis';
   styleUrls: ['./main.component.scss'],
 })
 export class MainComponent implements OnInit {
-  // public activeFeature: Feature;
-  // public currentUser: AuthenticatedUser;
+  private isPublicView = false;
+
 
   constructor(
-    private geoDataService: GeoDataService,
-    private authService: AuthService,
-    private bsModalService: BsModalService
+    private route: ActivatedRoute,
+    private projectsService: ProjectsService,
   ) {}
 
   ngOnInit() {
-    // this.geoDataService.activeFeature.subscribe( next => {
-    //   this.activeFeature = next;
-    // });
-    // this.authService.currentUser.subscribe(next => this.currentUser = next);
+    this.isPublicView = this.route.snapshot.url.some(
+      (segment: UrlSegment) => segment.path === 'project-public'
+    );
+    this.route.paramMap.subscribe(params => {
+      const projectUUID = params.get('projectUUID');
+      this.projectsService.setSelectedProjectUUID(projectUUID);
+    });
   }
 }

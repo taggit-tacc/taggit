@@ -11,6 +11,8 @@ import { NotificationsService } from './notifications.service';
   providedIn: 'root',
 })
 export class ProjectsService {
+  private _selectedProjectUUID = new BehaviorSubject<string | null>(null);
+  public readonly selectedProjectUUID$ = this._selectedProjectUUID.asObservable();
   private _projects: BehaviorSubject<Project[]> = new BehaviorSubject([]);
   public readonly projects: Observable<Project[]> =
     this._projects.asObservable();
@@ -71,21 +73,11 @@ export class ProjectsService {
     );
   }
 
-  create(data: ProjectRequest) {
-    this.http.post<Project>(
-      this.envService.apiUrl + `/projects/`,
-      data
-    ).subscribe((proj) => {
-      // Adding deletable attribute as missing from response https://jira.tacc.utexas.edu/browse/DES-2381
-      proj = {...proj, deletable: true};
-      this.setActiveProject(proj);
-      this._projects.next([...this._projects.value, proj]);
-    });
+  setSelectedProjectUUID(projectUUID: string): void {
+    this._selectedProjectUUID.next(projectUUID);
   }
 
   setActiveProject(proj: Project): void {
-    // saves change as last visited project
-    window.localStorage.setItem(this.getLastProjectKeyword(), JSON.stringify(proj));
     try {
       this._activeProject.next(proj);
     } catch (error) {
