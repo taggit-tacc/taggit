@@ -9,7 +9,6 @@ export class EnvService {
   private _env: EnvironmentType;
   private _apiUrl: string;
   private _designSafePortalUrl: string;
-  private _clientId: string;
   private _baseHref: string;
   private _hazmapperUrl: string;
 
@@ -83,10 +82,6 @@ export class EnvService {
     return this._apiUrl;
   }
 
-  get clientId(): string {
-    return this._clientId;
-  }
-
   get baseHref(): string {
     return this._baseHref;
   }
@@ -119,35 +114,24 @@ export class EnvService {
       this._designSafePortalUrl = this.getDesignSafePortalUrl(environment.backend);
       this._hazmapperUrl = this.getHazmapperUrl(environment.backend);
       this._baseHref = '/';
-      this._clientId = 'taggitds.local';
     } else if (hostname == hazmapperBase && pathname.startsWith('/taggit-dev')) {
       this._env = EnvironmentType.Dev;
       this._apiUrl = this.getApiUrl(this.env);
       this._designSafePortalUrl = this.getDesignSafePortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._clientId = 'taggitds.dev';
       this._baseHref = '/taggit-dev/';
     } else if (hostname == hazmapperBase && pathname.startsWith('/taggit-staging')) {
       this._env = EnvironmentType.Staging;
       this._apiUrl = this.getApiUrl(this.env);
       this._designSafePortalUrl = this.getDesignSafePortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._clientId = 'taggitds.staging';
       this._baseHref = '/taggit-staging/';
     } else if (hostname == hazmapperBase && pathname.startsWith('/taggit')) {
       this._env = EnvironmentType.Production;
       this._apiUrl = this.getApiUrl(this.env);
       this._designSafePortalUrl = this.getDesignSafePortalUrl(this.env);
       this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._clientId = 'taggitds.prod';
       this._baseHref = '/taggit/';
-    } else if (/^taggit-tacc.github.io/.test(hostname)) {
-      this._env = EnvironmentType.Production;
-      this._apiUrl = this.getApiUrl(this.env);
-      this._designSafePortalUrl = this.getDesignSafePortalUrl(this.env);
-      this._hazmapperUrl = this.getHazmapperUrl(this.env);
-      this._clientId = 'jHXnvsmQQcmP43qlrG7ATaxFXHQa'; // Need to update or delete the clientId to match convention
-      this._baseHref = '/';
     } else {
       console.error('Cannot find environment for host name ${hostname}');
     }
