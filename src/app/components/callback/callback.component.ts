@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/authentication.service';
 
@@ -12,7 +12,7 @@ export class CallbackComponent implements OnInit {
 
   ngOnInit() {
     const fragment = this.route.snapshot.fragment;
-      const redirectTo = localStorage.getItem('toParam') || '/';
+      const redirectTo = '/';
       const params = new URLSearchParams(fragment);
       const token = params.get('access_token');
       const expires_in = Number(params.get('expires_in'));
