@@ -29,7 +29,7 @@ export class AuthService {
     this._currentUser.asObservable();
   userToken: AuthToken;
 
-  constructor(private http: HttpClient, private router: Router, private envService: EnvService) {}
+  constructor(private http: HttpClient, private envService: EnvService) {}
 
   public getTokenKeyword() {
     return `${this.envService.env}V3TaggitToken`;
@@ -40,29 +40,24 @@ export class AuthService {
   }
 
   public login() {
-    debugger;
     // First, check if the user has a token in localStorage
     const tokenStr = localStorage.getItem(this.getTokenKeyword());
     if (!tokenStr) {
-      this.redirectToauthenticaor();
+      this.redirectToAuthenticator();
     } else {
       const token = JSON.parse(tokenStr);
       this.userToken = new AuthToken(token.token, new Date(token.expires));
       if (!this.userToken || this.userToken.isExpired()) {
         this.logout();
-        this.redirectToauthenticaor();
+        this.redirectToAuthenticator();
       }
       this.getUserInfoFromToken();
     }
   }
 
-  private redirectToauthenticaor() {
-    debugger;
-    const client_id = this.envService.clientId;
-    const callback = location.origin + this.envService.baseHref + 'callback';
-    const state = Math.random().toString(36);
-    const AUTH_URL_V3 = `${this.envService.tapisUrl}/v3/oauth2/authorize?client_id=${client_id}&response_type=token&redirect_uri=${callback}`;
-    window.location.href = AUTH_URL_V3;
+  private redirectToAuthenticator(to: string = '/') {
+    const geoapi_auth_url = `${this.envService.apiUrl}/auth/login?to=${encodeURIComponent(to)}`;
+    window.location.href = geoapi_auth_url;
   }
 
   /**
@@ -101,8 +96,6 @@ export class AuthService {
     this.userToken = AuthToken.fromExpiresIn(token, expires);
     localStorage.setItem(this.getTokenKeyword(), JSON.stringify(this.userToken));
     this.getUserInfoFromToken();
-    // hit the wso2 api to retrieve the username etc
-    this.router.navigate(['/']);
   }
 
   public getUserInfoFromToken() {

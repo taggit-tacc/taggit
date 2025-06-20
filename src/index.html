@@ -38,14 +38,17 @@
     <script>
       var hostname = window.location.hostname;
       var pathname = window.location.pathname;
+      const isHazmapper =
+        hostname === 'hazmapper.tacc.utexas.edu' ||
+        hostname === 'hazmapper-tmp.tacc.utexas.edu';
 
-      if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-dev')) {
+      if (isHazmapper && pathname.startsWith('/taggit-dev')) {
         document.getElementById('base').href = '/taggit-dev/';
-      } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-staging')) {
+      } else if (isHazmapper && pathname.startsWith('/taggit-staging')) {
         document.getElementById('base').href = '/taggit-staging/';
-      } else if (/^hazmapper.tacc.utexas.edu/.test(hostname) && pathname.startsWith('/taggit-exp')) {
+      } else if (isHazmapper && pathname.startsWith('/taggit-exp')) {
         document.getElementById('base').href = '/taggit-exp/';
-      } else if (/^hazmapper.tacc.utexas.edu/.test(hostname)) {
+      } else if (isHazmapper) {
         document.getElementById('base').href = '/taggit/';
       } else {
         document.getElementById('base').href = '/';
