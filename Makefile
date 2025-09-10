@@ -1,5 +1,5 @@
 TAG := $(shell git log --format=%h -1)
-IMAGE ?= taccaci/taggit
+IMAGE ?= taccwma/taggit
 
 .PHONY: image
 build:

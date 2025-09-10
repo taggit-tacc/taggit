@@ -6,7 +6,7 @@ The deployment of images and updating of the Kubernetes services and application
 workflow found [here](https://jenkins01.tacc.utexas.edu/view/Hazmapper+Geoapi/.)
 
 The images used in deployment are built automatically for the master branch using TravisCI and 
-pushed to Docker Hub (see https://hub.docker.com/r/taccaci/taggit).
+pushed to Docker Hub (see https://hub.docker.com/r/taccwma/taggit).
 
 ### Kube config
 
