@@ -9,7 +9,6 @@ import {
 import { NotFoundComponent } from './components/notfound/notfound.component';
 import { AuthService } from './services/authentication.service';
 import { MainComponent } from './components/main/main.component';
-import { CallbackComponent } from './components/callback/callback.component';
 import { LogoutComponent } from './components/logout/logout.component';
 import { TagGeneratorComponent } from './components/side-bar/tag-generator/tag-generator.component';
 import { TagImagesComponent } from './components/side-bar/tag-images/tag-images.component';
@@ -47,7 +46,6 @@ const routes: Routes = [
       },
     ],
   },
-  { path: 'handle-login', component: CallbackComponent },
   { path: 'logout', component: LogoutComponent },
   { path: '404', component: NotFoundComponent },
 ];

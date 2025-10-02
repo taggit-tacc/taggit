@@ -1,7 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import {
+  HttpClientModule,
+  HttpClientXsrfModule,
+  HTTP_INTERCEPTORS,
+} from '@angular/common/http';
 // CommonModule for dynamic field
 import { APP_BASE_HREF, CommonModule } from '@angular/common';
 
@@ -33,7 +37,6 @@ import { NotFoundComponent } from './components/notfound/notfound.component';
 import { ControlBarComponent } from './components/control-bar/control-bar.component';
 import { AuthService } from './services/authentication.service';
 import { EnvService } from './services/env.service';
-import { CallbackComponent } from './components/callback/callback.component';
 import { TokenInterceptor } from './app.interceptors';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ModalFileBrowserComponent } from './components/modal-file-browser/modal-file-browser.component';
@@ -74,7 +77,6 @@ import { LogoutComponent } from './components/logout/logout.component';
     NotFoundComponent,
     MainComponent,
     ControlBarComponent,
-    CallbackComponent,
     ModalFileBrowserComponent,
     ImageGalleryComponent,
     // TaggerComponent,
@@ -107,6 +109,10 @@ import { LogoutComponent } from './components/logout/logout.component';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    HttpClientXsrfModule.withOptions({
+      cookieName: 'csrftoken',
+      headerName: 'X-CSRFToken',
+    }),
     BrowserAnimationsModule,
     InfiniteScrollModule,
     NgxSpinnerModule,
