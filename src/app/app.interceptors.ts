@@ -33,7 +33,6 @@ export class TokenInterceptor implements HttpInterceptor {
         location.reload();
       }
 
-
       if (this.authSvc.isLoggedIn()) {
         headers['X-Tapis-Token'] = this.authSvc.userToken.token;
       }

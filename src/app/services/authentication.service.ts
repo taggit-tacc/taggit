@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthToken } from '../models/models';
 import { EnvService } from '../services/env.service';
-import { Observable, ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject, throwError } from 'rxjs';
+import { tap, catchError, map } from 'rxjs/operators';
 
 export class AuthenticatedUser {
   public readonly username: string;
@@ -41,10 +42,18 @@ export class AuthService {
   }
 
   public login() {
-    // First, try to get user object from backend
-    this.getAuthenticatedUser();
-    // If no user object, redirect to authenticator
-    if (!this.isLoggedIn()) this.redirectToAuthenticator();
+
+    // Get user object from backend and see if that works
+    this.getAuthenticatedUser().subscribe({
+      next: (user) => {
+        // User is authenticated, no redirect needed
+        console.log('User authenticated:', user);
+      },
+      error: () => {
+        // No authenticated user, redirect to authenticator
+        this.redirectToAuthenticator();
+      }
+    });
   }
 
   private redirectToAuthenticator(to: string = '/') {
@@ -73,20 +82,28 @@ export class AuthService {
     this._currentUser.next(null);
   }
 
+
   // Get the authenticated user object from the backend
-  public getAuthenticatedUser(): void {
-    this.http.get(this.envService.apiUrl + '/auth/user/').subscribe(
-      (resp: TAuthenticatedUserResponse) => {
+  // Now returns an Observable so callers can react to the response
+  public getAuthenticatedUser(): Observable<AuthenticatedUser> {
+    return this.http.get<TAuthenticatedUserResponse>(
+      this.envService.apiUrl + '/auth/user/'
+    ).pipe(
+      tap((resp: TAuthenticatedUserResponse) => {
         this.userToken = new AuthToken(
           resp.authToken.token,
           resp.authToken.expiresAt
         );
+      }),
+      map((resp) => {
         const u = new AuthenticatedUser(resp.username);
         this._currentUser.next(u);
-      },
-      (error) => {
-        console.error(error);
-      }
+        return u;
+      }),
+      catchError((error) => {
+        console.error('Failed to get authenticated user:', error);
+        return throwError(() => error);
+      })
     );
   }
 }
