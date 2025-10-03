@@ -1,4 +1,10 @@
-<div *ngIf="loaded; else loader" id="loading-load">
+<div *ngIf="loaded && hasError" id="error-state">
+  <i class="fas fa-exclamation-triangle"></i>
+  <p>{{ errorMessage }}</p>
+  <button (click)="retryLoad()" class="retry-button">Retry</button>
+</div>
+
+<div *ngIf="loaded && !hasError; else loader" id="loading-load">
   <div *ngIf="projectsExist; else noProjWarn" id="gallery-container">
 
   <div *ngIf="loadingGallery; else galleryLoader">
@@ -62,11 +68,8 @@
 </div>
 
 <ng-template #loader>
-  <div *ngIf="projectsExist; else createProj" id="loader">Loading...</div>
-
-  <ng-template #createProj>
-    <div id="new-proj" (click)="openCreateProjectModal()">
-      Start a new project
-    </div>
-  </ng-template>
+  <div id="loader">
+    <i class="fas fa-circle-notch fa-spin"></i>
+    <p>Loading...</p>
+  </div>
 </ng-template>
