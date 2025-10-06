@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthToken } from '../models/models';
 import { EnvService } from '../services/env.service';
-import { Observable, ReplaySubject } from 'rxjs';
-import { Router } from '@angular/router';
-import { jwtDecode } from 'jwt-decode';
+import { Observable, ReplaySubject, throwError } from 'rxjs';
+import { tap, catchError, map } from 'rxjs/operators';
 
 export class AuthenticatedUser {
   public readonly username: string;
@@ -16,9 +15,12 @@ export class AuthenticatedUser {
   }
 }
 
-interface OpenIDUser {
-  name: string;
-  email: string;
+interface TAuthenticatedUserResponse {
+  username: string | null;
+  authToken: {
+    token: string;
+    expiresAt: Date;
+  } | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -40,23 +42,24 @@ export class AuthService {
   }
 
   public login() {
-    // First, check if the user has a token in localStorage
-    const tokenStr = localStorage.getItem(this.getTokenKeyword());
-    if (!tokenStr) {
-      this.redirectToAuthenticator();
-    } else {
-      const token = JSON.parse(tokenStr);
-      this.userToken = new AuthToken(token.token, new Date(token.expires));
-      if (!this.userToken || this.userToken.isExpired()) {
-        this.logout();
+
+    // Get user object from backend and see if that works
+    this.getAuthenticatedUser().subscribe({
+      next: (user) => {
+        // User is authenticated, no redirect needed
+        console.log('User authenticated:', user);
+      },
+      error: () => {
+        // No authenticated user, redirect to authenticator
         this.redirectToAuthenticator();
       }
-      this.getUserInfoFromToken();
-    }
+    });
   }
 
   private redirectToAuthenticator(to: string = '/') {
-    const geoapi_auth_url = `${this.envService.apiUrl}/auth/login?to=${encodeURIComponent(to)}`;
+    const geoapi_auth_url = `${
+      this.envService.apiUrl
+    }/auth/login?to=${encodeURIComponent(to)}`;
     window.location.href = geoapi_auth_url;
   }
 
@@ -64,44 +67,43 @@ export class AuthService {
    * Checks to make sure that the user has a token and the token is not expired;
    */
   public isLoggedIn(): boolean {
-    const tokenStr = localStorage.getItem(this.getTokenKeyword());
-    if (tokenStr) {
-      const token = JSON.parse(tokenStr);
-      this.userToken = new AuthToken(token.token, new Date(token.expires));
-      return this.userToken && !this.userToken.isExpired();
-    }
-    return false;
+    return this.userToken && !this.userToken.isExpired();
   }
 
   /**
    * Checks to see if there is a logged in user but token is expired;
    */
   public isLoggedInButTokenExpired(): boolean {
-    const tokenStr = localStorage.getItem(this.getTokenKeyword());
-    if (tokenStr) {
-      const token = JSON.parse(tokenStr);
-      this.userToken = new AuthToken(token.token, new Date(token.expires));
-      return this.userToken && this.userToken.isExpired();
-    }
-    return false;
+    return this.userToken && this.userToken.isExpired();
   }
 
   public logout(): void {
     this.userToken = null;
-    localStorage.removeItem(this.getTokenKeyword());
-    localStorage.removeItem(this.getUserKeyword());
+    this._currentUser.next(null);
   }
 
-  public setToken(token: string, expires: number): void {
-    this.userToken = AuthToken.fromExpiresIn(token, expires);
-    localStorage.setItem(this.getTokenKeyword(), JSON.stringify(this.userToken));
-    this.getUserInfoFromToken();
-  }
 
-  public getUserInfoFromToken() {
-    // tapis/username
-    const decodedJwt = jwtDecode(this.userToken.token);
-    const u = new AuthenticatedUser(decodedJwt['tapis/username']);
-    this._currentUser.next(u);
+  // Get the authenticated user object from the backend
+  // Now returns an Observable so callers can react to the response
+  public getAuthenticatedUser(): Observable<AuthenticatedUser> {
+    return this.http.get<TAuthenticatedUserResponse>(
+      this.envService.apiUrl + '/auth/user/'
+    ).pipe(
+      tap((resp: TAuthenticatedUserResponse) => {
+        this.userToken = new AuthToken(
+          resp.authToken.token,
+          resp.authToken.expiresAt
+        );
+      }),
+      map((resp) => {
+        const u = new AuthenticatedUser(resp.username);
+        this._currentUser.next(u);
+        return u;
+      }),
+      catchError((error) => {
+        console.error('Failed to get authenticated user:', error);
+        return throwError(() => error);
+      })
+    );
   }
 }

@@ -2,15 +2,12 @@ import {
   AfterViewChecked,
   Component,
   OnInit,
-  Renderer2,
   ChangeDetectorRef,
 } from '@angular/core';
 import { GeoDataService } from '../../services/geo-data.service';
 import {
-  FeatureAsset,
   Feature,
   Project,
-  FeatureCollection,
   TagGroup,
 } from '../../models/models';
 import { ProjectsService } from '../../services/projects.service';
@@ -18,7 +15,6 @@ import { EnvService } from '../../services/env.service';
 import { ScrollService } from 'src/app/services/scroll.service';
 import { GroupsService } from '../../services/groups.service';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { startWith } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalCreateProjectComponent } from '../modal-create-project/modal-create-project.component';
 import { FeatureService } from 'src/app/services/feature.service';
@@ -43,19 +39,23 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   activeGroup: TagGroup;
   activeFeature: Feature;
   activeGroupFeature: Feature;
-  // activeFeatureNum: number;
   featurePath: string;
-  loaded: boolean;
-  loadingGallery = false;
+
   groupsFeatures: Map<string, any>;
   groups: Map<string, any>;
+
+  // Loading and error states
+  loaded = false;
+  loadingGallery = false;
+  hasError = false;
+  errorMessage = '';
+
 
   constructor(
     private geoDataService: GeoDataService,
     private projectsService: ProjectsService,
     private groupsService: GroupsService,
     private readonly cdr: ChangeDetectorRef,
-    private renderer: Renderer2,
     private envService: EnvService,
     private spinner: NgxSpinnerService,
     private dialog: MatDialog,
@@ -71,18 +71,21 @@ export class ImageGalleryComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit() {
-
     this.geoDataService.loaded.subscribe(
-      (e) => {
-        this.loaded = e;
+      (isLoaded) => {
+        this.loaded = isLoaded;
+        this.hasError = false;
       },
       (error) => {
-        this.projectsExist = false;
+        console.error('Error loading initial data:', error);
+        this.loaded = true;
+        this.hasError = true;
+        this.errorMessage = 'Failed to load data. Please try refreshing the page.';
       }
     );
 
-    this.geoDataService.loadingGallery.subscribe(e => {
-        this.loadingGallery = e;
+    this.geoDataService.loadingGallery.subscribe(isLoading => {
+      this.loadingGallery = isLoading;
     });
 
     this.featureService.features$.subscribe((fc: any) => {

@@ -25,7 +25,7 @@ export class TokenInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     const headers: { [key: string]: string } = {};
 
-    if (request.url.includes(this.envService.tapisUrl) || 
+    if (request.url.includes(this.envService.tapisUrl) ||
     request.url.includes(this.envService.apiUrl) ||
     request.url.includes(this.envService.designSafePortalUrl)) {
       if (this.authSvc.isLoggedInButTokenExpired()) {
@@ -33,15 +33,12 @@ export class TokenInterceptor implements HttpInterceptor {
         location.reload();
       }
 
-
       if (this.authSvc.isLoggedIn()) {
         headers['X-Tapis-Token'] = this.authSvc.userToken.token;
       }
     }
 
     if (request.url.includes(this.envService.apiUrl)) {
-      // Add information about what app is making the request
-
       // Add information about what app is making the request
       headers['X-Geoapi-Application'] = 'taggit';
       headers['X-Geoapi-IsPublicView'] = 'True'; // Todo: update for public-view in https://tacc-main.atlassian.net/browse/WG-127
@@ -57,6 +54,9 @@ export class TokenInterceptor implements HttpInterceptor {
         }
         headers['X-Guest-UUID'] = guestUuid;
       }
+
+      // Include credentials for CORS requests to the API
+      request = request.clone({ withCredentials: true });
     }
 
     // Apply headers if there are any to set
