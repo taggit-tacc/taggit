@@ -110,7 +110,7 @@ import { LogoutComponent } from './components/logout/logout.component';
     AppRoutingModule,
     HttpClientModule,
     HttpClientXsrfModule.withOptions({
-      cookieName: 'csrftoken',
+      cookieName: `csrftoken-${new EnvService().env}`,
       headerName: 'X-CSRFToken',
     }),
     BrowserAnimationsModule,
