@@ -70,6 +70,9 @@ import { ModalShareProjectComponent } from './components/modal-share-project/mod
 import { MatCardModule } from '@angular/material/card';
 import { LogoutComponent } from './components/logout/logout.component';
 
+const envService = new EnvService();
+envService.init();
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -110,7 +113,7 @@ import { LogoutComponent } from './components/logout/logout.component';
     AppRoutingModule,
     HttpClientModule,
     HttpClientXsrfModule.withOptions({
-      cookieName: `csrftoken-${new EnvService().env}`,
+      cookieName: `csrftoken-${envService.env}`,
       headerName: 'X-CSRFToken',
     }),
     BrowserAnimationsModule,
