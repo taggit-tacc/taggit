@@ -114,7 +114,7 @@ envService.init();
     HttpClientModule,
     HttpClientXsrfModule.withOptions({
       cookieName: `csrftoken-${envService.env}`,
-      headerName: 'X-CSRFToken',
+      headerName: `X-CSRFToken-${envService.env}`,
     }),
     BrowserAnimationsModule,
     InfiniteScrollModule,
