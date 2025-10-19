@@ -12,6 +12,12 @@ import { catchError } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 
 
+function readCookie(name: string): string | null {
+  const m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
+  return m ? decodeURIComponent(m[1]) : null;
+}
+
+
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
   constructor(
@@ -57,6 +63,20 @@ export class TokenInterceptor implements HttpInterceptor {
 
       // Include credentials for CORS requests to the API
       request = request.clone({ withCredentials: true });
+    }
+
+    // add csrv
+    if (request.url.includes(this.envService.apiUrl)) {
+      request = request.clone({ withCredentials: true });
+
+      if (['POST','PUT','PATCH','DELETE'].includes(request.method)) {
+        const cookieName = `csrftoken-${this.envService.env}`;
+        const headerName = `x-csrftoken-${this.envService.env}`;
+        const token = readCookie(cookieName);
+        if (token) {
+          headers[headerName] = token;
+        }
+      }
     }
 
     // Apply headers if there are any to set
