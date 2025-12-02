@@ -79,11 +79,17 @@ export class ModalFileBrowserComponent implements OnInit {
         );
 
         // This is where they choose which one they start with
-        this.selectedSystem = this.tapisFilesService.lastSystem;
-
-        if (this.selectedSystem == null) {
-          this.selectedSystem = this.myDataSystem;
-          this.tapisFilesService.lastSystem = this.myDataSystem;
+        const lastSystem = this.tapisFilesService.lastSystem;
+        if (lastSystem) {
+          if (lastSystem.id === this.myDataSystem.id) {
+            this.selectedSystem = this.myDataSystem;
+          } else if (lastSystem.id === this.communityDataSystem.id) {
+            this.selectedSystem = this.communityDataSystem;
+          } else if (lastSystem.id === this.publishedDataSystem.id) {
+            this.selectedSystem = this.publishedDataSystem;
+          } else {
+            this.selectedSystem = projects.find(prj => prj.id === lastSystem.id);
+          }
         }
 
         // If the user has already navigated to a folder, restore those options
@@ -96,11 +102,11 @@ export class ModalFileBrowserComponent implements OnInit {
           type: 'dir',
           path: this.currentUser.username,
         };
-        // If the user hasn't yet opened the file browser, set the last file to an init file.
-        if (this.tapisFilesService.noPreviousSelections) {
+        // If the user hasn't yet opened the file browser and no selected system is set
+        if (!this.selectedSystem) {
           this.selectedSystem = this.myDataSystem;
           this.tapisFilesService.lastFile = init;
-          this.tapisFilesService.noPreviousSelections = false;
+          this.tapisFilesService.lastSystem = this.myDataSystem;
         }
         this.browse(this.tapisFilesService.lastFile);
       });
