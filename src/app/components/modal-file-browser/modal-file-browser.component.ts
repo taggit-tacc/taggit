@@ -97,13 +97,16 @@ export class ModalFileBrowserComponent implements OnInit {
 
         this.projects = projects;
         this.currentUser = user;
-        const init = <RemoteFile> {
-          system: this.myDataSystem.id,
-          type: 'dir',
-          path: this.currentUser.username,
-        };
+
         // If the user hasn't yet opened the file browser and no selected system is set
         if (!this.selectedSystem) {
+
+          const init = <RemoteFile> {
+            system: this.myDataSystem.id,
+            type: 'dir',
+            path: this.currentUser.username,
+          };
+
           this.selectedSystem = this.myDataSystem;
           this.tapisFilesService.lastFile = init;
           this.tapisFilesService.lastSystem = this.myDataSystem;
@@ -114,9 +117,13 @@ export class ModalFileBrowserComponent implements OnInit {
 
   selectSystem(system: SystemSummary): void {
     let pth;
-    system.id === this.myDataSystem.id
-      ? (pth = this.currentUser.username)
-      : (pth = '/');
+    if (system.id === this.myDataSystem.id) {
+      pth = this.currentUser.username;
+    } else if (system.id === this.publishedDataSystem.id) {
+      pth = 'published-data';
+    } else {
+      pth = '/';
+    }
     const init = <RemoteFile> {
       system: system.id,
       type: 'dir',
