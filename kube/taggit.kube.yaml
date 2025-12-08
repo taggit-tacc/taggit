@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: taggit
-        image: taccaci/taggit:${TAGGIT_TAG}
+        image: taccwma/taggit:${TAGGIT_TAG}
         ports:
         - containerPort: 80
         resources:
