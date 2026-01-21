@@ -137,7 +137,9 @@ export class ModalFileBrowserComponent implements OnInit {
   browse(file: RemoteFile) {
     this.selectedPath = file.path;
     this.selectedSystem = this.selectedSystem; // Self-assignment keeps the system name from disappearing while browsing subfolders
-    if (file.type !== 'dir') {
+
+    // Directories and symbolic_links (used in older DesignSafe projects) are navigable.
+    if (file.type !== 'dir' && file.type !== 'symbolic_link') {
       return;
     }
     this.currentDirectory = file;
