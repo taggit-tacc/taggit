@@ -47,7 +47,7 @@
     "rxjs": "~6.5.4",
     "service": "^0.1.4",
     "ts-mocks": "^2.5.0",
-    "ts-sinon": "^1.0.21",
+    "ts-sinon": "^1.2.1",
     "tslib": "^1.14.1",
     "zone.js": "~0.9.1"
   },
@@ -72,8 +72,8 @@
     "protractor": "~5.4.0",
     "querystring": "^0.2.0",
     "ts-mockito": "^2.4.2",
-    "ts-node": "~7.0.0",
-    "tslint": "~5.11.0",
+    "ts-node": "~10.9.2",
+    "tslint": "~5.20.1",
     "typescript": "~3.5.3"
   }
 }
