@@ -46,8 +46,8 @@
       (click)="select($event, file, fileIndex)"
       (dblclick)="browse(file)"
     >
-      <i class="fas fa-folder" *ngIf="file.type === 'dir'"></i>
-      <i class="far fa-file" *ngIf="file.type !== 'dir'"></i>
+      <i class="fas fa-folder" *ngIf="file.type === 'dir' || file.type === 'symbolic_link'"></i>
+      <i class="far fa-file" *ngIf="file.type !== 'dir' && file.type !== 'symbolic_link' "></i>
       <span> {{ file.name }} </span>
     </div>
     <div class="size">
