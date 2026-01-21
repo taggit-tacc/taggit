@@ -138,7 +138,7 @@ export class ModalFileBrowserComponent implements OnInit {
     this.selectedPath = file.path;
     this.selectedSystem = this.selectedSystem; // Self-assignment keeps the system name from disappearing while browsing subfolders
 
-    // directories are navigatable as well as symbolic_links which are used in older DS projects to map to new structure.
+    // Directories and symbolic_links (used in older DesignSafe projects) are navigable.
     if (file.type !== 'dir' && file.type !== 'symbolic_link') {
       return;
     }
