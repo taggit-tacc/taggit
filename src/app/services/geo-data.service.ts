@@ -8,7 +8,6 @@ import {
   FeatureStyles,
   IFeatureAsset,
   IPointCloud,
-  Overlay,
   TagGroup,
   Tag,
   TagValue,
@@ -36,8 +35,6 @@ export class GeoDataService {
   private _activeFeature: BehaviorSubject<any>;
   private _mapMouseLocation: BehaviorSubject<any>;
   private _basemap: BehaviorSubject<any>;
-  private _overlays: BehaviorSubject<any>;
-  private _activeOverlay: BehaviorSubject<any>;
   private _pointClouds: BehaviorSubject<Array<IPointCloud>> =
     new BehaviorSubject<Array<IPointCloud>>(null);
   public readonly pointClouds: Observable<Array<IPointCloud>> =
@@ -98,10 +95,6 @@ export class GeoDataService {
 
     // For the style of the basemap, defaults to OpenStreetmap
     this._basemap = new BehaviorSubject<any>('roads');
-
-    // Holds all of the overlays on a project
-    this._overlays = new BehaviorSubject<any>(null);
-    this._activeOverlay = new BehaviorSubject<any>(null);
   }
 
   getFeature(
@@ -492,38 +485,6 @@ export class GeoDataService {
       );
   }
 
-  getOverlays(projectId: number): void {
-    this.http
-      .get(this.envService.apiUrl + `/projects/${projectId}/overlays/`)
-      .subscribe((ovs: Array<Overlay>) => {
-        this._overlays.next(ovs);
-      });
-  }
-
-  addOverlay(
-    projectId: number,
-    file: File,
-    label: string,
-    minLat: number,
-    maxLat: number,
-    minLon: number,
-    maxLon: number
-  ) {
-    const payload = new FormData();
-    payload.append('file', file);
-    payload.append('label', label);
-    payload.append('minLat', minLat.toFixed(6));
-    payload.append('maxLat', maxLat.toFixed(6));
-    payload.append('minLon', minLon.toFixed(6));
-    payload.append('maxLon', maxLon.toFixed(6));
-
-    this.http
-      .post(this.envService.apiUrl + `/projects/${projectId}/overlays/`, payload)
-      .subscribe((resp) => {
-        this.getOverlays(projectId);
-      });
-  }
-
   // Call on getFeatures (each time feature update)
   getGroups(featureList: Feature[]): void {
     const groups = new Map<string, TagGroup>();
@@ -713,10 +674,6 @@ export class GeoDataService {
     );
   }
 
-  public get overlays(): Observable<Array<Overlay>> {
-    return this._overlays.asObservable();
-  }
-
   public get features(): Observable<FeatureCollection> {
     return this._features.asObservable();
   }
@@ -736,14 +693,6 @@ export class GeoDataService {
     } else {
       this._activeFeature.next(null);
     }
-  }
-
-  public get activeOverlay(): Observable<Overlay> {
-    return this._activeOverlay.asObservable();
-  }
-
-  public set activeOverlay(ov) {
-    this._activeOverlay.next(ov);
   }
 
   public get mapMouseLocation(): Observable<LatLng> {

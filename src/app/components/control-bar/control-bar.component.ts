@@ -249,7 +249,6 @@ export class ControlBarComponent implements OnInit {
 
   getDataForProject(p: Project): void {
     this.geoDataService.getFeatures(p.id);
-    this.geoDataService.getOverlays(p.id);
     this.geoDataService.getPointClouds(p.id);
   }
 

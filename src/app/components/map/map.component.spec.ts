@@ -6,7 +6,6 @@ import { instance, mock, spy, when } from 'ts-mockito';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { of } from 'rxjs';
 import { featureFixture } from '../../fixtures/feature.fixture';
-import { overlayFixture } from '../../fixtures/overlay.fixture';
 import { FeatureCollection } from '../../models/models';
 
 class MockActivatedRoute extends ActivatedRoute {
@@ -42,7 +41,6 @@ describe('MapComponent', () => {
     fixture = TestBed.createComponent(MapComponent);
     component = fixture.componentInstance;
 
-    when(MockData.activeOverlay).thenReturn(of(overlayFixture));
     when(MockData.activeFeature).thenReturn(of(featureFixture));
     when(MockData.features).thenReturn(of(new FeatureCollection()));
     when(MockData.basemap).thenReturn(of('roads'));

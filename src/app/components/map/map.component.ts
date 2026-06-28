@@ -6,12 +6,10 @@ import 'leaflet.markercluster';
 import { GeoDataService } from '../../services/geo-data.service';
 import { createMarker } from '../../utils/leafletUtils';
 import { Feature } from 'geojson';
-import { FeatureGroup, ImageOverlay, LatLng, LeafletMouseEvent } from 'leaflet';
+import { FeatureGroup, LatLng, LeafletMouseEvent } from 'leaflet';
 import * as turf from '@turf/turf';
 import { AllGeoJSON } from '@turf/helpers';
 import { filter, skip } from 'rxjs/operators';
-import { Overlay } from '../../models/models';
-import { EnvService } from '../../services/env.service';
 
 @Component({
   selector: 'app-map',
@@ -22,13 +20,10 @@ export class MapComponent implements OnInit {
   map: L.Map;
   mapType = 'normal';
   activeFeature: Feature;
-  activeOverlay: Overlay;
   features: FeatureGroup = new FeatureGroup();
-  overlays: Map<number, ImageOverlay>;
 
   constructor(
     private GeoDataService: GeoDataService,
-    private envService: EnvService,
     private route: ActivatedRoute
   ) {
     // Have to bind these to keep this being this
@@ -40,7 +35,6 @@ export class MapComponent implements OnInit {
     // const mapType: string = this.route.snapshot.queryParamMap.get('mapType');
     // this.projectId = +this.route.snapshot.paramMap.get("projectId");
     // this.cluster = this.route.snapshot.queryParamMap.get('mapType');
-    this.overlays = new Map();
     this.map = new L.Map('map', {
       center: [40, -80],
       zoom: 9,
@@ -70,9 +64,6 @@ export class MapComponent implements OnInit {
     this.map.on('mousemove', (ev: LeafletMouseEvent) =>
       this.mouseEventHandler(ev)
     );
-    this.GeoDataService.activeOverlay.pipe(skip(1)).subscribe((next) => {
-      this.addRemoveOverlay(next);
-    });
 
     // Listen on the activeFeature stream and zoom map to that feature when it changes
     this.GeoDataService.activeFeature
@@ -97,24 +88,6 @@ export class MapComponent implements OnInit {
         this.map.addLayer(baseOSM);
       }
     });
-  }
-
-  addRemoveOverlay(ov: Overlay): void {
-    if (this.overlays.has(ov.id)) {
-      this.features.removeLayer(this.overlays.get(ov.id));
-      this.overlays.delete(ov.id);
-    } else {
-      const overlay = L.imageOverlay(
-        this.envService.apiUrl + '/assets/' + ov.path,
-        [
-          [ov.minLat, ov.minLon],
-          [ov.maxLat, ov.maxLon],
-        ]
-      );
-      this.overlays.set(ov.id, overlay);
-      this.features.addLayer(overlay);
-    }
-    this.map.fitBounds(this.features.getBounds());
   }
 
   mouseEventHandler(ev: any): void {
