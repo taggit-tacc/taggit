@@ -1,5 +1,7 @@
 # Taggit
 
+**⚠️ This project is no longer maintained.**
+
 [Taggit](https://www.designsafe-ci.org/ds-use-case/haan/usecase/) allows users to browse images files on DesignSafe and tag them for 
 later use in analysis or mapping applications. It also easily connects to [HazMapper](https://github.com/TACC-Cloud/hazmapper) to map image locations. 
 
