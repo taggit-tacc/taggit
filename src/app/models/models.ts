@@ -182,18 +182,6 @@ export interface FeatureStyles {
 
 export class FeatureStyles implements FeatureStyles {}
 
-export interface Overlay {
-  id: number;
-  path: string;
-  uuid: string;
-  minLon: number;
-  minLat: number;
-  maxLon: number;
-  maxLat: number;
-  project_id: number;
-  label: string;
-}
-
 interface AppGeoJSONFeature extends GeoJSONFeature {
   assets?: Array<IFeatureAsset>;
   styles?: FeatureStyles;
